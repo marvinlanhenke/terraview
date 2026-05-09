@@ -16,7 +16,9 @@ type Model struct {
 
 	focus Focus
 
-	search  search.Search
+	search     search.Search
+	matchCount int
+
 	summary string
 }
 

@@ -11,9 +11,7 @@ import (
 const defaultMargin = 4
 
 func (m Model) View() tea.View {
-	searchBar := theme.SearchBar.
-		Width(max(0, m.width-defaultMargin)).
-		Render(m.search.View())
+	searchBar := m.search.View(max(0, m.width-defaultMargin), m.matchCount)
 
 	summary := theme.Summary.
 		Width(max(0, m.width-defaultMargin)).

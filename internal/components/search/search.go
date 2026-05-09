@@ -1,10 +1,13 @@
 package search
 
 import (
+	"fmt"
 	"strings"
 
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
 type Search struct {
@@ -14,8 +17,19 @@ type Search struct {
 
 func New() Search {
 	input := textinput.New()
+
+	styles := input.Styles()
+	styles.Focused.Placeholder = theme.SearchBar
+	styles.Focused.Text = theme.SearchInput
+	styles.Blurred.Placeholder = theme.SearchBar.Faint(true)
+	styles.Blurred.Text = theme.SearchInput
+
+	// TODO: cursor messes up bg of search bar, maybe virt. cursor helps?
+	input.SetStyles(styles)
+
 	input.Placeholder = "search resources..."
 	input.CharLimit = 256
+	input.Prompt = ""
 	input.Blur()
 
 	return Search{input: input}
@@ -31,11 +45,38 @@ func (s *Search) Update(msg tea.Msg) tea.Cmd {
 	return cmd
 }
 
-func (s *Search) View() string {
-	return s.input.View()
+func (s *Search) View(width int, matches int) string {
+	if width <= 0 {
+		return ""
+	}
+
+	label := theme.SearchNugget.Render("[S]")
+	status := theme.SearchStatus.Render(fmt.Sprintf("%d matches", matches))
+
+	inputStyle := theme.SearchInput
+	barStyle := theme.SearchBar
+
+	if s.Focused() {
+		inputStyle = theme.SearchInputFocused
+		barStyle = theme.SearchBarFocused
+	}
+
+	availableWidth := max(0, width-lipgloss.Width(label)-lipgloss.Width(status))
+
+	input := inputStyle.Width(availableWidth).Render(s.input.View())
+
+	row := lipgloss.JoinHorizontal(
+		lipgloss.Top,
+		label,
+		input,
+		status,
+	)
+
+	return barStyle.Width(width).Render(row)
 }
 
 func (s *Search) Focus() tea.Cmd {
+	s.input.Placeholder = ""
 	s.input.Focus()
 	return textinput.Blink
 }
