@@ -7,6 +7,7 @@ import (
 
 type keymap struct {
 	Search key.Binding
+	Enter  key.Binding
 	Escape key.Binding
 	Quit   key.Binding
 }
@@ -15,6 +16,10 @@ var keys = keymap{
 	Search: key.NewBinding(
 		key.WithKeys("/"),
 		key.WithHelp("/", "search"),
+	),
+	Enter: key.NewBinding(
+		key.WithKeys("enter"),
+		key.WithHelp("enter", "apply search"),
 	),
 	Escape: key.NewBinding(
 		key.WithKeys("esc"),
@@ -40,6 +45,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.search.SetWidth(max(0, msg.Width-8))
 		return m, nil
 
+	// TODO: Refactor into specific handlerFuncs or command pattern?
 	case tea.KeyPressMsg:
 		switch {
 		case key.Matches(msg, keys.Quit) && m.focus != FocusSearch:
@@ -50,10 +56,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmds = append(cmds, m.search.Focus())
 			return m, tea.Batch(cmds...)
 
-		case key.Matches(msg, keys.Escape) && m.focus == FocusSearch:
+		case key.Matches(msg, keys.Enter, keys.Enter) && m.focus == FocusSearch:
 			m.focus = FocusTree
+			m.search.Blur()
+
+		case key.Matches(msg, keys.Escape) && m.focus == FocusSearch:
 			m.search.Clear()
 			m.search.Blur()
+			// TODO: Remove filter from tree, when implemented
+			m.focus = FocusTree
 			return m, nil
 		}
 	}
@@ -61,6 +72,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch m.focus {
 	case FocusSearch:
 		cmds = append(cmds, m.search.Update(msg))
+		// TODO: Apply filter while typing to tree
 
 	case FocusTree:
 		// TODO
