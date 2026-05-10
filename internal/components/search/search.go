@@ -15,8 +15,7 @@ const (
 )
 
 type Search struct {
-	input   textinput.Model
-	focused bool
+	input textinput.Model
 }
 
 func New() Search {
