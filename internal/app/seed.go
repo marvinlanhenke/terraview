@@ -1,6 +1,11 @@
 package app
 
-import "github.com/marvinlanhenke/terraview/internal/components/tree"
+import (
+	"fmt"
+	"math/rand"
+
+	"github.com/marvinlanhenke/terraview/internal/components/tree"
+)
 
 var (
 	child1 = &tree.Node{
@@ -37,11 +42,59 @@ var (
 	}
 )
 
-func getRoot() *tree.Node {
+func getNestedRoot(maxDepth, maxSiblings int) *tree.Node {
+	root := &tree.Node{
+		ID:     "root",
+		Label:  "root",
+		Kind:   tree.NodeGroup,
+		Action: tree.ActionNoOp,
+		Depth:  0,
+	}
 
-	child2.Children = []*tree.Node{child2Sub1}
-	child2Sub1.Parent = child2
-	root.Children = []*tree.Node{child1, child2}
+	actions := []tree.Action{
+		tree.ActionCreate,
+		tree.ActionUpdate,
+		tree.ActionDelete,
+		tree.ActionReplace,
+		tree.ActionNoOp,
+		tree.ActionNoOp,
+	}
+
+	minDepth := 2
+	minSiblings := 3
+
+	depth := rand.Intn(max(maxDepth, minDepth)-minDepth+1) + minDepth
+	siblings := rand.Intn(max(maxSiblings, minSiblings)-minSiblings+1) + minSiblings
+
+	root.Children = getChildren(root, "child", 1, depth, siblings, actions)
 
 	return root
+}
+
+func getChildren(parent *tree.Node, label string, depth, maxDepth, maxSiblings int, actions []tree.Action) []*tree.Node {
+	if depth > maxDepth {
+		return nil
+	}
+
+	children := make([]*tree.Node, maxSiblings)
+
+	for i := range maxSiblings {
+		id := fmt.Sprintf("%s-%d-%d", label, depth, i)
+		action := actions[rand.Intn(len(actions))]
+
+		child := &tree.Node{
+			ID:     id,
+			Label:  id,
+			Kind:   tree.NodeResource,
+			Action: action,
+			Depth:  depth,
+			Parent: parent,
+		}
+
+		child.Children = getChildren(child, label, depth+1, maxDepth, maxSiblings, actions)
+
+		children[i] = child
+	}
+
+	return children
 }
