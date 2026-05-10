@@ -1,8 +1,6 @@
 package app
 
 import (
-	"fmt"
-
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/marvinlanhenke/terraview/internal/theme"
@@ -13,9 +11,11 @@ const defaultMargin = 4
 func (m Model) View() tea.View {
 	searchBar := m.search.View(max(0, m.width-defaultMargin), m.matchCount)
 
-	summary := theme.Summary.
-		Width(max(0, m.width-defaultMargin)).
-		Render(fmt.Sprintf("Summary: %q", m.summary))
+	summary := m.summary.View()
+
+	// summary := theme.Summary.
+	// 	Width(max(0, m.width-defaultMargin)).
+	// 	Render(fmt.Sprintf("Summary: %q", m.summary))
 
 	tree := theme.Pane.
 		Width(max(20, m.width/3)).

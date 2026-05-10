@@ -7,7 +7,6 @@ import (
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
 const (
@@ -23,13 +22,13 @@ func New() Search {
 
 	styles := input.Styles()
 
-	styles.Focused.Placeholder = theme.SearchBar
-	styles.Focused.Text = theme.SearchInputFocused
-	styles.Focused.Prompt = theme.SearchInputFocused
+	styles.Focused.Placeholder = searchBar
+	styles.Focused.Text = searchInputFocused
+	styles.Focused.Prompt = searchInputFocused
 
-	styles.Blurred.Placeholder = theme.SearchBar.Faint(true)
-	styles.Blurred.Text = theme.SearchInput
-	styles.Blurred.Prompt = theme.SearchInput
+	styles.Blurred.Placeholder = searchBar.Faint(true)
+	styles.Blurred.Text = searchInput
+	styles.Blurred.Prompt = searchInput
 
 	input.SetStyles(styles)
 
@@ -55,13 +54,13 @@ func (s *Search) View(width int, matches int) string {
 		return ""
 	}
 
-	label := theme.SearchNugget.Render("[S]")
-	status := theme.SearchStatus.Render(fmt.Sprintf("%d matches", matches))
+	label := searchNugget.Render("[S]")
+	status := searchStatus.Render(fmt.Sprintf("%d matches", matches))
 
-	inputStyle := theme.SearchInput
+	inputStyle := searchInput
 
 	if s.Focused() {
-		inputStyle = theme.SearchInputFocused
+		inputStyle = searchInputFocused
 	}
 
 	availableWidth := max(0, width-lipgloss.Width(label)-lipgloss.Width(status))
@@ -75,7 +74,7 @@ func (s *Search) View(width int, matches int) string {
 		status,
 	)
 
-	return theme.SearchBar.Width(width).Render(row)
+	return searchBar.Width(width).Render(row)
 }
 
 func (s *Search) Focus() tea.Cmd {

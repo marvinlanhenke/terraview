@@ -1,6 +1,9 @@
 package app
 
-import "github.com/marvinlanhenke/terraview/internal/components/search"
+import (
+	"github.com/marvinlanhenke/terraview/internal/components/search"
+	"github.com/marvinlanhenke/terraview/internal/components/summary"
+)
 
 type Focus int
 
@@ -11,21 +14,20 @@ const (
 )
 
 type Model struct {
-	width  int
-	height int
+	width      int
+	height     int
+	matchCount int
 
 	focus Focus
 
-	search     search.Search
-	matchCount int
-
-	summary string
+	search  search.Search
+	summary summary.Summary
 }
 
 func New() Model {
 	return Model{
 		focus:   FocusTree,
 		search:  search.New(),
-		summary: "todo summary",
+		summary: summary.New(),
 	}
 }
