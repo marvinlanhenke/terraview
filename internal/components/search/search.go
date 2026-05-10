@@ -60,11 +60,9 @@ func (s *Search) View(width int, matches int) string {
 	status := theme.SearchStatus.Render(fmt.Sprintf("%d matches", matches))
 
 	inputStyle := theme.SearchInput
-	barStyle := theme.SearchBar
 
 	if s.Focused() {
 		inputStyle = theme.SearchInputFocused
-		barStyle = theme.SearchBarFocused
 	}
 
 	availableWidth := max(0, width-lipgloss.Width(label)-lipgloss.Width(status))
@@ -78,7 +76,7 @@ func (s *Search) View(width int, matches int) string {
 		status,
 	)
 
-	return barStyle.Width(width).Render(row)
+	return theme.SearchBar.Width(width).Render(row)
 }
 
 func (s *Search) Focus() tea.Cmd {
