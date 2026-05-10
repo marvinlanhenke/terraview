@@ -42,7 +42,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
+
 		m.search.SetWidth(max(0, msg.Width-8))
+
+		treeWidth, treeHeight := treePaneSize(msg.Width, msg.Height)
+		m.tree.SetSize(treeWidth, treeHeight)
+
 		return m, nil
 
 	case tea.KeyPressMsg:

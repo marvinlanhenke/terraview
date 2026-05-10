@@ -34,7 +34,9 @@ func New() Model {
 		tree:    tree.New(),
 	}
 
-	m.tree.SetRoot(getRoot())
+	treeWidth, treeHeight := treePaneSize(0, 0)
+	m.tree.SetSize(treeWidth, treeHeight)
+	m.tree.SetRoot(getNestedRoot(5, 5))
 
 	return m
 }

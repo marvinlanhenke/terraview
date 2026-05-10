@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"charm.land/bubbles/v2/key"
+	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 )
@@ -13,16 +14,36 @@ type Tree struct {
 	visible []*Node
 	cursor  int
 	query   string
+
+	width    int
+	height   int
+	viewport viewport.Model
 }
 
 func New() Tree {
-	return Tree{}
+	vp := viewport.New()
+	vp.FillHeight = true
+	vp.Style = treeBackground
+
+	return Tree{
+		viewport: vp,
+	}
 }
 
 func (t *Tree) SetRoot(root *Node) {
 	t.root = root
 	t.rebuildVisible()
 	t.clampCursor()
+	t.syncViewport()
+}
+
+func (t *Tree) SetSize(width, height int) {
+	t.width = max(0, width)
+	t.height = max(0, height)
+
+	t.viewport.SetWidth(t.width)
+	t.viewport.SetHeight(t.height)
+	t.syncViewport()
 }
 
 func (t *Tree) Selected() *Node {
@@ -37,6 +58,7 @@ func (t *Tree) ApplyFilter(query string) {
 	t.query = strings.TrimSpace(strings.ToLower(query))
 	t.rebuildVisible()
 	t.clampCursor()
+	t.syncViewport()
 }
 
 func (t *Tree) Update(msg tea.Msg) tea.Cmd {
@@ -80,49 +102,29 @@ func (t *Tree) Update(msg tea.Msg) tea.Cmd {
 	}
 
 	t.clampCursor()
+	t.syncViewport()
 
 	return nil
 }
 
-func (t Tree) View(width, height int) string {
+func (t Tree) View() string {
 	if len(t.visible) == 0 {
 		return treeEmpty.
-			Width(width).
-			MaxWidth(width).
-			Height(height).
+			Width(t.width).
+			MaxWidth(t.width).
+			Height(t.height).
 			AlignHorizontal(lipgloss.Center).
 			AlignVertical(lipgloss.Center).
 			Render("Nothing to show...")
 	}
 
-	var builder strings.Builder
-
-	limit := min(len(t.visible), height)
-
-	for i := range limit {
-		n := t.visible[i]
-		selected := i == t.cursor
-
-		line := t.renderNode(n, width, selected)
-		builder.WriteString(line)
-
-		if i < limit-1 {
-			builder.WriteRune('\n')
-		}
-	}
-
-	lines := builder.String()
-
-	return treeBackground.
-		Height(height).
-		Render(lines)
+	return t.viewport.View()
 }
 
-func (t Tree) renderNode(n *Node, width int, selected bool) string {
+func (t Tree) renderNode(n *Node, selected bool) string {
 	indent := strings.Repeat(" ", n.Depth)
 
 	icon := " "
-
 	if n.HasChildren() {
 		if n.Expanded || t.query != "" {
 			icon = "▾"
@@ -138,7 +140,50 @@ func (t Tree) renderNode(n *Node, width int, selected bool) string {
 		style = treeSelected
 	}
 
-	return style.Width(width).MaxWidth(width).Render(line)
+	return style.
+		Width(t.width).
+		MaxWidth(t.width).
+		Render(line)
+}
+
+func (t *Tree) syncViewport() {
+	if t.width <= 0 || t.height <= 0 {
+		t.viewport.SetContentLines(nil)
+		return
+	}
+
+	if len(t.visible) == 0 {
+		t.viewport.SetContentLines(nil)
+		t.viewport.SetYOffset(0)
+		return
+	}
+
+	lines := make([]string, len(t.visible))
+	for i, n := range t.visible {
+		selected := i == t.cursor
+		lines[i] = t.renderNode(n, selected)
+	}
+
+	t.viewport.SetContentLines(lines)
+	t.keepCursorVisible()
+}
+
+func (t *Tree) keepCursorVisible() {
+	if len(t.visible) == 0 || t.height <= 0 {
+		return
+	}
+
+	top := t.viewport.YOffset()
+	bottom := top + t.height - 1
+
+	if t.cursor < top {
+		t.viewport.SetYOffset(t.cursor)
+		return
+	}
+
+	if t.cursor > bottom {
+		t.viewport.SetYOffset(t.cursor - t.height + 1)
+	}
 }
 
 func (t *Tree) clampCursor() {
