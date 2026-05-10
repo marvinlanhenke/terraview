@@ -10,6 +10,10 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
+const (
+	placeholder = "search resources..."
+)
+
 type Search struct {
 	input   textinput.Model
 	focused bool
@@ -19,17 +23,17 @@ func New() Search {
 	input := textinput.New()
 
 	styles := input.Styles()
+
 	styles.Focused.Placeholder = theme.SearchBar
 	styles.Focused.Text = theme.SearchInput
+
 	styles.Blurred.Placeholder = theme.SearchBar.Faint(true)
 	styles.Blurred.Text = theme.SearchInput
 
-	// TODO: cursor messes up bg of search bar, maybe virt. cursor helps?
 	input.SetStyles(styles)
 
-	input.Placeholder = "search resources..."
+	input.Placeholder = placeholder
 	input.CharLimit = 256
-	input.Prompt = ""
 	input.Blur()
 
 	return Search{input: input}
@@ -95,6 +99,7 @@ func (s *Search) Value() string {
 
 func (s *Search) Clear() {
 	s.input.SetValue("")
+	s.input.Placeholder = placeholder
 }
 
 func (s *Search) SetWidth(width int) {
