@@ -45,17 +45,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.search.SetWidth(max(0, msg.Width-8))
 		return m, nil
 
-	// TODO: Refactor into specific handlerFuncs or command pattern?
 	case tea.KeyPressMsg:
 		switch {
+		// Quit
 		case key.Matches(msg, keys.Quit) && m.focus != FocusSearch:
 			return m, tea.Quit
 
+		// Search Focus
 		case key.Matches(msg, keys.Search) && m.focus != FocusSearch:
 			m.focus = FocusSearch
 			cmds = append(cmds, m.search.Focus())
 			return m, tea.Batch(cmds...)
 
+		// Search Enter
 		case key.Matches(msg, keys.Enter, keys.Enter) && m.focus == FocusSearch:
 			m.focus = FocusTree
 			m.search.Blur()
@@ -64,7 +66,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.focus = FocusTree
 			m.search.Clear()
 			m.search.Blur()
-			// TODO: Remove filter from tree, when implemented
+			m.tree.ApplyFilter("")
 			return m, nil
 		}
 	}
@@ -72,7 +74,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch m.focus {
 	case FocusSearch:
 		cmds = append(cmds, m.search.Update(msg))
-		// TODO: Apply filter while typing to tree
+		m.tree.ApplyFilter(m.search.Value())
 
 	case FocusTree:
 		// TODO

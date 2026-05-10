@@ -2,6 +2,8 @@ package tree
 
 import (
 	"strings"
+
+	"charm.land/lipgloss/v2"
 )
 
 type Tree struct {
@@ -35,12 +37,15 @@ func (t *Tree) ApplyFilter(query string) {
 	t.clampCursor()
 }
 
-// TODO: resource name, max-width, truncation
-// TODO: needs to be a viewport for huge plans
-// TODO: set a solid background for complete pane; no borders
 func (t Tree) View(width, height int) string {
 	if len(t.visible) == 0 {
-		return treeEmpty.Render("No resources yet...")
+		return treeEmpty.
+			Width(width).
+			MaxWidth(width).
+			Height(height).
+			AlignHorizontal(lipgloss.Center).
+			AlignVertical(lipgloss.Center).
+			Render("Nothing to show...")
 	}
 
 	var builder strings.Builder
