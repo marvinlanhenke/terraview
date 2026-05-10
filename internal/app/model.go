@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/marvinlanhenke/terraview/internal/components/search"
 	"github.com/marvinlanhenke/terraview/internal/components/summary"
+	"github.com/marvinlanhenke/terraview/internal/components/tree"
 )
 
 type Focus int
@@ -22,6 +23,7 @@ type Model struct {
 
 	search  search.Search
 	summary summary.Summary
+	tree    tree.Tree
 }
 
 func New() Model {
@@ -29,5 +31,6 @@ func New() Model {
 		focus:   FocusTree,
 		search:  search.New(),
 		summary: summary.New(),
+		tree:    tree.New(),
 	}
 }
