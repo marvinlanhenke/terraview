@@ -25,10 +25,12 @@ func New() Search {
 	styles := input.Styles()
 
 	styles.Focused.Placeholder = theme.SearchBar
-	styles.Focused.Text = theme.SearchInput
+	styles.Focused.Text = theme.SearchInputFocused
+	styles.Focused.Prompt = theme.SearchInputFocused
 
 	styles.Blurred.Placeholder = theme.SearchBar.Faint(true)
 	styles.Blurred.Text = theme.SearchInput
+	styles.Blurred.Prompt = theme.SearchInput
 
 	input.SetStyles(styles)
 

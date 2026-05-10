@@ -21,6 +21,8 @@ var (
 	// SearchBar
 	SearchBarBG = lipgloss.Color("#353533")
 
+	SearchBarFocusBG = lipgloss.Color("#242424")
+
 	SearchBar = lipgloss.NewStyle().
 			Background(SearchBarBG)
 
@@ -32,7 +34,7 @@ var (
 
 	SearchInput = lipgloss.NewStyle().
 			Foreground(lipgloss.Color("#C1C6B2")).
-			Background(lipgloss.Color("#353533")).
+			Background(SearchBarBG).
 			Padding(0, 1)
 
 	SearchStatus = lipgloss.NewStyle().
@@ -44,5 +46,5 @@ var (
 				Foreground(lipgloss.Color("#FFFDF5"))
 
 	SearchBarFocused = SearchBar.
-				Background(lipgloss.Color("#242424"))
+				Background(SearchBarFocusBG)
 )
