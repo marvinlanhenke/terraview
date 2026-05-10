@@ -39,10 +39,6 @@ func New() Search {
 	return Search{input: input}
 }
 
-func (s *Search) Init() tea.Cmd {
-	return textinput.Blink
-}
-
 func (s *Search) Update(msg tea.Msg) tea.Cmd {
 	var cmd tea.Cmd
 	s.input, cmd = s.input.Update(msg)

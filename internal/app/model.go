@@ -27,10 +27,14 @@ type Model struct {
 }
 
 func New() Model {
-	return Model{
+	m := Model{
 		focus:   FocusTree,
 		search:  search.New(),
 		summary: summary.New(),
 		tree:    tree.New(),
 	}
+
+	m.tree.SetRoot(getRoot())
+
+	return m
 }
