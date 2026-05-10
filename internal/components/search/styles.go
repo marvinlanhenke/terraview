@@ -8,8 +8,6 @@ import (
 var (
 	searchBar = lipgloss.NewStyle().Background(theme.BackgroundBlur)
 
-	searchBarFocused = searchBar.Background(theme.BackgroundFocus)
-
 	searchNugget = lipgloss.NewStyle().
 			Foreground(theme.TextBlur).
 			Background(theme.AccentPrimary).
@@ -21,7 +19,9 @@ var (
 			Background(theme.BackgroundBlur).
 			Padding(0, 1)
 
-	searchInputFocused = searchInput.Foreground(theme.TextFocus)
+	searchInputFocused = searchInput.
+				Foreground(theme.TextFocus).
+				Background(theme.BackgroundFocus)
 
 	searchStatus = lipgloss.NewStyle().
 			Foreground(theme.TextBlur).

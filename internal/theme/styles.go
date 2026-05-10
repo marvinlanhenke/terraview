@@ -5,10 +5,6 @@ import "charm.land/lipgloss/v2"
 var (
 	App = lipgloss.NewStyle().Padding(1, 2)
 
-	Summary = lipgloss.NewStyle().
-		Border(lipgloss.NormalBorder()).
-		Padding(0, 1)
-
 	Pane = lipgloss.NewStyle().
 		Border(lipgloss.NormalBorder()).
 		Padding(0, 1)
@@ -17,7 +13,7 @@ var (
 
 	// Colors
 	BackgroundBlur  = lipgloss.Color("#303446")
-	BackgroundFocus = lipgloss.Color("#5c5f77")
+	BackgroundFocus = lipgloss.Color("#414559")
 
 	TextBlur  = lipgloss.Color("#51576d")
 	TextFocus = lipgloss.Color("#bcc0cc")
