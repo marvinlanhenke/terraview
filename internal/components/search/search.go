@@ -103,5 +103,5 @@ func (s *Search) Clear() {
 }
 
 func (s *Search) SetWidth(width int) {
-	s.input.SetWidth(max(width, 0))
+	s.input.SetWidth(max(0, width))
 }
