@@ -57,15 +57,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Batch(cmds...)
 
 		case key.Matches(msg, keys.Enter, keys.Enter) && m.focus == FocusSearch:
-			m.search.Blur()
-			m.search.Clear()
 			m.focus = FocusTree
+			m.search.Blur()
 
 		case key.Matches(msg, keys.Escape) && m.focus == FocusSearch:
+			m.focus = FocusTree
 			m.search.Clear()
 			m.search.Blur()
 			// TODO: Remove filter from tree, when implemented
-			m.focus = FocusTree
 			return m, nil
 		}
 	}
