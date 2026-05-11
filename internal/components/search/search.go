@@ -15,6 +15,9 @@ const (
 
 type Search struct {
 	input textinput.Model
+
+	width   int
+	matches int
 }
 
 func New() Search {
@@ -39,19 +42,30 @@ func New() Search {
 	return Search{input: input}
 }
 
+func (s *Search) SetWidth(width int) {
+	s.width = max(0, width)
+	s.input.SetWidth(s.width)
+}
+
+func (s *Search) SetMatches(matches int) {
+	if s.Value() != "" {
+		s.matches = max(0, matches)
+	}
+}
+
 func (s *Search) Update(msg tea.Msg) tea.Cmd {
 	var cmd tea.Cmd
 	s.input, cmd = s.input.Update(msg)
 	return cmd
 }
 
-func (s *Search) View(width int, matches int) string {
-	if width <= 0 {
+func (s *Search) View() string {
+	if s.width <= 0 {
 		return ""
 	}
 
 	label := searchNugget.Render("[S]")
-	status := searchStatus.Render(fmt.Sprintf("%d matches", matches))
+	status := searchStatus.Render(fmt.Sprintf("%d matches", s.matches))
 
 	inputStyle := searchInput
 
@@ -59,7 +73,7 @@ func (s *Search) View(width int, matches int) string {
 		inputStyle = searchInputFocused
 	}
 
-	availableWidth := max(0, width-lipgloss.Width(label)-lipgloss.Width(status))
+	availableWidth := max(0, s.width-lipgloss.Width(label)-lipgloss.Width(status))
 
 	input := inputStyle.Width(availableWidth).Render(s.input.View())
 
@@ -70,7 +84,10 @@ func (s *Search) View(width int, matches int) string {
 		status,
 	)
 
-	return searchBar.Width(width).Render(row)
+	return searchBar.
+		Width(s.width).
+		MaxWidth(s.width).
+		Render(row)
 }
 
 func (s *Search) Focus() tea.Cmd {
@@ -93,9 +110,6 @@ func (s *Search) Value() string {
 
 func (s *Search) Clear() {
 	s.input.SetValue("")
+	s.matches = 0
 	s.input.Placeholder = placeholder
-}
-
-func (s *Search) SetWidth(width int) {
-	s.input.SetWidth(max(0, width))
 }

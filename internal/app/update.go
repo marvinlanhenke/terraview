@@ -43,7 +43,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.width = msg.Width
 		m.height = msg.Height
 
-		m.search.SetWidth(max(0, msg.Width-8))
+		m.search.SetWidth(msg.Width - defaultMargin)
 		m.summary.SetWidth(msg.Width - defaultMargin)
 
 		treeWidth, treeHeight := treePaneSize(msg.Width, msg.Height)
@@ -82,6 +82,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case FocusSearch:
 		cmds = append(cmds, m.search.Update(msg))
 		m.tree.ApplyFilter(m.search.Value())
+		// TODO get visible from tree
+		m.search.SetMatches(0)
 
 	case FocusTree:
 		cmds = append(cmds, m.tree.Update(msg))

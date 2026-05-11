@@ -36,6 +36,7 @@ func New() Model {
 		tree:    tree.New(),
 	}
 
+	m.search.SetWidth(m.width - defaultMargin)
 	m.summary.SetWidth(m.width - defaultMargin)
 
 	treeWidth, treeHeight := treePaneSize(0, 0)

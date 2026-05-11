@@ -7,11 +7,10 @@ import (
 )
 
 func (m Model) View() tea.View {
-	searchBar := m.search.View(max(0, m.width-defaultMargin), m.matchCount)
-
+	searchBar := m.search.View()
 	summary := m.summary.View()
-
 	tree := m.tree.View()
+
 	treeWidth, treeHeight := treePaneSize(m.width, m.height)
 
 	details := lipgloss.NewStyle().
