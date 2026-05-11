@@ -6,6 +6,8 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/components/tree"
 )
 
+const defaultMargin = 4
+
 type Focus int
 
 const (
@@ -33,6 +35,8 @@ func New() Model {
 		summary: summary.New(),
 		tree:    tree.New(),
 	}
+
+	m.summary.SetWidth(m.width - defaultMargin)
 
 	treeWidth, treeHeight := treePaneSize(0, 0)
 	m.tree.SetSize(treeWidth, treeHeight)

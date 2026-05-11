@@ -57,6 +57,8 @@ func (f Filters) String() string {
 type Summary struct {
 	stats   Stats
 	filters Filters
+
+	width int
 }
 
 func New() Summary {
@@ -71,8 +73,13 @@ func (s *Summary) SetFilters(filters Filters) {
 	s.filters = filters
 }
 
-func (s Summary) View(width int) string {
+func (s *Summary) SetWidth(width int) {
+	s.width = max(0, width)
+}
+
+func (s *Summary) View() string {
 	filters := fmt.Sprintf("Filters: %s", s.filters)
 	plan := fmt.Sprintf("Plan: %s", s.stats)
-	return summaryBar.Width(width).Render(filters + "\n\n" + plan)
+
+	return summaryBar.Width(s.width).Render(filters + "\n\n" + plan)
 }

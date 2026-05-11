@@ -6,12 +6,10 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
-const defaultMargin = 4
-
 func (m Model) View() tea.View {
 	searchBar := m.search.View(max(0, m.width-defaultMargin), m.matchCount)
 
-	summary := m.summary.View(max(0, m.width-defaultMargin))
+	summary := m.summary.View()
 
 	tree := m.tree.View()
 	treeWidth, treeHeight := treePaneSize(m.width, m.height)
