@@ -82,8 +82,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case FocusSearch:
 		cmds = append(cmds, m.search.Update(msg))
 		m.tree.ApplyFilter(m.search.Value())
-		// TODO get visible from tree
-		m.search.SetMatches(0)
+		m.search.SetMatches(m.tree.GetVisible())
 
 	case FocusTree:
 		cmds = append(cmds, m.tree.Update(msg))

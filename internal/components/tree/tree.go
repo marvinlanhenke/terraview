@@ -30,6 +30,10 @@ func New() Tree {
 	}
 }
 
+func (t Tree) GetVisible() int {
+	return len(t.visible)
+}
+
 func (t *Tree) SetRoot(root *Node) {
 	t.root = root
 	t.rebuildVisible()
