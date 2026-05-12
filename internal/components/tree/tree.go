@@ -154,7 +154,7 @@ func (t Tree) renderNode(n *node, selected bool) string {
 			Render(prefixSelected + labelSelected)
 	}
 
-	prefix := actionMarker.style.Render(rawPrefix)
+	prefix := actionMarker.style.Faint(true).Render(rawPrefix)
 	label := t.styles.label.Render(n.label)
 
 	return t.styles.base.

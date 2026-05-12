@@ -52,11 +52,12 @@ func newStyles(t theme.Theme) styles {
 		backgroundAlt: s.BackgroundAlt,
 		selected:      base.Foreground(p.Text).Background(p.SurfaceAlt),
 
-		create: lipgloss.NewStyle().Foreground(p.Success),
-		update: lipgloss.NewStyle().Foreground(p.Warning),
-		delete: lipgloss.NewStyle().Foreground(p.Danger),
-		noOp:   lipgloss.NewStyle().Foreground(p.TextMuted),
-		error:  lipgloss.NewStyle().Foreground(p.Danger),
+		create:  lipgloss.NewStyle().Foreground(p.Success),
+		update:  lipgloss.NewStyle().Foreground(p.Warning),
+		delete:  lipgloss.NewStyle().Foreground(p.Danger),
+		replace: lipgloss.NewStyle().Foreground(p.Secondary),
+		noOp:    lipgloss.NewStyle().Foreground(p.Text),
+		error:   lipgloss.NewStyle().Foreground(p.Danger),
 
 		label:    lipgloss.NewStyle().Foreground(p.TextMuted).Background(p.Surface),
 		labelAlt: lipgloss.NewStyle().Foreground(p.Text).Background(p.SurfaceAlt),
