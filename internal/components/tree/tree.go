@@ -138,16 +138,24 @@ func (t Tree) renderNode(n *Node, selected bool) string {
 	}
 
 	action, style := treeActionMarkerWithStyle(n.Action)
-	line := indent + icon + " " + action + " " + n.Label
+	rawPrefix := indent + icon + " " + action + " "
 
 	if selected {
-		style = treeSelected
+		prefixSelected := style.Background(treeBackgroundFocus).Render(rawPrefix)
+		labelSelected := treeLabelSelected.Render(n.Label)
+		return treeSelected.
+			Width(t.width).
+			MaxWidth(t.width).
+			Render(prefixSelected + labelSelected)
 	}
 
-	return style.
+	prefix := style.Render(rawPrefix)
+	label := treeLabel.Render(n.Label)
+
+	return treeBase.
 		Width(t.width).
 		MaxWidth(t.width).
-		Render(line)
+		Render(prefix + label)
 }
 
 func (t *Tree) syncViewport() {

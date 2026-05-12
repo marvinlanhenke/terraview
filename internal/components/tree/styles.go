@@ -19,12 +19,15 @@ var (
 			Background(theme.BackgroundFocus)
 
 	// TODO: Color Coding
-	treeCreate  = treeBase.Foreground(theme.AccentTertiary)
-	treeUpdate  = treeBase.Foreground(theme.AccentTertiary)
-	treeDelete  = treeBase.Foreground(theme.AccentTertiary)
-	treeReplace = treeBase.Foreground(theme.AccentTertiary)
-	treeNoOp    = treeBase.Foreground(theme.AccentTertiary)
-	treeError   = treeBase.Foreground(theme.AccentTertiary)
+	treeCreate          = lipgloss.NewStyle().Foreground(theme.AccentTertiary)
+	treeUpdate          = lipgloss.NewStyle().Foreground(theme.AccentTertiary)
+	treeDelete          = lipgloss.NewStyle().Foreground(theme.AccentTertiary)
+	treeReplace         = lipgloss.NewStyle().Foreground(theme.AccentTertiary)
+	treeNoOp            = lipgloss.NewStyle().Foreground(theme.TextBlur)
+	treeError           = lipgloss.NewStyle().Foreground(theme.AccentTertiary)
+	treeLabel           = lipgloss.NewStyle().Foreground(theme.TextBlur).Background(theme.BackgroundBlur)
+	treeLabelSelected   = lipgloss.NewStyle().Foreground(theme.TextFocus).Background(theme.BackgroundFocus)
+	treeBackgroundFocus = theme.BackgroundFocus
 )
 
 func treeActionMarkerWithStyle(action Action) (string, lipgloss.Style) {
