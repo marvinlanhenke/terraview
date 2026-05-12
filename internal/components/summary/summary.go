@@ -1,6 +1,10 @@
 package summary
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/marvinlanhenke/terraview/internal/theme"
+)
 
 type Stats struct {
 	Add     int
@@ -11,7 +15,6 @@ type Stats struct {
 	Errors  int
 }
 
-// TODO: Prettify output; add color coding
 func (s Stats) String() string {
 	return fmt.Sprintf(
 		"+%d ~%d -%d -/+%d =%d !%d",
@@ -24,7 +27,6 @@ func (s Stats) String() string {
 	)
 }
 
-// TODO: Add filter query param string
 type Filters struct {
 	Add     bool
 	Change  bool
@@ -58,11 +60,14 @@ type Summary struct {
 	stats   Stats
 	filters Filters
 
-	width int
+	width  int
+	styles styles
 }
 
-func New() Summary {
-	return Summary{}
+func New(t theme.Theme) Summary {
+	return Summary{
+		styles: newStyles(t),
+	}
 }
 
 func (s *Summary) SetStats(stats Stats) {
@@ -81,5 +86,8 @@ func (s *Summary) View() string {
 	filters := fmt.Sprintf("Filters: %s", s.filters)
 	plan := fmt.Sprintf("Plan: %s", s.stats)
 
-	return summaryBar.Width(s.width).Render(filters + "\n\n" + plan)
+	return s.styles.
+		borderBar.
+		Width(s.width).
+		Render(filters + "\n\n" + plan)
 }

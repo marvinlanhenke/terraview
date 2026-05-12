@@ -5,26 +5,45 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
-var (
-	searchBar = lipgloss.NewStyle().Background(theme.BackgroundBlur)
+type styles struct {
+	palette         theme.Palette
+	background      lipgloss.Style
+	backgroundMuted lipgloss.Style
+	nugget          lipgloss.Style
+	status          lipgloss.Style
+	input           lipgloss.Style
+	inputAlt        lipgloss.Style
+}
 
-	searchNugget = lipgloss.NewStyle().
-			Foreground(theme.TextBlur).
-			Background(theme.AccentPrimary).
-			Padding(0, 1).
-			Bold(true)
+func newStyles(t theme.Theme) styles {
+	p := t.Palette
 
-	searchInput = lipgloss.NewStyle().
-			Foreground(theme.TextBlur).
-			Background(theme.BackgroundBlur).
-			Padding(0, 1)
+	background := lipgloss.NewStyle().Background(p.Surface)
+	backgroundMuted := background.Faint(true)
 
-	searchInputFocused = searchInput.
-				Foreground(theme.TextFocus).
-				Background(theme.BackgroundFocus)
+	base := lipgloss.NewStyle().Padding(0, 1)
 
-	searchStatus = lipgloss.NewStyle().
-			Foreground(theme.TextBlur).
-			Background(theme.AccentPrimary).
-			Padding(0, 1)
-)
+	input := base.
+		Foreground(p.TextMuted).
+		Background(p.Surface)
+
+	inputAlt := base.
+		Foreground(p.Text).
+		Background(p.SurfaceAlt)
+
+	status := base.
+		Foreground(p.TextMuted).
+		Background(p.Primary)
+
+	nugget := status.Bold(true)
+
+	return styles{
+		palette:         p,
+		background:      background,
+		backgroundMuted: backgroundMuted,
+		nugget:          nugget,
+		status:          status,
+		input:           input,
+		inputAlt:        inputAlt,
+	}
+}

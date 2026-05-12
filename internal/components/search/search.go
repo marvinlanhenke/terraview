@@ -7,31 +7,32 @@ import (
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
-const (
-	placeholder = "search resources..."
-)
+const placeholder = "search resources..."
 
 type Search struct {
 	input textinput.Model
 
 	width   int
 	matches int
+	styles  styles
 }
 
-func New() Search {
+func New(t theme.Theme) Search {
+	s := newStyles(t)
 	input := textinput.New()
 
 	styles := input.Styles()
 
-	styles.Focused.Placeholder = searchBar
-	styles.Focused.Text = searchInputFocused
-	styles.Focused.Prompt = searchInputFocused
+	styles.Focused.Placeholder = s.background
+	styles.Focused.Text = s.inputAlt
+	styles.Focused.Prompt = s.inputAlt
 
-	styles.Blurred.Placeholder = searchBar.Faint(true)
-	styles.Blurred.Text = searchInput
-	styles.Blurred.Prompt = searchInput
+	styles.Blurred.Placeholder = s.backgroundMuted
+	styles.Blurred.Text = s.input
+	styles.Blurred.Prompt = s.input
 
 	input.SetStyles(styles)
 
@@ -39,7 +40,10 @@ func New() Search {
 	input.CharLimit = 256
 	input.Blur()
 
-	return Search{input: input}
+	return Search{
+		input:  input,
+		styles: s,
+	}
 }
 
 func (s *Search) SetWidth(width int) {
@@ -64,13 +68,13 @@ func (s *Search) View() string {
 		return ""
 	}
 
-	label := searchNugget.Render("[S]")
-	status := searchStatus.Render(fmt.Sprintf("%d matches", s.matches))
+	label := s.styles.nugget.Render("[S]")
+	status := s.styles.status.Render(fmt.Sprintf("%d matches", s.matches))
 
-	inputStyle := searchInput
+	inputStyle := s.styles.input
 
 	if s.Focused() {
-		inputStyle = searchInputFocused
+		inputStyle = s.styles.inputAlt
 	}
 
 	availableWidth := max(0, s.width-lipgloss.Width(label)-lipgloss.Width(status))
@@ -84,7 +88,8 @@ func (s *Search) View() string {
 		status,
 	)
 
-	return searchBar.
+	return s.styles.
+		background.
 		Width(s.width).
 		MaxWidth(s.width).
 		Render(row)

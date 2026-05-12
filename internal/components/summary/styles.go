@@ -5,11 +5,24 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
-var (
-	summaryBar = lipgloss.NewStyle().
-		Padding(0, 1).
-		Foreground(theme.TextFocus).
-		Background(theme.BackgroundBlur).
+type styles struct {
+	palette   theme.Palette
+	base      lipgloss.Style
+	borderBar lipgloss.Style
+}
+
+func newStyles(t theme.Theme) styles {
+	p := t.Palette
+
+	base := lipgloss.NewStyle().Padding(0, 1).Background(p.Surface)
+	borderBar := base.
+		Foreground(p.Text).
 		Border(lipgloss.NormalBorder(), true, false, true, false).
-		BorderForeground(theme.AccentSecondary)
-)
+		BorderForeground(p.Secondary)
+
+	return styles{
+		palette:   p,
+		base:      base,
+		borderBar: borderBar,
+	}
+}

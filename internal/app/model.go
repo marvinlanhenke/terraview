@@ -4,9 +4,15 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/components/search"
 	"github.com/marvinlanhenke/terraview/internal/components/summary"
 	"github.com/marvinlanhenke/terraview/internal/components/tree"
+	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
 const defaultMargin = 4
+
+type Size struct {
+	width  int
+	height int
+}
 
 type Focus int
 
@@ -16,32 +22,41 @@ const (
 	FocusDetails
 )
 
-type Model struct {
-	width      int
-	height     int
-	matchCount int
-
-	focus Focus
-
+type Components struct {
 	search  search.Search
 	summary summary.Summary
 	tree    tree.Tree
 }
 
+type Model struct {
+	theme      theme.Theme
+	size       Size
+	focus      Focus
+	components Components
+}
+
 func New() Model {
-	m := Model{
-		focus:   FocusTree,
-		search:  search.New(),
-		summary: summary.New(),
-		tree:    tree.New(),
+	t := theme.Default()
+
+	c := Components{
+		search:  search.New(t),
+		summary: summary.New(t),
+		tree:    tree.New(t),
 	}
 
-	m.search.SetWidth(m.width - defaultMargin)
-	m.summary.SetWidth(m.width - defaultMargin)
+	m := Model{
+		theme:      t,
+		size:       Size{},
+		focus:      FocusTree,
+		components: c,
+	}
+
+	m.components.search.SetWidth(m.size.width - defaultMargin)
+	m.components.summary.SetWidth(m.size.width - defaultMargin)
 
 	treeWidth, treeHeight := treePaneSize(0, 0)
-	m.tree.SetSize(treeWidth, treeHeight)
-	m.tree.SetRoot(getNestedRoot(4, 5))
+	m.components.tree.SetSize(treeWidth, treeHeight)
+	m.components.tree.SetRoot(tree.GetNestedRoot(4, 5))
 
 	return m
 }

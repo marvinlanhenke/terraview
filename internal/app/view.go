@@ -3,18 +3,18 @@ package app
 import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
 func (m Model) View() tea.View {
-	searchBar := m.search.View()
-	summary := m.summary.View()
-	tree := m.tree.View()
+	searchBar := m.components.search.View()
+	summary := m.components.summary.View()
+	tree := m.components.tree.View()
 
-	treeWidth, treeHeight := treePaneSize(m.width, m.height)
+	treeWidth, treeHeight := treePaneSize(m.size.width, m.size.height)
 
+	// TODO
 	details := lipgloss.NewStyle().
-		Width(max(20, m.width-treeWidth-defaultMargin)).
+		Width(max(20, m.size.width-treeWidth-defaultMargin)).
 		Height(treeHeight).
 		Render("Details / Diff\n\nplaceholder")
 
@@ -25,10 +25,11 @@ func (m Model) View() tea.View {
 		details,
 	)
 
-	footer := theme.Footer.Render("/ search • esc back • q quit")
+	// TODO
+	footer := m.theme.Styles.Footer.Render("/ search • esc back • q quit")
 
 	view := tea.NewView(
-		theme.App.Render(
+		m.theme.Styles.App.Render(
 			lipgloss.JoinVertical(
 				lipgloss.Left,
 				searchBar,

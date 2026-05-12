@@ -5,46 +5,79 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
-var (
-	treeBase = lipgloss.NewStyle().
-			Padding(0, 1).
-			Background(theme.BackgroundBlur)
+type action string
 
-	treeEmpty = treeBase.Faint(true)
-
-	treeBackground = lipgloss.NewStyle().Background(theme.BackgroundBlur)
-
-	treeSelected = treeBase.
-			Foreground(theme.TextFocus).
-			Background(theme.BackgroundFocus)
-
-	// TODO: Color Coding
-	treeCreate          = lipgloss.NewStyle().Foreground(theme.AccentTertiary)
-	treeUpdate          = lipgloss.NewStyle().Foreground(theme.AccentTertiary)
-	treeDelete          = lipgloss.NewStyle().Foreground(theme.AccentTertiary)
-	treeReplace         = lipgloss.NewStyle().Foreground(theme.AccentTertiary)
-	treeNoOp            = lipgloss.NewStyle().Foreground(theme.TextBlur)
-	treeError           = lipgloss.NewStyle().Foreground(theme.AccentTertiary)
-	treeLabel           = lipgloss.NewStyle().Foreground(theme.TextBlur).Background(theme.BackgroundBlur)
-	treeLabelSelected   = lipgloss.NewStyle().Foreground(theme.TextFocus).Background(theme.BackgroundFocus)
-	treeBackgroundFocus = theme.BackgroundFocus
+const (
+	actionCreate  action = "create"
+	actionUpdate  action = "update"
+	actionDelete  action = "delete"
+	actionReplace action = "replace"
+	actionNoOp    action = "no-op"
+	actionError   action = "error"
 )
 
-func treeActionMarkerWithStyle(action Action) (string, lipgloss.Style) {
+type actionStyle struct {
+	marker string
+	style  lipgloss.Style
+}
+
+type styles struct {
+	palette       theme.Palette
+	base          lipgloss.Style
+	empty         lipgloss.Style
+	background    lipgloss.Style
+	backgroundAlt lipgloss.Style
+	selected      lipgloss.Style
+	create        lipgloss.Style
+	update        lipgloss.Style
+	delete        lipgloss.Style
+	replace       lipgloss.Style
+	noOp          lipgloss.Style
+	error         lipgloss.Style
+	label         lipgloss.Style
+	labelAlt      lipgloss.Style
+}
+
+func newStyles(t theme.Theme) styles {
+	p := t.Palette
+	s := t.Styles
+
+	base := lipgloss.NewStyle().Padding(0, 1).Background(p.Surface)
+
+	return styles{
+		palette:       p,
+		base:          base,
+		empty:         base.Faint(true),
+		background:    s.Background,
+		backgroundAlt: s.BackgroundAlt,
+		selected:      base.Foreground(p.Text).Background(p.SurfaceAlt),
+
+		create: lipgloss.NewStyle().Foreground(p.Success),
+		update: lipgloss.NewStyle().Foreground(p.Warning),
+		delete: lipgloss.NewStyle().Foreground(p.Danger),
+		noOp:   lipgloss.NewStyle().Foreground(p.TextMuted),
+		error:  lipgloss.NewStyle().Foreground(p.Danger),
+
+		label:    lipgloss.NewStyle().Foreground(p.TextMuted).Background(p.Surface),
+		labelAlt: lipgloss.NewStyle().Foreground(p.Text).Background(p.SurfaceAlt),
+	}
+}
+
+func (s styles) actionMarker(action action) actionStyle {
 	switch action {
-	case ActionCreate:
-		return "+", treeCreate
-	case ActionUpdate:
-		return "~", treeUpdate
-	case ActionDelete:
-		return "-", treeDelete
-	case ActionReplace:
-		return "-/+", treeReplace
-	case ActionNoOp:
-		return "=", treeNoOp
-	case ActionError:
-		return "!", treeError
+	case actionCreate:
+		return actionStyle{"+", s.create}
+	case actionUpdate:
+		return actionStyle{"~", s.update}
+	case actionDelete:
+		return actionStyle{"-", s.delete}
+	case actionReplace:
+		return actionStyle{"-/+", s.replace}
+	case actionNoOp:
+		return actionStyle{"=", s.noOp}
+	case actionError:
+		return actionStyle{"!", s.error}
 	default:
-		return " ", lipgloss.NewStyle()
+		return actionStyle{" ", lipgloss.NewStyle()}
 	}
 }
