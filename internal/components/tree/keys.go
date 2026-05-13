@@ -21,8 +21,8 @@ var keys = keymap{
 		key.WithHelp("↓/j", "down"),
 	),
 	expand: key.NewBinding(
-		key.WithKeys("enter", "right", "l"),
-		key.WithHelp("enter", "expand"),
+		key.WithKeys("right", "l"),
+		key.WithHelp("→/l", "expand"),
 	),
 	collapse: key.NewBinding(
 		key.WithKeys("left", "h"),

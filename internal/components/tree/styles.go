@@ -5,15 +5,15 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
-type action string
+type Action string
 
 const (
-	actionCreate  action = "create"
-	actionUpdate  action = "update"
-	actionDelete  action = "delete"
-	actionReplace action = "replace"
-	actionNoOp    action = "no-op"
-	actionError   action = "error"
+	ActionCreate  Action = "create"
+	ActionUpdate  Action = "update"
+	ActionDelete  Action = "delete"
+	ActionReplace Action = "replace"
+	ActionNoOp    Action = "no-op"
+	ActionError   Action = "error"
 )
 
 type actionStyle struct {
@@ -64,19 +64,19 @@ func newStyles(t theme.Theme) styles {
 	}
 }
 
-func (s styles) actionMarker(action action) actionStyle {
+func (s styles) actionMarker(action Action) actionStyle {
 	switch action {
-	case actionCreate:
+	case ActionCreate:
 		return actionStyle{"+", s.create}
-	case actionUpdate:
+	case ActionUpdate:
 		return actionStyle{"~", s.update}
-	case actionDelete:
+	case ActionDelete:
 		return actionStyle{"-", s.delete}
-	case actionReplace:
+	case ActionReplace:
 		return actionStyle{"-/+", s.replace}
-	case actionNoOp:
+	case ActionNoOp:
 		return actionStyle{"=", s.noOp}
-	case actionError:
+	case ActionError:
 		return actionStyle{"!", s.error}
 	default:
 		return actionStyle{" ", lipgloss.NewStyle()}

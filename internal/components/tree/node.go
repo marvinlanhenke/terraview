@@ -1,28 +1,28 @@
 package tree
 
-type nodeKind int
+type NodeKind int
 
 const (
-	nodeGroup nodeKind = iota
-	nodeResource
-	nodeOutput
-	nodeError
+	NodeGroup NodeKind = iota
+	NodeResource
+	NodeOutput
+	NodeError
 )
 
-type node struct {
-	id       string
-	label    string
-	kind     nodeKind
-	action   action
-	depth    int
-	expanded bool
+type Node struct {
+	Id       string
+	Label    string
+	Kind     NodeKind
+	Action   Action
+	Depth    int
+	Expanded bool
 
-	parent   *node
-	children []*node
+	Parent   *Node
+	Children []*Node
 
-	payload any
+	Payload any
 }
 
-func (n *node) hasChildren() bool {
-	return len(n.children) > 0
+func (n *Node) hasChildren() bool {
+	return len(n.Children) > 0
 }

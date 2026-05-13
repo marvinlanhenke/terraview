@@ -73,12 +73,23 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.focus = FocusTree
 			m.components.search.Blur()
 
+		// Search Escape
 		case key.Matches(msg, keys.Escape) && m.focus == FocusSearch:
 			m.focus = FocusTree
 			m.components.search.Clear()
 			m.components.search.Blur()
 			m.components.tree.ApplyFilter("")
 			return m, nil
+
+		// Tree Enter
+		case key.Matches(msg, keys.Enter) && m.focus == FocusTree:
+			m.focus = FocusDetails
+			m.components.details.Focus()
+
+		// Details Escape
+		case key.Matches(msg, keys.Escape) && m.focus == FocusDetails:
+			m.focus = FocusTree
+			m.components.details.Blur()
 		}
 	}
 
@@ -90,6 +101,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case FocusTree:
 		cmds = append(cmds, m.components.tree.Update(msg))
+		m.components.details.SetNode(m.components.tree.Selected())
 
 	case FocusDetails:
 		cmds = append(cmds, m.components.details.Update(msg))

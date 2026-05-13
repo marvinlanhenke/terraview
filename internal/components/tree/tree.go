@@ -11,8 +11,8 @@ import (
 )
 
 type Tree struct {
-	root    *node
-	visible []*node
+	root    *Node
+	visible []*Node
 	cursor  int
 	query   string
 
@@ -39,7 +39,7 @@ func (t Tree) GetVisible() int {
 	return len(t.visible)
 }
 
-func (t *Tree) SetRoot(root *node) {
+func (t *Tree) SetRoot(root *Node) {
 	t.root = root
 	t.rebuildVisible()
 	t.clampCursor()
@@ -55,7 +55,7 @@ func (t *Tree) SetSize(width, height int) {
 	t.syncViewport()
 }
 
-func (t *Tree) Selected() *node {
+func (t *Tree) Selected() *Node {
 	if len(t.visible) == 0 {
 		return nil
 	}
@@ -86,7 +86,7 @@ func (t *Tree) Update(msg tea.Msg) tea.Cmd {
 		case key.Matches(msg, keys.expand):
 			selected := t.Selected()
 			if selected != nil && selected.hasChildren() {
-				selected.expanded = !selected.expanded
+				selected.Expanded = !selected.Expanded
 				t.rebuildVisible()
 			}
 
@@ -96,12 +96,12 @@ func (t *Tree) Update(msg tea.Msg) tea.Cmd {
 			if selected == nil {
 				break
 			}
-			if selected.hasChildren() && selected.expanded {
-				selected.expanded = false
+			if selected.hasChildren() && selected.Expanded {
+				selected.Expanded = false
 				t.rebuildVisible()
-			} else if selected.parent != nil {
+			} else if selected.Parent != nil {
 				for i, n := range t.visible {
-					if n == selected.parent {
+					if n == selected.Parent {
 						t.cursor = i
 						break
 					}
@@ -130,24 +130,24 @@ func (t Tree) View() string {
 	return t.viewport.View()
 }
 
-func (t Tree) renderNode(n *node, selected bool) string {
-	indent := strings.Repeat(" ", n.depth)
+func (t Tree) renderNode(n *Node, selected bool) string {
+	indent := strings.Repeat(" ", n.Depth)
 
 	icon := " "
 	if n.hasChildren() {
-		if n.expanded || t.query != "" {
+		if n.Expanded || t.query != "" {
 			icon = "▾"
 		} else {
 			icon = "▸"
 		}
 	}
 
-	actionMarker := t.styles.actionMarker(n.action)
+	actionMarker := t.styles.actionMarker(n.Action)
 	rawPrefix := indent + icon + " " + actionMarker.marker + " "
 
 	if selected {
 		prefixSelected := actionMarker.style.Background(t.styles.palette.SurfaceAlt).Render(rawPrefix)
-		labelSelected := t.styles.labelAlt.Render(n.label)
+		labelSelected := t.styles.labelAlt.Render(n.Label)
 		return t.styles.selected.
 			Width(t.width).
 			MaxWidth(t.width).
@@ -155,7 +155,7 @@ func (t Tree) renderNode(n *node, selected bool) string {
 	}
 
 	prefix := actionMarker.style.Faint(true).Render(rawPrefix)
-	label := t.styles.label.Render(n.label)
+	label := t.styles.label.Render(n.Label)
 
 	return t.styles.base.
 		Width(t.width).
@@ -225,33 +225,33 @@ func (t *Tree) rebuildVisible() {
 		return
 	}
 
-	for _, child := range t.root.children {
+	for _, child := range t.root.Children {
 		t.walk(child)
 	}
 }
 
-func (t *Tree) walk(n *node) {
+func (t *Tree) walk(n *Node) {
 	if t.query != "" && !matches(n, t.query) && !hasMatchingDescendant(n, t.query) {
 		return
 	}
 
 	t.visible = append(t.visible, n)
 
-	if n.expanded || t.query != "" {
-		for _, child := range n.children {
+	if n.Expanded || t.query != "" {
+		for _, child := range n.Children {
 			t.walk(child)
 		}
 	}
 }
 
-func matches(n *node, query string) bool {
-	return strings.Contains(strings.ToLower(n.label), query) ||
-		strings.Contains(strings.ToLower(n.id), query) ||
-		strings.Contains(strings.ToLower(string(n.action)), query)
+func matches(n *Node, query string) bool {
+	return strings.Contains(strings.ToLower(n.Label), query) ||
+		strings.Contains(strings.ToLower(n.Id), query) ||
+		strings.Contains(strings.ToLower(string(n.Action)), query)
 }
 
-func hasMatchingDescendant(n *node, query string) bool {
-	for _, child := range n.children {
+func hasMatchingDescendant(n *Node, query string) bool {
+	for _, child := range n.Children {
 		if matches(child, query) || hasMatchingDescendant(child, query) {
 			return true
 		}

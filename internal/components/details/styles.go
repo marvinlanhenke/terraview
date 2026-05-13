@@ -6,9 +6,11 @@ import (
 )
 
 type styles struct {
-	palette    theme.Palette
-	base       lipgloss.Style
-	background lipgloss.Style
+	palette       theme.Palette
+	base          lipgloss.Style
+	empty         lipgloss.Style
+	background    lipgloss.Style
+	backgroundAlt lipgloss.Style
 }
 
 func newStyles(t theme.Theme) styles {
@@ -18,8 +20,10 @@ func newStyles(t theme.Theme) styles {
 	base := lipgloss.NewStyle().Padding(0, 1).Background(p.Surface)
 
 	return styles{
-		palette:    p,
-		base:       base,
-		background: s.Background,
+		palette:       p,
+		base:          base,
+		empty:         base.Faint(true),
+		background:    s.Background,
+		backgroundAlt: s.BackgroundAlt,
 	}
 }
