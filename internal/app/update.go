@@ -49,6 +49,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		treeWidth, treeHeight := treePaneSize(msg.Width, msg.Height)
 		m.components.tree.SetSize(treeWidth, treeHeight)
 
+		detailsWidth := detailsWidth(m.size.width, treeWidth)
+		detailsHeight := treeHeight
+		m.components.details.SetSize(detailsWidth, detailsHeight)
+
 		return m, nil
 
 	case tea.KeyPressMsg:
@@ -88,7 +92,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmds = append(cmds, m.components.tree.Update(msg))
 
 	case FocusDetails:
-		// TODO
+		cmds = append(cmds, m.components.details.Update(msg))
 	}
 
 	return m, tea.Batch(cmds...)

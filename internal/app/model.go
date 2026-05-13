@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/marvinlanhenke/terraview/internal/components/details"
 	"github.com/marvinlanhenke/terraview/internal/components/search"
 	"github.com/marvinlanhenke/terraview/internal/components/summary"
 	"github.com/marvinlanhenke/terraview/internal/components/tree"
@@ -26,6 +27,7 @@ type Components struct {
 	search  search.Search
 	summary summary.Summary
 	tree    tree.Tree
+	details details.Details
 }
 
 type Model struct {
@@ -42,6 +44,7 @@ func New() Model {
 		search:  search.New(t),
 		summary: summary.New(t),
 		tree:    tree.New(t),
+		details: details.New(t),
 	}
 
 	m := Model{
@@ -57,6 +60,10 @@ func New() Model {
 	treeWidth, treeHeight := treePaneSize(0, 0)
 	m.components.tree.SetSize(treeWidth, treeHeight)
 	m.components.tree.SetRoot(tree.GetNestedRoot(4, 5))
+
+	detailsWidth := detailsWidth(m.size.width, treeWidth)
+	detailsHeight := treeHeight
+	m.components.details.SetSize(detailsWidth, detailsHeight)
 
 	return m
 }
