@@ -11,6 +11,7 @@ type styles struct {
 	empty         lipgloss.Style
 	background    lipgloss.Style
 	backgroundAlt lipgloss.Style
+	header        lipgloss.Style
 }
 
 func newStyles(t theme.Theme) styles {
@@ -18,6 +19,7 @@ func newStyles(t theme.Theme) styles {
 	s := t.Styles
 
 	base := lipgloss.NewStyle().Padding(0, 1).Background(p.Surface)
+	header := lipgloss.NewStyle().Padding(0, 1).Border(lipgloss.ASCIIBorder(), true, false)
 
 	return styles{
 		palette:       p,
@@ -25,5 +27,6 @@ func newStyles(t theme.Theme) styles {
 		empty:         base.Faint(true),
 		background:    s.Background,
 		backgroundAlt: s.BackgroundAlt,
+		header:        header,
 	}
 }

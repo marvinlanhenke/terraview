@@ -10,6 +10,7 @@ import (
 
 type Details struct {
 	node     *tree.Node
+	summary  *summary
 	width    int
 	height   int
 	viewport viewport.Model
@@ -40,6 +41,7 @@ func (d *Details) SetSize(width, height int) {
 
 func (d *Details) SetNode(n *tree.Node) {
 	d.node = n
+	d.summary = newSummary(d.node)
 	d.syncViewport()
 }
 
@@ -87,7 +89,7 @@ func (d *Details) syncViewport() {
 		NewStyle().
 		Width(d.width).
 		Border(lipgloss.ASCIIBorder(), true, false).
-		Render("Changed Attributes")
+		Render(d.summary.header)
 
 	// TODO renderFunction
 	lines := make([]string, 2)
