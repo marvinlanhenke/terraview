@@ -6,10 +6,12 @@ import (
 )
 
 type keymap struct {
-	Search key.Binding
-	Enter  key.Binding
-	Escape key.Binding
-	Quit   key.Binding
+	Search    key.Binding
+	Enter     key.Binding
+	Escape    key.Binding
+	Quit      key.Binding
+	LeftPane  key.Binding
+	RightPane key.Binding
 }
 
 var keys = keymap{
@@ -28,6 +30,14 @@ var keys = keymap{
 	Quit: key.NewBinding(
 		key.WithKeys("q", "ctrl+c"),
 		key.WithHelp("q", "quit"),
+	),
+	LeftPane: key.NewBinding(
+		key.WithKeys("ctrl+h"),
+		key.WithHelp("ctrl+h", "left pane"),
+	),
+	RightPane: key.NewBinding(
+		key.WithKeys("ctrl+l"),
+		key.WithHelp("ctrl+l", "right pane"),
 	),
 }
 
@@ -81,13 +91,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.components.tree.ApplyFilter("")
 			return m, nil
 
-		// Tree Enter
-		case key.Matches(msg, keys.Enter) && m.focus == FocusTree:
+		// Tree -> Details
+		case (key.Matches(msg, keys.Enter) || key.Matches(msg, keys.RightPane)) && m.focus == FocusTree:
 			m.focus = FocusDetails
 			m.components.details.Focus()
 
-		// Details Enter, Escape
-		case (key.Matches(msg, keys.Escape) || key.Matches(msg, keys.Enter)) && m.focus == FocusDetails:
+		// Details -> Tree
+		case (key.Matches(msg, keys.Escape) || key.Matches(msg, keys.Enter) || key.Matches(msg, keys.LeftPane)) && m.focus == FocusDetails:
 			m.focus = FocusTree
 			m.components.details.Blur()
 		}
