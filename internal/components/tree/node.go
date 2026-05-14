@@ -11,10 +11,16 @@ const (
 	ActionError   Action = "error"
 )
 
+type Changes struct {
+	Before map[string]any
+	After  map[string]any
+}
+
 type Node struct {
 	Id       string
 	Label    string
 	Action   Action
+	Changes  Changes
 	Depth    int
 	Expanded bool
 

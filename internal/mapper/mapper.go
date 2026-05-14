@@ -3,6 +3,7 @@ package mapper
 import (
 	"errors"
 	"fmt"
+	"reflect"
 
 	"github.com/marvinlanhenke/terraview/internal/components/tree"
 	"github.com/marvinlanhenke/terraview/internal/terraform"
@@ -26,10 +27,13 @@ func BuildTree(plan terraform.Plan) (*tree.Node, error) {
 			return nil, err
 		}
 
+		changes := compareChanges(rc.Change.Before, rc.Change.After)
+
 		children[i] = &tree.Node{
 			Id:       rc.Address,
 			Label:    rc.Address,
 			Action:   action,
+			Changes:  changes,
 			Depth:    1,
 			Expanded: false,
 			Payload:  rc,
@@ -39,6 +43,55 @@ func BuildTree(plan terraform.Plan) (*tree.Node, error) {
 	root.Children = children
 
 	return root, nil
+}
+
+func compareChanges(before, after map[string]any) tree.Changes {
+	result := tree.Changes{
+		Before: map[string]any{},
+		After:  map[string]any{},
+	}
+
+	for key, beforeVal := range before {
+		afterVal, exists := after[key]
+
+		// Removed field
+		if !exists {
+			result.Before[key] = beforeVal
+			result.After[key] = nil
+			continue
+		}
+
+		// Nested object
+		beforeMap, beforeIsMap := beforeVal.(map[string]any)
+		afterMap, afterIsMap := afterVal.(map[string]any)
+
+		if beforeIsMap && afterIsMap {
+			nested := compareChanges(beforeMap, afterMap)
+
+			if len(nested.Before) > 0 || len(nested.After) > 0 {
+				result.Before[key] = nested.Before
+				result.After[key] = nested.After
+			}
+
+			continue
+		}
+
+		// Value changed
+		if !reflect.DeepEqual(beforeVal, afterVal) {
+			result.Before[key] = beforeVal
+			result.After[key] = afterVal
+		}
+	}
+
+	// Added fields
+	for key, afterVal := range after {
+		if _, exists := before[key]; !exists {
+			result.Before[key] = nil
+			result.After[key] = afterVal
+		}
+	}
+
+	return result
 }
 
 func actionFromString(action []string) (tree.Action, error) {
