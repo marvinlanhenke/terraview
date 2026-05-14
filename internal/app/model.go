@@ -37,7 +37,7 @@ type Model struct {
 	components Components
 }
 
-func New() Model {
+func New(root *tree.Node) Model {
 	t := theme.Default()
 
 	c := Components{
@@ -59,7 +59,7 @@ func New() Model {
 
 	treeWidth, treeHeight := treePaneSize(0, 0)
 	m.components.tree.SetSize(treeWidth, treeHeight)
-	m.components.tree.SetRoot(tree.GetNestedRoot(4, 5))
+	m.components.tree.SetRoot(root)
 
 	detailsWidth := detailsWidth(m.size.width, treeWidth)
 	detailsHeight := treeHeight
