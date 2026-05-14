@@ -21,6 +21,7 @@ func BuildTree(plan terraform.Plan) (*tree.Node, error) {
 
 	children := make([]*tree.Node, len(plan.ResourceChanges))
 
+	// TODO: add children into buckets for each action and allocate under Root:1=>N:NodeGroup
 	for i, rc := range plan.ResourceChanges {
 		action, err := actionFromString(rc.Change.Actions)
 		if err != nil {
@@ -34,7 +35,7 @@ func BuildTree(plan terraform.Plan) (*tree.Node, error) {
 			Label:    rc.Address,
 			Action:   action,
 			Changes:  changes,
-			Depth:    1,
+			Depth:    0,
 			Expanded: false,
 			Payload:  rc,
 		}
