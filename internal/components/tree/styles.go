@@ -5,17 +5,6 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
-type Action string
-
-const (
-	ActionCreate  Action = "create"
-	ActionUpdate  Action = "update"
-	ActionDelete  Action = "delete"
-	ActionReplace Action = "replace"
-	ActionNoOp    Action = "no-op"
-	ActionError   Action = "error"
-)
-
 type actionStyle struct {
 	marker string
 	style  lipgloss.Style

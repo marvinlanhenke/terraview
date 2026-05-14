@@ -9,7 +9,6 @@ func GetNestedRoot(maxDepth, maxSiblings int) *Node {
 	root := &Node{
 		Id:     "root",
 		Label:  "root",
-		Kind:   NodeGroup,
 		Action: ActionNoOp,
 		Depth:  0,
 	}
@@ -48,7 +47,6 @@ func getChildren(parent *Node, label string, depth, maxDepth, maxSiblings int, a
 		child := &Node{
 			Id:     id,
 			Label:  id,
-			Kind:   NodeResource,
 			Action: action,
 			Depth:  depth,
 			Parent: parent,
