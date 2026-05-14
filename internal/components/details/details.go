@@ -35,6 +35,7 @@ func (d *Details) SetSize(width, height int) {
 
 	d.viewport.SetWidth(d.width)
 	d.viewport.SetHeight(d.height)
+	d.syncViewport()
 }
 
 func (d *Details) SetNode(n *tree.Node) {
@@ -50,7 +51,7 @@ func (d *Details) Blur() {
 	d.viewport.Style = d.styles.background
 }
 
-func (d Details) Update(msg tea.Msg) tea.Cmd {
+func (d *Details) Update(msg tea.Msg) tea.Cmd {
 	d.syncViewport()
 
 	return nil
@@ -82,7 +83,6 @@ func (d *Details) syncViewport() {
 		return
 	}
 
-	// TODO why is width not full size on startup; only after first select in tree changes
 	header := lipgloss.
 		NewStyle().
 		Width(d.width).
