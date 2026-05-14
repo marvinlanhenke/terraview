@@ -1,6 +1,9 @@
 package details
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
@@ -9,8 +12,9 @@ import (
 )
 
 type Details struct {
-	node     *tree.Node
-	summary  *summary
+	node    *tree.Node
+	changes []changeLine
+
 	width    int
 	height   int
 	viewport viewport.Model
@@ -41,7 +45,7 @@ func (d *Details) SetSize(width, height int) {
 
 func (d *Details) SetNode(n *tree.Node) {
 	d.node = n
-	d.summary = newSummary(d.node)
+	d.changes = flattenChanges(d.node)
 	d.syncViewport()
 }
 
@@ -85,16 +89,47 @@ func (d *Details) syncViewport() {
 		return
 	}
 
+	lines := d.renderLines()
+
+	d.viewport.SetContentLines(lines)
+}
+
+func (d *Details) renderLines() []string {
 	header := lipgloss.
 		NewStyle().
 		Width(d.width).
 		Border(lipgloss.ASCIIBorder(), true, false).
-		Render(d.summary.header)
+		Render("Changed Attributes:")
 
-	// TODO renderFunction
-	lines := make([]string, 2)
+	indent := " "
+	beforeIcon := "−"
+	afterIcon := "+"
+
+	lines := make([]string, len(d.changes)+1)
+
 	lines[0] = header
-	lines[1] = d.node.Label + " " + string(d.node.Action)
+	for i, cl := range d.changes {
+		beforeLine := indent + beforeIcon + renderValue(cl.before) + "\n"
+		afterLine := indent + afterIcon + renderValue(cl.after) + "\n"
+		lines[i+1] = cl.path + "\n" + beforeLine + afterLine
+	}
 
-	d.viewport.SetContentLines(lines)
+	return lines
+}
+
+func renderValue(v any) string {
+	if v == nil {
+		return "null"
+	}
+
+	switch t := v.(type) {
+	case string:
+		return t
+	default:
+		b, err := json.Marshal(t)
+		if err != nil {
+			return fmt.Sprintf("%v", t)
+		}
+		return string(b)
+	}
 }
