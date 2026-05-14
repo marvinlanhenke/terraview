@@ -111,7 +111,13 @@ func (d *Details) renderLines() []string {
 	for i, cl := range d.changes {
 		beforeLine := indent + beforeIcon + renderValue(cl.before) + "\n"
 		afterLine := indent + afterIcon + renderValue(cl.after) + "\n"
-		lines[i+1] = cl.path + "\n" + beforeLine + afterLine
+
+		path := lipgloss.
+			NewStyle().
+			Border(lipgloss.ASCIIBorder(), false, false, true, false).
+			Render(cl.path + ":")
+
+		lines[i+1] = path + "\n" + beforeLine + afterLine
 	}
 
 	return lines
@@ -126,10 +132,10 @@ func renderValue(v any) string {
 	case string:
 		return t
 	default:
-		b, err := json.Marshal(t)
+		b, err := json.MarshalIndent(t, "", " ")
 		if err != nil {
 			return fmt.Sprintf("%v", t)
 		}
-		return string(b)
+		return "\n" + string(b)
 	}
 }
