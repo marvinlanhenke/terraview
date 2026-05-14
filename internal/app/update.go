@@ -86,8 +86,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.focus = FocusDetails
 			m.components.details.Focus()
 
-		// Details Escape
-		case key.Matches(msg, keys.Escape) && m.focus == FocusDetails:
+		// Details Enter, Escape
+		case (key.Matches(msg, keys.Escape) || key.Matches(msg, keys.Enter)) && m.focus == FocusDetails:
 			m.focus = FocusTree
 			m.components.details.Blur()
 		}
