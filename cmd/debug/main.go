@@ -15,9 +15,8 @@ func main() {
 		panic(err)
 	}
 
-	var plan terraform.Plan
-
-	if err := json.Unmarshal(data, &plan); err != nil {
+	plan, err := terraform.Parse(data)
+	if err != nil {
 		panic(err)
 	}
 
