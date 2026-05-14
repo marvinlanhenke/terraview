@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/marvinlanhenke/terraview/internal/components/tree"
+	"github.com/marvinlanhenke/terraview/internal/mapper"
 	"github.com/marvinlanhenke/terraview/internal/terraform"
 )
 
@@ -20,35 +20,12 @@ func main() {
 		panic(err)
 	}
 
-	root := &tree.Node{
-		Id:       "root",
-		Label:    fmt.Sprintf("Terraform plan %s", plan.TerraformVersion),
-		Action:   tree.ActionNoOp,
-		Depth:    0,
-		Expanded: true,
-		Payload:  plan,
+	tree, err := mapper.BuildTree(plan)
+	if err != nil {
+		panic(err)
 	}
 
-	children := make([]*tree.Node, len(plan.ResourceChanges))
-	for i, rc := range plan.ResourceChanges {
-		action, err := tree.GetAction(rc.Change.Actions)
-		if err != nil {
-			panic(err)
-		}
-
-		children[i] = &tree.Node{
-			Id:       rc.Address,
-			Label:    rc.Address,
-			Action:   action,
-			Depth:    1,
-			Expanded: false,
-			Payload:  rc,
-		}
-	}
-
-	root.Children = children
-
-	data, err = json.MarshalIndent(root, "", " ")
+	data, err = json.MarshalIndent(tree, "", " ")
 	if err != nil {
 		panic(err)
 	}
