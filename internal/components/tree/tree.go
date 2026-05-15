@@ -66,7 +66,7 @@ func (t *Tree) Selected() *Node {
 	return t.visible[t.cursor]
 }
 
-func (t *Tree) ApplyFilter(query string) {
+func (t *Tree) ApplyQuery(query string) {
 	t.query = strings.TrimSpace(strings.ToLower(query))
 	t.rebuildVisible()
 	t.clampCursor()

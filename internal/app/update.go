@@ -89,7 +89,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.focus = FocusTree
 			m.components.search.Clear()
 			m.components.search.Blur()
-			m.components.tree.ApplyFilter("")
+			m.components.tree.ApplyQuery("")
 			return m, nil
 
 		// Tree -> Details
@@ -113,7 +113,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch m.focus {
 	case FocusSearch:
 		cmds = append(cmds, m.components.search.Update(msg))
-		m.components.tree.ApplyFilter(m.components.search.Value())
+		m.components.tree.ApplyQuery(m.components.search.Value())
 		m.components.search.SetMatches(m.components.tree.GetVisible())
 
 	case FocusTree:
