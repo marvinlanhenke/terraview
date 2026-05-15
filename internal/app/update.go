@@ -13,6 +13,7 @@ type keymap struct {
 	Quit      key.Binding
 	LeftPane  key.Binding
 	RightPane key.Binding
+	Filter    key.Binding
 }
 
 var keys = keymap{
@@ -39,6 +40,10 @@ var keys = keymap{
 	RightPane: key.NewBinding(
 		key.WithKeys("ctrl+l"),
 		key.WithHelp("ctrl+l", "right pane"),
+	),
+	Filter: key.NewBinding(
+		key.WithKeys("f"),
+		key.WithHelp("f", "filter"),
 	),
 }
 
@@ -80,7 +85,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Batch(cmds...)
 
 		// Search Enter
-		case key.Matches(msg, keys.Enter, keys.Enter) && m.focus == FocusSearch:
+		case key.Matches(msg, keys.Enter) && m.focus == FocusSearch:
 			m.focus = FocusTree
 			m.components.search.Blur()
 
@@ -98,7 +103,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.components.details.Focus()
 
 		case key.Matches(msg, keys.Enter) && m.focus == FocusTree:
-			if m.components.tree.Selected().Kind == tree.NodeResource {
+			selected := m.components.tree.Selected()
+			if selected != nil && selected.Kind == tree.NodeResource {
 				m.focus = FocusDetails
 				m.components.details.Focus()
 			}
@@ -107,7 +113,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case (key.Matches(msg, keys.Escape) || key.Matches(msg, keys.Enter) || key.Matches(msg, keys.LeftPane)) && m.focus == FocusDetails:
 			m.focus = FocusTree
 			m.components.details.Blur()
+
+		// Filter Focus
+		case (key.Matches(msg, keys.Filter)) && m.focus != FocusSearch:
+			if m.focus == FocusFilter {
+				m.focus = FocusTree
+			} else {
+				m.focus = FocusFilter
+			}
+
 		}
+
 	}
 
 	switch m.focus {
@@ -122,6 +138,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case FocusDetails:
 		cmds = append(cmds, m.components.details.Update(msg))
+
+	case FocusFilter:
+		cmds = append(cmds, m.components.filter.Update(msg))
+		m.components.tree.ApplyFilters(m.components.filter.GetFilters())
+		m.components.details.SetNode(m.components.tree.Selected())
+		m.components.search.SetMatches(m.components.tree.GetVisible())
 	}
 
 	return m, tea.Batch(cmds...)

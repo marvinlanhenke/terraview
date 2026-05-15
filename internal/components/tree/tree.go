@@ -48,13 +48,6 @@ func (t *Tree) SetRoot(n *Node) {
 	t.syncViewport()
 }
 
-func (t *Tree) SetFilters(f map[Action]bool) {
-	t.filters = f
-	t.rebuildVisible()
-	t.clampCursor()
-	t.syncViewport()
-}
-
 func (t *Tree) SetSize(width, height int) {
 	t.width = max(0, width)
 	t.height = max(0, height)
@@ -72,6 +65,13 @@ func (t *Tree) Selected() *Node {
 	}
 
 	return t.visible[t.cursor]
+}
+
+func (t *Tree) ApplyFilters(f map[Action]bool) {
+	t.filters = f
+	t.rebuildVisible()
+	t.clampCursor()
+	t.syncViewport()
 }
 
 func (t *Tree) ApplyQuery(query string) {

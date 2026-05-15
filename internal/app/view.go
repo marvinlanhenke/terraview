@@ -21,20 +21,31 @@ func (m Model) View() tea.View {
 	// TODO
 	footer := m.theme.Styles.Footer.Render("/ search • esc back • q quit")
 
-	view := tea.NewView(
-		m.theme.Styles.App.Render(
-			lipgloss.JoinVertical(
-				lipgloss.Left,
-				searchBar,
-				summary,
-				" ",
-				body,
-				" ",
-				footer,
-			),
-		),
+	appContent := lipgloss.JoinVertical(
+		lipgloss.Left,
+		searchBar,
+		summary,
+		" ",
+		body,
+		" ",
+		footer,
 	)
 
+	content := appContent
+
+	if m.focus == FocusFilter {
+		modal := m.components.filter.View()
+
+		x := max(0, (m.size.width-lipgloss.Width(modal))/2)
+		y := max(0, (m.size.height-lipgloss.Height(modal))/2)
+
+		base := lipgloss.NewLayer(appContent).Z(1)
+		popup := lipgloss.NewLayer(modal).X(x).Y(y).Z(2)
+
+		content = lipgloss.NewCompositor(base, popup).Render()
+	}
+
+	view := tea.NewView(m.theme.Styles.App.Render(content))
 	view.AltScreen = true
 	view.MouseMode = tea.MouseModeCellMotion
 

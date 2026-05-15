@@ -1,12 +1,19 @@
 package filter
 
 import (
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/marvinlanhenke/terraview/internal/components/tree"
 	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
 type FilterModal struct {
 	filters map[tree.Action]bool
+
+	cursor int
+	width  int
+	height int
+	styles styles
 }
 
 func New(t theme.Theme) FilterModal {
@@ -15,6 +22,18 @@ func New(t theme.Theme) FilterModal {
 	return FilterModal{
 		filters: inner,
 	}
+}
+
+func (f *FilterModal) Update(msg tea.Msg) tea.Cmd {
+	return nil
+}
+
+func (f FilterModal) View() string {
+	return lipgloss.NewStyle().
+		Width(28).
+		Border(lipgloss.RoundedBorder()).
+		Padding(0, 1).
+		Render("Filters")
 }
 
 func (f *FilterModal) ToggleFilters(actions []tree.Action) {
@@ -39,6 +58,6 @@ func (f *FilterModal) ResetFilters() {
 	f.filters = make(map[tree.Action]bool)
 }
 
-func (f FilterModal) GetFilter() map[tree.Action]bool {
+func (f FilterModal) GetFilters() map[tree.Action]bool {
 	return f.filters
 }

@@ -22,6 +22,7 @@ const (
 	FocusTree Focus = iota
 	FocusSearch
 	FocusDetails
+	FocusFilter
 )
 
 type Components struct {
@@ -63,7 +64,7 @@ func New(root *tree.Node) Model {
 	treeWidth, treeHeight := treePaneSize(0, 0)
 	m.components.tree.SetSize(treeWidth, treeHeight)
 	m.components.tree.SetRoot(root)
-	m.components.tree.SetFilters(c.filter.GetFilter())
+	m.components.tree.ApplyFilters(c.filter.GetFilters())
 
 	detailsWidth := detailsWidth(m.size.width, treeWidth)
 	detailsHeight := treeHeight
