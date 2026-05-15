@@ -3,6 +3,7 @@ package app
 import (
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
+	"github.com/marvinlanhenke/terraview/internal/components/tree"
 )
 
 type keymap struct {
@@ -92,9 +93,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 
 		// Tree -> Details
-		case (key.Matches(msg, keys.Enter) || key.Matches(msg, keys.RightPane)) && m.focus == FocusTree:
+		case key.Matches(msg, keys.RightPane) && m.focus == FocusTree:
 			m.focus = FocusDetails
 			m.components.details.Focus()
+
+		case key.Matches(msg, keys.Enter) && m.focus == FocusTree:
+			if m.components.tree.Selected().Kind == tree.NodeResource {
+				m.focus = FocusDetails
+				m.components.details.Focus()
+			}
 
 		// Details -> Tree
 		case (key.Matches(msg, keys.Escape) || key.Matches(msg, keys.Enter) || key.Matches(msg, keys.LeftPane)) && m.focus == FocusDetails:

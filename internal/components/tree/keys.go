@@ -21,11 +21,11 @@ var keys = keymap{
 		key.WithHelp("↓/j", "down"),
 	),
 	expand: key.NewBinding(
-		key.WithKeys("e", "right", "l"),
+		key.WithKeys("enter", "right", "l"),
 		key.WithHelp("→/l", "expand"),
 	),
 	collapse: key.NewBinding(
-		key.WithKeys("e", "left", "h"),
+		key.WithKeys("enter", "left", "h"),
 		key.WithHelp("←/h", "collapse"),
 	),
 }

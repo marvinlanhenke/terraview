@@ -65,6 +65,7 @@ func BuildTree(plan terraform.Plan) (*tree.Node, error) {
 		child := &tree.Node{
 			Id:       rc.Address,
 			Label:    rc.Address,
+			Kind:     tree.NodeResource,
 			Action:   action,
 			Changes:  changes,
 			Depth:    0,
