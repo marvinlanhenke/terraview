@@ -27,6 +27,7 @@ func New(t theme.Theme) Details {
 
 	vp := viewport.New()
 	vp.FillHeight = true
+	vp.SoftWrap = true
 	vp.Style = s.background
 
 	return Details{
@@ -47,8 +48,22 @@ func (d *Details) SetSize(width, height int) {
 }
 
 func (d *Details) SetNode(n *tree.Node) {
+	hasChanged := d.node != n
 	d.node = n
-	d.changes = flattenChanges(d.node)
+
+	if n == nil {
+		d.changes = nil
+		d.viewport.SetYOffset(0)
+		d.syncViewport()
+		return
+	}
+
+	d.changes = flattenChanges(n)
+
+	if hasChanged {
+		d.viewport.SetYOffset(0)
+	}
+
 	d.syncViewport()
 }
 
@@ -61,9 +76,9 @@ func (d *Details) Blur() {
 }
 
 func (d *Details) Update(msg tea.Msg) tea.Cmd {
-	d.syncViewport()
-
-	return nil
+	var cmd tea.Cmd
+	d.viewport, cmd = d.viewport.Update(msg)
+	return cmd
 }
 
 func (d Details) View() string {
