@@ -82,14 +82,14 @@ func (d *Details) Update(msg tea.Msg) tea.Cmd {
 }
 
 func (d Details) View() string {
-	if d.node == nil {
+	if len(d.changes) == 0 {
 		empty := d.styles.empty.
 			Width(d.width).
 			MaxWidth(d.width).
-			Height(d.height).
+			Height(d.height - lipgloss.Height(d.header)).
 			AlignHorizontal(lipgloss.Center).
 			AlignVertical(lipgloss.Center).
-			Render("Nothing to show...")
+			Render("Nothing to show yet...")
 
 		return lipgloss.JoinVertical(lipgloss.Left, d.header, empty)
 	}
@@ -129,7 +129,6 @@ func (d *Details) renderLines() []string {
 	header := lipgloss.
 		NewStyle().
 		Width(d.width).
-		Border(lipgloss.ASCIIBorder(), true, false).
 		Render("Changed Attributes:")
 
 	indent := " "
