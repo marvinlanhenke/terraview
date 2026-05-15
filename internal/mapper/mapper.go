@@ -70,6 +70,7 @@ func BuildTree(plan terraform.Plan) (*tree.Node, error) {
 			Changes:  changes,
 			Depth:    0,
 			Expanded: false,
+			Parent:   root.Children[idx],
 			Payload:  rc,
 		}
 
