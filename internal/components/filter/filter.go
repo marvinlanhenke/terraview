@@ -5,25 +5,25 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
-type Filter struct {
+type FilterModal struct {
 	inner map[tree.Action]bool
 }
 
-func New(t theme.Theme) Filter {
+func New(t theme.Theme) FilterModal {
 	inner := make(map[tree.Action]bool)
 
-	return Filter{
+	return FilterModal{
 		inner: inner,
 	}
 }
 
-func (f *Filter) ToggleFilters(actions []tree.Action) {
+func (f *FilterModal) ToggleFilters(actions []tree.Action) {
 	for _, action := range actions {
 		f.ToggleSingleFilter(action)
 	}
 }
 
-func (f *Filter) ToggleSingleFilter(action tree.Action) {
+func (f *FilterModal) ToggleSingleFilter(action tree.Action) {
 	before, exists := f.inner[action]
 
 	if !exists {
@@ -34,11 +34,11 @@ func (f *Filter) ToggleSingleFilter(action tree.Action) {
 	f.inner[action] = !before
 }
 
-func (f *Filter) ResetFilters() {
+func (f *FilterModal) ResetFilters() {
 	f.inner = nil
 	f.inner = make(map[tree.Action]bool)
 }
 
-func (f Filter) GetFilter() map[tree.Action]bool {
+func (f FilterModal) GetFilter() map[tree.Action]bool {
 	return f.inner
 }
