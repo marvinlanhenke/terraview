@@ -59,7 +59,10 @@ func New(root *tree.Node) Model {
 	}
 
 	m.components.search.SetWidth(m.size.width - defaultMargin)
+
 	m.components.summary.SetWidth(m.size.width - defaultMargin)
+
+	m.components.filter.SetOptions(root.Children)
 
 	treeWidth, treeHeight := treePaneSize(0, 0)
 	m.components.tree.SetSize(treeWidth, treeHeight)
