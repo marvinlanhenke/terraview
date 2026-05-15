@@ -226,7 +226,10 @@ func (t *Tree) rebuildVisible() {
 	}
 
 	for _, child := range t.root.Children {
-		t.walk(child)
+		// We filter out empty group nodes
+		if child.hasChildren() {
+			t.walk(child)
+		}
 	}
 }
 
