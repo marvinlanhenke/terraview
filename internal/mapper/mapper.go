@@ -33,7 +33,7 @@ func BuildTree(plan terraform.Plan) (*tree.Node, error) {
 	for action, idx := range actionIndex {
 		nodeGroups[idx] = &tree.Node{
 			Id:       fmt.Sprintf("%s-node-group", string(action)),
-			Label:    fmt.Sprintf("%s Node Group", strings.ToUpper(string(action))),
+			Label:    fmt.Sprintf("%s", strings.ToUpper(string(action))),
 			Kind:     tree.NodeGroup,
 			Action:   action,
 			Depth:    0,
@@ -43,13 +43,19 @@ func BuildTree(plan terraform.Plan) (*tree.Node, error) {
 
 	root.Children = nodeGroups
 
+	totalChanges := len(plan.ResourceChanges)
+
+	childCounter := make(map[tree.Action]int)
+
 	for _, rc := range plan.ResourceChanges {
 		action, err := actionFromString(rc.Change.Actions)
+
 		if err != nil {
 			return nil, err
 		}
 
 		idx, exists := actionIndex[action]
+
 		if !exists {
 			return nil, errors.New("failed to lookup node group index by action type")
 		}
@@ -66,7 +72,21 @@ func BuildTree(plan terraform.Plan) (*tree.Node, error) {
 			Payload:  rc,
 		}
 
+		childCounter[action]++
+
 		root.Children[idx].Children = append(root.Children[idx].Children, child)
+	}
+
+	for _, node := range root.Children {
+		numerator, exists := childCounter[node.Action]
+
+		if !exists {
+			continue
+		}
+
+		denominator := totalChanges
+
+		node.Label = fmt.Sprintf("%s [%d/%d]", node.Label, numerator, denominator)
 	}
 
 	return root, nil
