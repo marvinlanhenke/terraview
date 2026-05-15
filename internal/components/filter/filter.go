@@ -6,14 +6,14 @@ import (
 )
 
 type FilterModal struct {
-	inner map[tree.Action]bool
+	filters map[tree.Action]bool
 }
 
 func New(t theme.Theme) FilterModal {
 	inner := make(map[tree.Action]bool)
 
 	return FilterModal{
-		inner: inner,
+		filters: inner,
 	}
 }
 
@@ -24,21 +24,21 @@ func (f *FilterModal) ToggleFilters(actions []tree.Action) {
 }
 
 func (f *FilterModal) ToggleSingleFilter(action tree.Action) {
-	before, exists := f.inner[action]
+	before, exists := f.filters[action]
 
 	if !exists {
-		f.inner[action] = true
+		f.filters[action] = true
 		return
 	}
 
-	f.inner[action] = !before
+	f.filters[action] = !before
 }
 
 func (f *FilterModal) ResetFilters() {
-	f.inner = nil
-	f.inner = make(map[tree.Action]bool)
+	f.filters = nil
+	f.filters = make(map[tree.Action]bool)
 }
 
 func (f FilterModal) GetFilter() map[tree.Action]bool {
-	return f.inner
+	return f.filters
 }
