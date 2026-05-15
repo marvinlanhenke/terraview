@@ -274,7 +274,7 @@ func (t *Tree) rebuildVisible() {
 	for _, child := range t.root.Children {
 		// We filter out empty group nodes
 		// We only show active filters
-		if child.hasChildren() && (t.filters[child.Action] || noFilterActive(t.filters)) {
+		if child.hasChildren() && (t.filters[child.Action] || !hasActiveFilters(t.filters)) {
 			t.walk(child)
 		}
 	}
@@ -310,12 +310,12 @@ func hasMatchingDescendant(n *Node, query string) bool {
 	return false
 }
 
-func noFilterActive(f map[Action]bool) bool {
+func hasActiveFilters(f map[Action]bool) bool {
 	for _, isActive := range f {
 		if isActive {
-			return false
+			return true
 		}
 	}
 
-	return true
+	return false
 }
