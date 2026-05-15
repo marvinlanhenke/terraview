@@ -14,7 +14,7 @@ const (
 type NodeKind int
 
 const (
-	NodeGroup int = iota
+	NodeGroup NodeKind = iota
 	NodeResource
 )
 
@@ -33,6 +33,7 @@ type Changes struct {
 type Node struct {
 	Id       string
 	Label    string
+	Kind     NodeKind
 	Action   Action
 	Changes  Changes
 	Depth    int

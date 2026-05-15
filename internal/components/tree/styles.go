@@ -62,7 +62,7 @@ func (s styles) actionMarker(action Action) actionStyle {
 	case ActionDelete:
 		return actionStyle{"-", s.delete}
 	case ActionReplace:
-		return actionStyle{"-/+", s.replace}
+		return actionStyle{"*", s.replace}
 	case ActionNoOp:
 		return actionStyle{"=", s.noOp}
 	case ActionError:

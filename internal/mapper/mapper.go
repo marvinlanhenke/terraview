@@ -4,33 +4,59 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/marvinlanhenke/terraview/internal/components/tree"
 	"github.com/marvinlanhenke/terraview/internal/terraform"
 )
 
+var actionIndex = map[tree.Action]int{
+	tree.ActionCreate:  0,
+	tree.ActionUpdate:  1,
+	tree.ActionDelete:  2,
+	tree.ActionReplace: 3,
+	tree.ActionNoOp:    4,
+	tree.ActionError:   5,
+}
+
 func BuildTree(plan terraform.Plan) (*tree.Node, error) {
 	root := &tree.Node{
 		Id:       "root",
 		Label:    fmt.Sprintf("Terraform plan %s", plan.TerraformVersion),
+		Kind:     tree.NodeGroup,
 		Action:   tree.ActionNoOp,
 		Depth:    0,
 		Expanded: true,
-		Payload:  plan,
 	}
 
-	children := make([]*tree.Node, len(plan.ResourceChanges))
+	nodeGroups := make([]*tree.Node, len(actionIndex))
+	for action, idx := range actionIndex {
+		nodeGroups[idx] = &tree.Node{
+			Id:       fmt.Sprintf("%s-node-group", string(action)),
+			Label:    fmt.Sprintf("%s Node Group", strings.ToUpper(string(action))),
+			Kind:     tree.NodeGroup,
+			Action:   action,
+			Depth:    0,
+			Expanded: false,
+		}
+	}
 
-	// TODO: add children into buckets for each action and allocate under Root:1=>N:NodeGroup
-	for i, rc := range plan.ResourceChanges {
+	root.Children = nodeGroups
+
+	for _, rc := range plan.ResourceChanges {
 		action, err := actionFromString(rc.Change.Actions)
 		if err != nil {
 			return nil, err
 		}
 
+		idx, exists := actionIndex[action]
+		if !exists {
+			return nil, errors.New("failed to lookup node group index by action type")
+		}
+
 		changes := compareChanges(rc.Change.Before, rc.Change.After)
 
-		children[i] = &tree.Node{
+		child := &tree.Node{
 			Id:       rc.Address,
 			Label:    rc.Address,
 			Action:   action,
@@ -39,9 +65,9 @@ func BuildTree(plan terraform.Plan) (*tree.Node, error) {
 			Expanded: false,
 			Payload:  rc,
 		}
-	}
 
-	root.Children = children
+		root.Children[idx].Children = append(root.Children[idx].Children, child)
+	}
 
 	return root, nil
 }
