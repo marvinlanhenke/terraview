@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/marvinlanhenke/terraview/internal/components/details"
+	"github.com/marvinlanhenke/terraview/internal/components/filter"
 	"github.com/marvinlanhenke/terraview/internal/components/search"
 	"github.com/marvinlanhenke/terraview/internal/components/summary"
 	"github.com/marvinlanhenke/terraview/internal/components/tree"
@@ -25,6 +26,7 @@ const (
 
 type Components struct {
 	search  search.Search
+	filters filter.Filter
 	summary summary.Summary
 	tree    tree.Tree
 	details details.Details
@@ -42,6 +44,7 @@ func New(root *tree.Node) Model {
 
 	c := Components{
 		search:  search.New(t),
+		filters: filter.New(t),
 		summary: summary.New(t),
 		tree:    tree.New(t),
 		details: details.New(t),
@@ -60,6 +63,7 @@ func New(root *tree.Node) Model {
 	treeWidth, treeHeight := treePaneSize(0, 0)
 	m.components.tree.SetSize(treeWidth, treeHeight)
 	m.components.tree.SetRoot(root)
+	m.components.tree.SetFilters(c.filters.GetFilter())
 
 	detailsWidth := detailsWidth(m.size.width, treeWidth)
 	detailsHeight := treeHeight

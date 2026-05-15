@@ -15,6 +15,7 @@ type Tree struct {
 	visible []*Node
 	cursor  int
 	query   string
+	filters map[Action]bool
 	header  string
 
 	width    int
@@ -40,8 +41,15 @@ func (t Tree) GetVisible() int {
 	return len(t.visible)
 }
 
-func (t *Tree) SetRoot(root *Node) {
-	t.root = root
+func (t *Tree) SetRoot(n *Node) {
+	t.root = n
+	t.rebuildVisible()
+	t.clampCursor()
+	t.syncViewport()
+}
+
+func (t *Tree) SetFilters(f map[Action]bool) {
+	t.filters = f
 	t.rebuildVisible()
 	t.clampCursor()
 	t.syncViewport()
@@ -265,7 +273,8 @@ func (t *Tree) rebuildVisible() {
 
 	for _, child := range t.root.Children {
 		// We filter out empty group nodes
-		if child.hasChildren() {
+		// We only show active filters
+		if child.hasChildren() && (t.filters[child.Action] || noFilterActive(t.filters)) {
 			t.walk(child)
 		}
 	}
@@ -299,4 +308,14 @@ func hasMatchingDescendant(n *Node, query string) bool {
 	}
 
 	return false
+}
+
+func noFilterActive(f map[Action]bool) bool {
+	for _, isActive := range f {
+		if isActive {
+			return false
+		}
+	}
+
+	return true
 }
