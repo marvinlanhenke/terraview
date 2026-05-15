@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"charm.land/bubbles/v2/key"
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
@@ -12,9 +13,10 @@ import (
 )
 
 type Details struct {
-	node    *tree.Node
-	changes []changeLine
-	header  string
+	node     *tree.Node
+	changes  []changeLine
+	header   string
+	showPlan bool
 
 	width    int
 	height   int
@@ -33,6 +35,7 @@ func New(t theme.Theme) Details {
 	return Details{
 		viewport: vp,
 		styles:   s,
+		showPlan: false,
 	}
 }
 
@@ -40,6 +43,7 @@ func (d *Details) SetSize(width, height int) {
 	d.width = max(0, width)
 	d.height = max(0, height)
 
+	// TODO show which mode (summary/plan)
 	d.setHeader("▤ Details")
 
 	d.viewport.SetWidth(d.width)
@@ -77,12 +81,23 @@ func (d *Details) Blur() {
 
 func (d *Details) Update(msg tea.Msg) tea.Cmd {
 	var cmd tea.Cmd
+
+	switch msg := msg.(type) {
+	case tea.KeyPressMsg:
+		switch {
+		case key.Matches(msg, keys.toggle):
+			d.showPlan = !d.showPlan
+			d.syncViewport()
+		}
+	}
+
 	d.viewport, cmd = d.viewport.Update(msg)
+
 	return cmd
 }
 
 func (d Details) View() string {
-	if len(d.changes) == 0 {
+	if d.node == nil || d.node.Kind == tree.NodeGroup {
 		empty := d.styles.empty.
 			Width(d.width).
 			MaxWidth(d.width).
@@ -126,19 +141,32 @@ func (d *Details) setHeader(text string) {
 }
 
 func (d *Details) renderLines() []string {
+	lines := make([]string, 0)
+
+	if d.showPlan {
+		plan, err := json.MarshalIndent(d.node.Payload, "", " ")
+		if err != nil {
+			line := "error while marshaling json payload."
+			lines = append(lines, line)
+			return lines
+		}
+
+		lines = append(lines, string(plan))
+		return lines
+	}
+
 	header := lipgloss.
 		NewStyle().
 		Width(d.width).
 		Render("Changed Attributes:")
 
+	lines = append(lines, header)
+
 	indent := " "
 	beforeIcon := "−"
 	afterIcon := "+"
 
-	lines := make([]string, len(d.changes)+1)
-
-	lines[0] = header
-	for i, cl := range d.changes {
+	for _, cl := range d.changes {
 		beforeLine := indent + beforeIcon + renderValue(cl.before) + "\n"
 		afterLine := indent + afterIcon + renderValue(cl.after) + "\n"
 
@@ -147,7 +175,8 @@ func (d *Details) renderLines() []string {
 			Border(lipgloss.ASCIIBorder(), false, false, true, false).
 			Render(cl.path + ":")
 
-		lines[i+1] = path + "\n" + beforeLine + afterLine
+		line := path + "\n" + beforeLine + afterLine
+		lines = append(lines, line)
 	}
 
 	return lines
