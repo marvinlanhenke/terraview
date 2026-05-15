@@ -147,36 +147,40 @@ func (t *Tree) setHeader(text string) {
 }
 
 func (t Tree) renderNode(n *Node, selected bool) string {
-	indent := strings.Repeat(" ", n.Depth)
+	indent := strings.Repeat(" ", max(1, n.Depth))
 
 	icon := " "
 	if n.hasChildren() {
 		if n.Expanded || t.query != "" {
-			icon = "▾"
+			icon = "◉"
 		} else {
-			icon = "▸"
+			icon = "○"
 		}
 	}
 
 	actionMarker := t.styles.actionMarker(n.Action)
-	rawPrefix := indent + icon + " " + actionMarker.marker + " "
+	lineLen := int(float64(t.width) * 0.8)
+	lineBreak := "."
 
 	if selected {
-		prefixSelected := actionMarker.style.Background(t.styles.palette.SurfaceAlt).Render(rawPrefix)
+		prefixSelected := t.styles.labelAlt.Render(indent + " " + icon + " ")
+		actionSelected := actionMarker.style.Background(t.styles.palette.SurfaceAlt).Render(actionMarker.marker + " ")
 		labelSelected := t.styles.labelAlt.Render(n.Label)
+
 		return t.styles.selected.
 			Width(t.width).
 			MaxWidth(t.width).
-			Render(prefixSelected + labelSelected)
+			Render(prefixSelected + actionSelected + lipgloss.Wrap(labelSelected, lineLen, lineBreak))
 	}
 
-	prefix := actionMarker.style.Faint(true).Render(rawPrefix)
+	prefix := t.styles.label.Render(indent + " " + icon + " ")
+	action := actionMarker.style.Background(t.styles.palette.Surface).Render(actionMarker.marker + " ")
 	label := t.styles.label.Render(n.Label)
 
 	return t.styles.base.
 		Width(t.width).
 		MaxWidth(t.width).
-		Render(prefix + label)
+		Render(prefix + action + lipgloss.Wrap(label, lineLen, lineBreak))
 }
 
 func (t *Tree) syncViewport() {

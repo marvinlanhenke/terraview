@@ -48,7 +48,7 @@ func newStyles(t theme.Theme) styles {
 		noOp:    lipgloss.NewStyle().Foreground(p.Text),
 		error:   lipgloss.NewStyle().Foreground(p.Danger),
 
-		label:    lipgloss.NewStyle().Foreground(p.TextMuted).Background(p.Surface),
+		label:    lipgloss.NewStyle().Foreground(p.Text).Background(p.Surface),
 		labelAlt: lipgloss.NewStyle().Foreground(p.Text).Background(p.SurfaceAlt),
 	}
 }
