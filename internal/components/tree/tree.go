@@ -15,6 +15,7 @@ type Tree struct {
 	visible []*Node
 	cursor  int
 	query   string
+	header  string
 
 	width    int
 	height   int
@@ -50,8 +51,10 @@ func (t *Tree) SetSize(width, height int) {
 	t.width = max(0, width)
 	t.height = max(0, height)
 
+	t.setHeader("⌘ Resources")
+
 	t.viewport.SetWidth(t.width)
-	t.viewport.SetHeight(t.height)
+	t.viewport.SetHeight(t.contentHeight())
 	t.syncViewport()
 }
 
@@ -118,16 +121,29 @@ func (t *Tree) Update(msg tea.Msg) tea.Cmd {
 
 func (t Tree) View() string {
 	if len(t.visible) == 0 {
-		return t.styles.empty.
+		empty := t.styles.empty.
 			Width(t.width).
 			MaxWidth(t.width).
 			Height(t.height).
 			AlignHorizontal(lipgloss.Center).
 			AlignVertical(lipgloss.Center).
 			Render("Nothing to show...")
+
+		return lipgloss.JoinVertical(lipgloss.Left, t.header, empty)
 	}
 
-	return t.viewport.View()
+	return lipgloss.JoinVertical(lipgloss.Left, t.header, t.viewport.View())
+}
+
+func (t Tree) contentHeight() int {
+	return max(0, t.height-lipgloss.Height(t.header))
+}
+
+func (t *Tree) setHeader(text string) {
+	t.header = lipgloss.
+		NewStyle().
+		Width(t.width).
+		Render(text)
 }
 
 func (t Tree) renderNode(n *Node, selected bool) string {
@@ -186,12 +202,14 @@ func (t *Tree) syncViewport() {
 }
 
 func (t *Tree) keepCursorVisible() {
-	if len(t.visible) == 0 || t.height <= 0 {
+	h := t.viewport.Height()
+
+	if len(t.visible) == 0 || h <= 0 {
 		return
 	}
 
 	top := t.viewport.YOffset()
-	bottom := top + t.height - 1
+	bottom := top + h - 1
 
 	if t.cursor < top {
 		t.viewport.SetYOffset(t.cursor)
@@ -199,7 +217,7 @@ func (t *Tree) keepCursorVisible() {
 	}
 
 	if t.cursor > bottom {
-		t.viewport.SetYOffset(t.cursor - t.height + 1)
+		t.viewport.SetYOffset(t.cursor - h + 1)
 	}
 }
 
