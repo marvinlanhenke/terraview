@@ -14,6 +14,7 @@ import (
 type Details struct {
 	node    *tree.Node
 	changes []changeLine
+	header  string
 
 	width    int
 	height   int
@@ -38,8 +39,10 @@ func (d *Details) SetSize(width, height int) {
 	d.width = max(0, width)
 	d.height = max(0, height)
 
+	d.setHeader("▤ Details")
+
 	d.viewport.SetWidth(d.width)
-	d.viewport.SetHeight(d.height)
+	d.viewport.SetHeight(d.contentHeight())
 	d.syncViewport()
 }
 
@@ -65,16 +68,18 @@ func (d *Details) Update(msg tea.Msg) tea.Cmd {
 
 func (d Details) View() string {
 	if d.node == nil {
-		return d.styles.empty.
+		empty := d.styles.empty.
 			Width(d.width).
 			MaxWidth(d.width).
 			Height(d.height).
 			AlignHorizontal(lipgloss.Center).
 			AlignVertical(lipgloss.Center).
 			Render("Nothing to show...")
+
+		return lipgloss.JoinVertical(lipgloss.Left, d.header, empty)
 	}
 
-	return d.viewport.View()
+	return lipgloss.JoinVertical(lipgloss.Left, d.header, d.viewport.View())
 }
 
 func (d *Details) syncViewport() {
@@ -92,6 +97,17 @@ func (d *Details) syncViewport() {
 	lines := d.renderLines()
 
 	d.viewport.SetContentLines(lines)
+}
+
+func (d Details) contentHeight() int {
+	return max(0, d.height-lipgloss.Height(d.header))
+}
+
+func (d *Details) setHeader(text string) {
+	d.header = lipgloss.
+		NewStyle().
+		Width(d.width).
+		Render(text)
 }
 
 func (d *Details) renderLines() []string {
