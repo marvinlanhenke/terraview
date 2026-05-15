@@ -26,10 +26,12 @@ type FilterModal struct {
 }
 
 func New(t theme.Theme) FilterModal {
-	inner := make(map[tree.Action]bool)
+	s := newStyles(t)
+	f := make(map[tree.Action]bool)
 
 	return FilterModal{
-		filters: inner,
+		filters: f,
+		styles:  s,
 	}
 }
 
@@ -59,6 +61,10 @@ func (f FilterModal) View() string {
 	rows := make([]string, len(f.options))
 
 	for i, option := range f.options {
+		row := lipgloss.NewStyle().
+			Foreground(f.styles.palette.Text).
+			Background(f.styles.palette.Surface)
+
 		icon := "[ ]"
 
 		if f.filters[option.action] {
@@ -68,9 +74,9 @@ func (f FilterModal) View() string {
 		label := strings.ToUpper(string(option.action[0])) + string(option.action[1:])
 		count := option.count
 
-		iconCol := lipgloss.NewStyle().Width(4).Render(icon)
-		labelCol := lipgloss.NewStyle().Width(12).Render(label)
-		countCol := lipgloss.NewStyle().Width(8).Align(lipgloss.Right).Render(count)
+		iconCol := row.Width(4).Render(icon)
+		labelCol := row.Width(12).Render(label)
+		countCol := row.Width(8).Align(lipgloss.Right).Render(count)
 
 		rows[i] = lipgloss.JoinHorizontal(lipgloss.Top, iconCol, labelCol, countCol)
 	}
@@ -81,6 +87,8 @@ func (f FilterModal) View() string {
 		Width(28).
 		Padding(0, 1).
 		Border(lipgloss.RoundedBorder()).
+		BorderBackground(f.styles.palette.Surface).
+		Background(f.styles.palette.Surface).
 		Render(content)
 }
 
