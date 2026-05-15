@@ -33,7 +33,7 @@ func BuildTree(plan terraform.Plan) (*tree.Node, error) {
 	for action, idx := range actionIndex {
 		nodeGroups[idx] = &tree.Node{
 			Id:       fmt.Sprintf("%s-node-group", string(action)),
-			Label:    fmt.Sprintf("%s", strings.ToUpper(string(action))),
+			Label:    fmt.Sprintf("%s", strings.ToUpper(string(action[0]))+string(action[1:])),
 			Kind:     tree.NodeGroup,
 			Action:   action,
 			Depth:    0,
