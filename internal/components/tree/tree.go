@@ -159,28 +159,44 @@ func (t Tree) renderNode(n *Node, selected bool) string {
 	}
 
 	actionMarker := t.styles.actionMarker(n.Action)
-	lineLen := int(float64(t.width) * 0.8)
-	lineBreak := "."
+	rawPrefix := indent + " " + icon + " "
+	wrap := n.Kind == NodeResource
+
+	return t.renderLine(rawPrefix, n.Label, n.LabelCount, actionMarker, selected, wrap)
+}
+
+func (t Tree) renderLine(rawPrefix, rawLabel, rawLabelCount string, actionMarker actionStyle, selected, wrap bool) string {
+	actionBackground := t.styles.palette.Surface
+	labelStyle := t.styles.label
+	labelCountStyle := labelStyle.Faint(true)
+	style := t.styles.base
 
 	if selected {
-		prefixSelected := t.styles.labelAlt.Render(indent + " " + icon + " ")
-		actionSelected := actionMarker.style.Background(t.styles.palette.SurfaceAlt).Render(actionMarker.marker + " ")
-		labelSelected := t.styles.labelAlt.Render(n.Label)
-
-		return t.styles.selected.
-			Width(t.width).
-			MaxWidth(t.width).
-			Render(prefixSelected + actionSelected + lipgloss.Wrap(labelSelected, lineLen, lineBreak))
+		actionBackground = t.styles.palette.SurfaceAlt
+		labelStyle = t.styles.labelAlt
+		labelCountStyle = labelStyle.Faint(true)
+		style = t.styles.selected
 	}
 
-	prefix := t.styles.label.Render(indent + " " + icon + " ")
-	action := actionMarker.style.Background(t.styles.palette.Surface).Render(actionMarker.marker + " ")
-	label := t.styles.label.Render(n.Label)
+	prefix := labelStyle.Render(rawPrefix)
+	action := actionMarker.style.Background(actionBackground).Render(actionMarker.marker + " ")
+	label := labelStyle.Render(rawLabel)
+	left := prefix + action + label
 
-	return t.styles.base.
-		Width(t.width).
-		MaxWidth(t.width).
-		Render(prefix + action + lipgloss.Wrap(label, lineLen, lineBreak))
+	width := t.width - style.GetHorizontalPadding()
+
+	if wrap {
+		return style.Width(t.width).MaxWidth(t.width).Render(lipgloss.Wrap(left, width, "."))
+	}
+
+	right := labelCountStyle.Render(rawLabelCount)
+
+	gapSize := max(0, width-lipgloss.Width(left)-lipgloss.Width(right))
+	gap := labelStyle.Render(strings.Repeat(" ", gapSize))
+
+	line := left + gap + right
+
+	return style.Width(t.width).MaxWidth(t.width).Render(line)
 }
 
 func (t *Tree) syncViewport() {

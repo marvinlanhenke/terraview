@@ -88,7 +88,7 @@ func BuildTree(plan terraform.Plan) (*tree.Node, error) {
 
 		denominator := totalChanges
 
-		node.Label = fmt.Sprintf("%s [%d/%d]", node.Label, numerator, denominator)
+		node.LabelCount = fmt.Sprintf("(%d/%d)", numerator, denominator)
 	}
 
 	return root, nil
