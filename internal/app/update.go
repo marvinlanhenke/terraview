@@ -138,6 +138,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case FocusTree:
 		cmds = append(cmds, m.components.tree.Update(msg))
 		m.components.details.SetNode(m.components.tree.Selected())
+		m.components.search.SetMatches(m.components.tree.GetVisible())
 
 	case FocusDetails:
 		cmds = append(cmds, m.components.details.Update(msg))

@@ -52,9 +52,7 @@ func (s *Search) SetWidth(width int) {
 }
 
 func (s *Search) SetMatches(matches int) {
-	if s.Value() != "" {
-		s.matches = max(0, matches)
-	}
+	s.matches = max(0, matches)
 }
 
 func (s *Search) Update(msg tea.Msg) tea.Cmd {
