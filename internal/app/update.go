@@ -122,6 +122,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.focus = FocusFilter
 			}
 
+		// Filter Exit
+		case (key.Matches(msg, keys.Escape)) && m.focus == FocusFilter:
+			m.focus = FocusTree
 		}
 
 	}

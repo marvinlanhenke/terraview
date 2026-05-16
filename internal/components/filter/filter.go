@@ -3,6 +3,7 @@ package filter
 import (
 	"strings"
 
+	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/marvinlanhenke/terraview/internal/components/tree"
@@ -54,6 +55,32 @@ func (f *FilterModal) SetOptions(nodes []*tree.Node) {
 }
 
 func (f *FilterModal) Update(msg tea.Msg) tea.Cmd {
+	switch msg := msg.(type) {
+	case tea.KeyPressMsg:
+		switch {
+		// Up
+		case key.Matches(msg, keys.up):
+			f.cursor--
+
+		// Down
+		case key.Matches(msg, keys.down):
+			f.cursor++
+
+		// Toggle Filter
+		case key.Matches(msg, keys.toggle):
+			selected := f.Selected()
+			if selected != nil {
+				f.ToggleSingleFilter(selected.action)
+			}
+
+		// Reset Filters
+		case key.Matches(msg, keys.reset):
+			f.ResetFilters()
+		}
+	}
+
+	f.clampCursor()
+
 	return nil
 }
 
@@ -62,11 +89,16 @@ func (f FilterModal) View() string {
 
 	for i, option := range f.options {
 		row := f.styles.row
+		isCurrent := i == f.cursor
 
 		icon := "[ ]"
 
 		if f.filters[option.action] {
 			icon = "[x]"
+		}
+
+		if isCurrent {
+			row = f.styles.rowAlt
 		}
 
 		label := strings.ToUpper(string(option.action[0])) + string(option.action[1:])
@@ -86,6 +118,14 @@ func (f FilterModal) View() string {
 	content := lipgloss.JoinVertical(lipgloss.Left, header, "", list)
 
 	return f.styles.modal.Width(28).Render(content)
+}
+
+func (f *FilterModal) Selected() *option {
+	if len(f.options) == 0 {
+		return nil
+	}
+
+	return &f.options[f.cursor]
 }
 
 func (f *FilterModal) ToggleFilters(actions []tree.Action) {
@@ -112,4 +152,19 @@ func (f *FilterModal) ResetFilters() {
 
 func (f FilterModal) GetFilters() map[tree.Action]bool {
 	return f.filters
+}
+
+func (f *FilterModal) clampCursor() {
+	if len(f.options) == 0 {
+		f.cursor = 0
+		return
+	}
+
+	if f.cursor < 0 {
+		f.cursor = 0
+	}
+
+	if f.cursor >= len(f.options) {
+		f.cursor = len(f.options) - 1
+	}
 }

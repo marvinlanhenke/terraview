@@ -30,11 +30,15 @@ func newStyles(t theme.Theme) styles {
 		Foreground(p.Text).
 		Background(p.SurfaceMuted)
 
+	rowAlt := lipgloss.NewStyle().
+		Foreground(p.Text).
+		Background(p.SurfaceAlt)
+
 	return styles{
 		palette: p,
 		header:  header,
 		modal:   modal,
 		row:     row,
-		rowAlt:  row,
+		rowAlt:  rowAlt,
 	}
 }

@@ -132,7 +132,7 @@ func (t Tree) View() string {
 		empty := t.styles.empty.
 			Width(t.width).
 			MaxWidth(t.width).
-			Height(t.height).
+			Height(t.height - lipgloss.Height(t.header)).
 			AlignHorizontal(lipgloss.Center).
 			AlignVertical(lipgloss.Center).
 			Render("Nothing to show...")
