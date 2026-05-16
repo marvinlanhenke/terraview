@@ -81,7 +81,15 @@ func (f FilterModal) View() string {
 		rows[i] = lipgloss.JoinHorizontal(lipgloss.Top, iconCol, labelCol, countCol)
 	}
 
-	content := lipgloss.JoinVertical(lipgloss.Left, rows...)
+	list := lipgloss.JoinVertical(lipgloss.Left, rows...)
+
+	header := lipgloss.NewStyle().
+		Width(28).
+		Foreground(f.styles.palette.Text).
+		Background(f.styles.palette.Surface).
+		Render("⚲ Filter:")
+
+	content := lipgloss.JoinVertical(lipgloss.Left, header, "", list)
 
 	return lipgloss.NewStyle().
 		Width(28).
