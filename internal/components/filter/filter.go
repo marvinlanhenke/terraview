@@ -61,9 +61,7 @@ func (f FilterModal) View() string {
 	rows := make([]string, len(f.options))
 
 	for i, option := range f.options {
-		row := lipgloss.NewStyle().
-			Foreground(f.styles.palette.Text).
-			Background(f.styles.palette.Surface)
+		row := f.styles.row
 
 		icon := "[ ]"
 
@@ -83,21 +81,11 @@ func (f FilterModal) View() string {
 
 	list := lipgloss.JoinVertical(lipgloss.Left, rows...)
 
-	header := lipgloss.NewStyle().
-		Width(28).
-		Foreground(f.styles.palette.Text).
-		Background(f.styles.palette.Surface).
-		Render("⚲ Filter:")
+	header := f.styles.header.Width(28).Render("⚲ Filter:")
 
 	content := lipgloss.JoinVertical(lipgloss.Left, header, "", list)
 
-	return lipgloss.NewStyle().
-		Width(28).
-		Padding(0, 1).
-		Border(lipgloss.RoundedBorder()).
-		BorderBackground(f.styles.palette.Surface).
-		Background(f.styles.palette.Surface).
-		Render(content)
+	return f.styles.modal.Width(28).Render(content)
 }
 
 func (f *FilterModal) ToggleFilters(actions []tree.Action) {
