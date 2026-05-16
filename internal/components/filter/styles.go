@@ -18,17 +18,17 @@ func newStyles(t theme.Theme) styles {
 
 	header := lipgloss.NewStyle().
 		Foreground(p.Text).
-		Background(p.Surface)
+		Background(p.SurfaceMuted)
 
 	modal := lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
-		BorderBackground(p.Surface).
-		Background(p.Surface).
+		BorderBackground(p.SurfaceMuted).
+		Background(p.SurfaceMuted).
 		Padding(0, 1)
 
 	row := lipgloss.NewStyle().
 		Foreground(p.Text).
-		Background(p.Surface)
+		Background(p.SurfaceMuted)
 
 	return styles{
 		palette: p,
