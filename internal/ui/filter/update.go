@@ -5,7 +5,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 )
 
-func (f *FilterModal) Update(msg tea.Msg) tea.Cmd {
+func (f *Modal) Update(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		switch {
@@ -19,33 +19,18 @@ func (f *FilterModal) Update(msg tea.Msg) tea.Cmd {
 
 		// Toggle Filter
 		case key.Matches(msg, keys.toggle):
-			selected := f.Selected()
+			selected := f.selected()
 			if selected != nil {
-				f.ToggleSingleFilter(selected.action)
+				f.toggleSingleFilter(selected.action)
 			}
 
 		// Reset Filters
 		case key.Matches(msg, keys.reset):
-			f.ResetFilters()
+			f.resetFilters()
 		}
 	}
 
 	f.clampCursor()
 
 	return nil
-}
-
-func (f *FilterModal) clampCursor() {
-	if len(f.options) == 0 {
-		f.cursor = 0
-		return
-	}
-
-	if f.cursor < 0 {
-		f.cursor = 0
-	}
-
-	if f.cursor >= len(f.options) {
-		f.cursor = len(f.options) - 1
-	}
 }

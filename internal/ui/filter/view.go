@@ -1,12 +1,17 @@
 package filter
 
 import (
-	"strings"
-
 	"charm.land/lipgloss/v2"
 )
 
-func (f FilterModal) View() string {
+const (
+	iconWidth  = 4
+	labelWidth = 12
+	countWidth = 8
+	modalWidth = 28
+)
+
+func (f *Modal) View() string {
 	rows := make([]string, len(f.options))
 
 	for i, option := range f.options {
@@ -23,21 +28,21 @@ func (f FilterModal) View() string {
 			row = f.styles.rowAlt
 		}
 
-		label := strings.ToUpper(string(option.action[0])) + string(option.action[1:])
+		label := option.label
 		count := option.count
 
-		iconCol := row.Width(4).Render(icon)
-		labelCol := row.Width(12).Render(label)
-		countCol := row.Width(8).Align(lipgloss.Right).Render(count)
+		iconCol := row.Width(iconWidth).Render(icon)
+		labelCol := row.Width(labelWidth).Render(label)
+		countCol := row.Width(countWidth).Align(lipgloss.Right).Render(count)
 
 		rows[i] = lipgloss.JoinHorizontal(lipgloss.Top, iconCol, labelCol, countCol)
 	}
 
 	list := lipgloss.JoinVertical(lipgloss.Left, rows...)
 
-	header := f.styles.header.Width(28).Render("⚲ Filter:")
+	header := f.styles.header.Width(modalWidth).Render("⚲ Filter:")
 
 	content := lipgloss.JoinVertical(lipgloss.Left, header, "", list)
 
-	return f.styles.modal.Width(28).Render(content)
+	return f.styles.modal.Width(modalWidth).Render(content)
 }

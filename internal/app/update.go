@@ -105,7 +105,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case FocusFilter:
 		cmds = append(cmds, m.components.filter.Update(msg))
-		m.components.tree.ApplyFilters(m.components.filter.GetFilters())
+		m.components.tree.ApplyFilters(m.components.filter.Filters())
 		m.components.details.SetNode(m.components.tree.Selected())
 		m.components.search.SetMatches(m.components.tree.GetVisible())
 	}

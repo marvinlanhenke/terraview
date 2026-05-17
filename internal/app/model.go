@@ -28,7 +28,7 @@ const (
 
 type Components struct {
 	search  search.Search
-	filter  filter.FilterModal
+	filter  filter.Modal
 	status  status.Status
 	tree    tree.Tree
 	details details.Details
@@ -68,7 +68,7 @@ func New(root *planview.Node) Model {
 	treeWidth, treeHeight := treePaneSize(0, 0)
 	m.components.tree.SetSize(treeWidth, treeHeight)
 	m.components.tree.SetRoot(root)
-	m.components.tree.ApplyFilters(c.filter.GetFilters())
+	m.components.tree.ApplyFilters(c.filter.Filters())
 
 	detailsWidth := detailsWidth(m.size.width, treeWidth)
 	detailsHeight := treeHeight
