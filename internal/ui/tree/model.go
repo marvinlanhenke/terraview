@@ -37,17 +37,6 @@ func New(t theme.Theme) Tree {
 	}
 }
 
-func (t *Tree) SetSize(width, height int) {
-	t.width = max(0, width)
-	t.height = max(0, height)
-
-	t.setHeader("⌘ Resources")
-
-	t.viewport.SetWidth(t.width)
-	t.viewport.SetHeight(t.contentHeight())
-	t.syncViewport()
-}
-
 func (t *Tree) SetRoot(n *planview.Node) {
 	t.root = n
 	t.rebuildVisible()
@@ -68,6 +57,17 @@ func (t *Tree) SetCriteria(query string, filters map[planview.Action]bool) {
 	t.syncViewport()
 }
 
+func (t *Tree) SetSize(width, height int) {
+	t.width = max(0, width)
+	t.height = max(0, height)
+
+	t.setHeader("⌘ Resources")
+
+	t.viewport.SetWidth(t.width)
+	t.viewport.SetHeight(t.contentHeight())
+	t.syncViewport()
+}
+
 func (t *Tree) Selected() *planview.Node {
 	if len(t.visible) == 0 {
 		return nil
@@ -76,7 +76,7 @@ func (t *Tree) Selected() *planview.Node {
 	return t.visible[t.cursor]
 }
 
-func (t Tree) VisibleCount() int {
+func (t *Tree) VisibleCount() int {
 	return len(t.visible)
 }
 
