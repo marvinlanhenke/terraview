@@ -60,7 +60,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.size.height = msg.Height
 
 		m.components.search.SetWidth(msg.Width - defaultMargin)
-		m.components.summary.SetWidth(msg.Width - defaultMargin)
+		m.components.status.SetWidth(msg.Width - defaultMargin)
 
 		treeWidth, treeHeight := treePaneSize(msg.Width, msg.Height)
 		m.components.tree.SetSize(treeWidth, treeHeight)

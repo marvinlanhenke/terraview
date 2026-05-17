@@ -7,7 +7,7 @@ import (
 
 func (m Model) View() tea.View {
 	searchBar := m.components.search.View()
-	summary := m.components.summary.View()
+	summary := m.components.status.View()
 	tree := m.components.tree.View()
 	details := m.components.details.View()
 

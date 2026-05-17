@@ -1,4 +1,4 @@
-package summary
+package status
 
 import (
 	"charm.land/lipgloss/v2"

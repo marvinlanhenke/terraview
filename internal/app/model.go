@@ -5,7 +5,7 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/ui/details"
 	"github.com/marvinlanhenke/terraview/internal/ui/filter"
 	"github.com/marvinlanhenke/terraview/internal/ui/search"
-	"github.com/marvinlanhenke/terraview/internal/ui/summary"
+	"github.com/marvinlanhenke/terraview/internal/ui/status"
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 	"github.com/marvinlanhenke/terraview/internal/ui/tree"
 )
@@ -29,7 +29,7 @@ const (
 type Components struct {
 	search  search.Search
 	filter  filter.FilterModal
-	summary summary.Summary
+	status  status.Status
 	tree    tree.Tree
 	details details.Details
 }
@@ -47,7 +47,7 @@ func New(root *planview.Node) Model {
 	c := Components{
 		search:  search.New(t),
 		filter:  filter.New(t),
-		summary: summary.New(t),
+		status:  status.New(t),
 		tree:    tree.New(t),
 		details: details.New(t),
 	}
@@ -61,7 +61,7 @@ func New(root *planview.Node) Model {
 
 	m.components.search.SetWidth(m.size.width - defaultMargin)
 
-	m.components.summary.SetWidth(m.size.width - defaultMargin)
+	m.components.status.SetWidth(m.size.width - defaultMargin)
 
 	m.components.filter.SetOptions(root.Children)
 

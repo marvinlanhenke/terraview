@@ -1,4 +1,4 @@
-package summary
+package status
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
-type stats struct {
+type actions struct {
 	add     int
 	change  int
 	destroy int
@@ -15,7 +15,7 @@ type stats struct {
 	errors  int
 }
 
-func (s stats) String() string {
+func (s actions) String() string {
 	return fmt.Sprintf(
 		"+%d ~%d -%d -/+%d =%d !%d",
 		s.add,
@@ -27,23 +27,23 @@ func (s stats) String() string {
 	)
 }
 
-type Summary struct {
-	stats stats
+type Status struct {
+	actions actions
 
 	width  int
 	styles styles
 }
 
-func New(t theme.Theme) Summary {
-	return Summary{
+func New(t theme.Theme) Status {
+	return Status{
 		styles: newStyles(t),
 	}
 }
 
-func (s *Summary) SetStats(st stats) {
-	s.stats = st
+func (s *Status) SetStats(st actions) {
+	s.actions = st
 }
 
-func (s *Summary) SetWidth(width int) {
+func (s *Status) SetWidth(width int) {
 	s.width = max(0, width)
 }
