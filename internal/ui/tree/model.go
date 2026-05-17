@@ -3,6 +3,7 @@ package tree
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"regexp"
 	"strings"
 
@@ -40,13 +41,6 @@ func New(t theme.Theme) Tree {
 	}
 }
 
-func (t *Tree) SetRoot(n *planview.Node) {
-	t.root = n
-	t.rebuildVisible()
-	t.clampCursor()
-	t.syncViewport()
-}
-
 func (t *Tree) SetSize(width, height int) {
 	t.width = max(0, width)
 	t.height = max(0, height)
@@ -55,6 +49,34 @@ func (t *Tree) SetSize(width, height int) {
 
 	t.viewport.SetWidth(t.width)
 	t.viewport.SetHeight(t.contentHeight())
+	t.syncViewport()
+}
+
+func (t *Tree) SetRoot(n *planview.Node) {
+	t.root = n
+	t.rebuildVisible()
+	t.clampCursor()
+	t.syncViewport()
+}
+
+func (t *Tree) SetCriteria(query string, filters map[planview.Action]bool) {
+	t.query = strings.TrimSpace(query)
+	t.queryRE = nil
+
+	if isRegexQuery(t.query) {
+		re, err := regexp.Compile("(?i)" + unwrapRegex(t.query))
+		if err == nil {
+			t.queryRE = re
+		}
+	}
+
+	t.filters = maps.Clone(filters)
+	if t.filters == nil {
+		t.filters = make(map[planview.Action]bool)
+	}
+
+	t.rebuildVisible()
+	t.clampCursor()
 	t.syncViewport()
 }
 
@@ -68,29 +90,6 @@ func (t *Tree) Selected() *planview.Node {
 
 func (t Tree) VisibleCount() int {
 	return len(t.visible)
-}
-
-func (t *Tree) ApplyFilters(f map[planview.Action]bool) {
-	t.filters = f
-	t.rebuildVisible()
-	t.clampCursor()
-	t.syncViewport()
-}
-
-func (t *Tree) ApplyQuery(query string) {
-	t.query = strings.TrimSpace(query)
-	t.queryRE = nil
-
-	if isRegexQuery(t.query) {
-		re, err := regexp.Compile("(?i)" + unwrapRegex(t.query))
-		if err == nil {
-			t.queryRE = re
-		}
-	}
-
-	t.rebuildVisible()
-	t.clampCursor()
-	t.syncViewport()
 }
 
 func (t Tree) contentHeight() int {

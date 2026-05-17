@@ -34,7 +34,7 @@ func (m Model) View() tea.View {
 	content := appContent
 
 	if m.focus == FocusFilter {
-		modal := m.components.filter.View()
+		modal := m.components.filter.View(m.controls.filters)
 
 		x := max(0, (m.size.width-lipgloss.Width(modal))/2)
 		y := max(0, (m.size.height-lipgloss.Height(modal))/2)

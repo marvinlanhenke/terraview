@@ -4,6 +4,7 @@ import (
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
 	"github.com/marvinlanhenke/terraview/internal/planview"
+	"github.com/marvinlanhenke/terraview/internal/ui/filter"
 )
 
 func (m Model) Init() tea.Cmd {
@@ -54,7 +55,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.focus = FocusTree
 			m.components.search.Clear()
 			m.components.search.Blur()
-			m.components.tree.ApplyQuery("")
+			m.controls.query = ""
+			m.refreshTreeFromControls()
 			return m, nil
 
 		// Tree -> Details
@@ -92,23 +94,61 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch m.focus {
 	case FocusSearch:
 		cmds = append(cmds, m.components.search.Update(msg))
-		m.components.tree.ApplyQuery(m.components.search.Value())
-		m.components.search.SetMatches(m.components.tree.VisibleCount())
+		if m.applySearchQuery() {
+			m.refreshTreeFromControls()
+		}
 
 	case FocusTree:
 		cmds = append(cmds, m.components.tree.Update(msg))
-		m.components.details.SetNode(m.components.tree.Selected())
-		m.components.search.SetMatches(m.components.tree.VisibleCount())
+		m.syncTreeOutputs()
 
 	case FocusDetails:
 		cmds = append(cmds, m.components.details.Update(msg))
 
 	case FocusFilter:
-		cmds = append(cmds, m.components.filter.Update(msg))
-		m.components.tree.ApplyFilters(m.components.filter.Filters())
-		m.components.details.SetNode(m.components.tree.Selected())
-		m.components.search.SetMatches(m.components.tree.VisibleCount())
+		intent, cmd := m.components.filter.Update(msg)
+
+		cmds = append(cmds, cmd)
+
+		if m.applyFilterIntent(intent) {
+			m.refreshTreeFromControls()
+		}
 	}
 
 	return m, tea.Batch(cmds...)
+}
+
+func (m *Model) applySearchQuery() bool {
+	nextQuery := m.components.search.Value()
+
+	if nextQuery != m.controls.query {
+		m.controls.query = nextQuery
+		return true
+	}
+
+	return false
+}
+
+func (m *Model) applyFilterIntent(intent filter.Intent) bool {
+	if intent.Reset {
+		if len(m.controls.filters) == 0 {
+			return false
+		}
+
+		clear(m.controls.filters)
+
+		return true
+	}
+
+	if intent.HasToggle {
+		if m.controls.filters[intent.ToggleAction] {
+			delete(m.controls.filters, intent.ToggleAction)
+		} else {
+			m.controls.filters[intent.ToggleAction] = true
+		}
+
+		return true
+	}
+
+	return false
 }

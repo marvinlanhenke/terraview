@@ -1,11 +1,15 @@
 package filter
 
 import (
-	"maps"
-
 	"github.com/marvinlanhenke/terraview/internal/planview"
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
+
+type Intent struct {
+	ToggleAction planview.Action
+	HasToggle    bool
+	Reset        bool
+}
 
 type option struct {
 	action planview.Action
@@ -15,24 +19,18 @@ type option struct {
 
 type Modal struct {
 	options []option
-	filters map[planview.Action]bool
 
 	cursor int
 	styles styles
 }
 
 func New(t theme.Theme) Modal {
-	s := newStyles(t)
-	f := make(map[planview.Action]bool)
-
 	return Modal{
-		filters: f,
-		styles:  s,
+		styles: newStyles(t),
 	}
 }
 
 func (f *Modal) SetOptions(nodes []*planview.Node) {
-	f.resetFilters()
 	f.options = f.options[:0]
 
 	seen := make(map[planview.Action]struct{})
@@ -48,6 +46,7 @@ func (f *Modal) SetOptions(nodes []*planview.Node) {
 				label:  n.Label,
 				count:  n.LabelCount,
 			}
+
 			f.options = append(f.options, option)
 		}
 
@@ -55,29 +54,6 @@ func (f *Modal) SetOptions(nodes []*planview.Node) {
 	}
 
 	f.clampCursor()
-}
-
-func (f *Modal) Filters() map[planview.Action]bool {
-	filters := make(map[planview.Action]bool, len(f.filters))
-	maps.Copy(filters, f.filters)
-
-	return filters
-}
-
-func (f *Modal) resetFilters() {
-	f.filters = nil
-	f.filters = make(map[planview.Action]bool)
-}
-
-func (f *Modal) toggleSingleFilter(action planview.Action) {
-	before, exists := f.filters[action]
-
-	if !exists {
-		f.filters[action] = true
-		return
-	}
-
-	f.filters[action] = !before
 }
 
 func (f *Modal) selected() *option {
