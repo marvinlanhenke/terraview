@@ -4,13 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"charm.land/bubbles/v2/key"
 	"charm.land/bubbles/v2/viewport"
-	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/marvinlanhenke/terraview/internal/planview"
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
+
+type changeLine struct {
+	path   string
+	before any
+	after  any
+}
 
 type Details struct {
 	node     *planview.Node
@@ -77,39 +81,6 @@ func (d *Details) Focus() {
 
 func (d *Details) Blur() {
 	d.viewport.Style = d.styles.background
-}
-
-func (d *Details) Update(msg tea.Msg) tea.Cmd {
-	var cmd tea.Cmd
-
-	switch msg := msg.(type) {
-	case tea.KeyPressMsg:
-		switch {
-		case key.Matches(msg, keys.toggle):
-			d.showPlan = !d.showPlan
-			d.syncViewport()
-		}
-	}
-
-	d.viewport, cmd = d.viewport.Update(msg)
-
-	return cmd
-}
-
-func (d Details) View() string {
-	if d.node == nil || d.node.Kind == planview.NodeGroup {
-		empty := d.styles.empty.
-			Width(d.width).
-			MaxWidth(d.width).
-			Height(d.height - lipgloss.Height(d.header)).
-			AlignHorizontal(lipgloss.Center).
-			AlignVertical(lipgloss.Center).
-			Render("Nothing to show yet...")
-
-		return lipgloss.JoinVertical(lipgloss.Left, d.header, empty)
-	}
-
-	return lipgloss.JoinVertical(lipgloss.Left, d.header, d.viewport.View())
 }
 
 func (d *Details) syncViewport() {

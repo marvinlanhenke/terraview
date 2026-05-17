@@ -6,12 +6,6 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/planview"
 )
 
-type changeLine struct {
-	path   string
-	before any
-	after  any
-}
-
 func flattenChanges(n *planview.Node) []changeLine {
 	lines := make([]changeLine, 0)
 
