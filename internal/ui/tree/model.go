@@ -43,7 +43,6 @@ func New(t theme.Theme) Tree {
 
 func (t *Tree) SetRoot(n *planview.Node) {
 	t.root = n
-	t.expanded = seedExpanded(n, t.expanded)
 	t.rebuildRows()
 	t.clampCursor()
 	t.syncViewport()

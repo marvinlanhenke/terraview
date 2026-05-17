@@ -112,35 +112,3 @@ func hasActiveFilters(filters map[planview.Action]bool) bool {
 
 	return false
 }
-
-// NOTE migration only
-func seedExpanded(root *planview.Node, previous map[string]bool) map[string]bool {
-	next := make(map[string]bool)
-
-	var visit func(*planview.Node)
-
-	visit = func(n *planview.Node) {
-		if n == nil {
-			return
-		}
-
-		if previous != nil {
-			if expanded, ok := previous[n.Id]; ok {
-				if expanded {
-					next[n.Id] = true
-				}
-			} else if n.Expanded {
-				next[n.Id] = true
-			}
-		} else if n.Expanded {
-			next[n.Id] = true
-		}
-		for _, child := range n.Children {
-			visit(child)
-		}
-	}
-
-	visit(root)
-
-	return next
-}
