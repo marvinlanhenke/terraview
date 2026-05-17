@@ -80,6 +80,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Search Focus
 		case key.Matches(msg, keys.Search) && m.focus != FocusSearch:
 			m.focus = FocusSearch
+			m.components.details.Blur()
 			cmds = append(cmds, m.components.search.Focus())
 			// We return here, such that the `/` is not used as query input
 			return m, tea.Batch(cmds...)
