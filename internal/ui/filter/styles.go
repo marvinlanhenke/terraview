@@ -6,11 +6,10 @@ import (
 )
 
 type styles struct {
-	palette theme.Palette
-	header  lipgloss.Style
-	modal   lipgloss.Style
-	row     lipgloss.Style
-	rowAlt  lipgloss.Style
+	header lipgloss.Style
+	modal  lipgloss.Style
+	row    lipgloss.Style
+	rowAlt lipgloss.Style
 }
 
 func newStyles(t theme.Theme) styles {
@@ -35,10 +34,9 @@ func newStyles(t theme.Theme) styles {
 		Background(p.SurfaceAlt)
 
 	return styles{
-		palette: p,
-		header:  header,
-		modal:   modal,
-		row:     row,
-		rowAlt:  rowAlt,
+		header: header,
+		modal:  modal,
+		row:    row,
+		rowAlt: rowAlt,
 	}
 }

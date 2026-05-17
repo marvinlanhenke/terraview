@@ -14,8 +14,8 @@ type option struct {
 }
 
 type Modal struct {
-	filters map[planview.Action]bool
 	options []option
+	filters map[planview.Action]bool
 
 	cursor int
 	styles styles
@@ -32,6 +32,7 @@ func New(t theme.Theme) Modal {
 }
 
 func (f *Modal) SetOptions(nodes []*planview.Node) {
+	f.resetFilters()
 	f.options = f.options[:0]
 
 	seen := make(map[planview.Action]struct{})
