@@ -26,7 +26,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	root, err := planview.BuildTree(plan)
+	root, err := planview.FromTerraform(plan)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to build tree from plan: %v\n", err)
 		os.Exit(1)
