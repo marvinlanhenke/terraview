@@ -1,12 +1,10 @@
 package search
 
 import (
-	"fmt"
 	"strings"
 
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
-	"charm.land/lipgloss/v2"
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
@@ -53,44 +51,6 @@ func (s *Search) SetWidth(width int) {
 
 func (s *Search) SetMatches(matches int) {
 	s.matches = max(0, matches)
-}
-
-func (s *Search) Update(msg tea.Msg) tea.Cmd {
-	var cmd tea.Cmd
-	s.input, cmd = s.input.Update(msg)
-	return cmd
-}
-
-func (s *Search) View() string {
-	if s.width <= 0 {
-		return ""
-	}
-
-	label := s.styles.nugget.Render("[S]")
-	status := s.styles.status.Render(fmt.Sprintf("%d matches", s.matches))
-
-	inputStyle := s.styles.input
-
-	if s.Focused() {
-		inputStyle = s.styles.inputAlt
-	}
-
-	availableWidth := max(0, s.width-lipgloss.Width(label)-lipgloss.Width(status))
-
-	input := inputStyle.Width(availableWidth).Render(s.input.View())
-
-	row := lipgloss.JoinHorizontal(
-		lipgloss.Top,
-		label,
-		input,
-		status,
-	)
-
-	return s.styles.
-		background.
-		Width(s.width).
-		MaxWidth(s.width).
-		Render(row)
 }
 
 func (s *Search) Focus() tea.Cmd {
