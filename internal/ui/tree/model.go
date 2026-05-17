@@ -91,7 +91,7 @@ func (t *Tree) setHeader(text string) {
 		Render(text)
 }
 
-func (t Tree) renderNode(n *planview.Node, selected bool) string {
+func (t *Tree) renderNode(n *planview.Node, selected bool) string {
 	indent := strings.Repeat(" ", max(1, n.Depth))
 
 	icon := " "
@@ -110,7 +110,7 @@ func (t Tree) renderNode(n *planview.Node, selected bool) string {
 	return t.renderLine(rawPrefix, n.Label, n.LabelCount, actionMarker, selected, wrap)
 }
 
-func (t Tree) renderLine(rawPrefix, rawLabel, rawLabelCount string, actionMarker actionStyle, selected, wrap bool) string {
+func (t *Tree) renderLine(rawPrefix, rawLabel, rawLabelCount string, actionMarker actionStyle, selected, wrap bool) string {
 	actionBackground := t.styles.palette.Surface
 	labelStyle := t.styles.label
 	labelCountStyle := labelStyle.Faint(true)
@@ -202,62 +202,8 @@ func (t *Tree) clampCursor() {
 }
 
 func (t *Tree) rebuildVisible() {
-	t.visible = t.visible[:0]
-
-	if t.root == nil {
-		return
-	}
-
-	for _, child := range t.root.Children {
-		if child == nil {
-			continue
-		}
-		// We filter out empty group nodes
-		// We only show active filters
-		if child.HasChildren() && (t.filters[child.Action] || !hasActiveFilters(t.filters)) {
-			t.walk(child)
-		}
-	}
-}
-
-func (t *Tree) walk(n *planview.Node) {
-	if t.matcher.Active() && !t.matcher.MatchNode(n) && !t.hasMatchingDescendant(n) {
-		return
-	}
-
-	t.visible = append(t.visible, n)
-
-	if n.Expanded || t.matcher.Active() {
-		for _, child := range n.Children {
-			if child == nil {
-				continue
-			}
-
-			t.walk(child)
-		}
-	}
-}
-
-func (t *Tree) hasMatchingDescendant(n *planview.Node) bool {
-	for _, child := range n.Children {
-		if child == nil {
-			continue
-		}
-
-		if t.matcher.MatchNode(child) || t.hasMatchingDescendant(child) {
-			return true
-		}
-	}
-
-	return false
-}
-
-func hasActiveFilters(f map[planview.Action]bool) bool {
-	for _, isActive := range f {
-		if isActive {
-			return true
-		}
-	}
-
-	return false
+	t.visible = buildVisible(t.root, criteria{
+		matcher: t.matcher,
+		filters: t.filters,
+	})
 }
