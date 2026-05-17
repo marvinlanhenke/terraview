@@ -3,7 +3,7 @@ package summary
 import (
 	"fmt"
 
-	"github.com/marvinlanhenke/terraview/internal/theme"
+	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
 type stats struct {

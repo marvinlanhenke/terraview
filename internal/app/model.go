@@ -1,13 +1,13 @@
 package app
 
 import (
-	"github.com/marvinlanhenke/terraview/internal/components/details"
-	"github.com/marvinlanhenke/terraview/internal/components/filter"
-	"github.com/marvinlanhenke/terraview/internal/components/search"
-	"github.com/marvinlanhenke/terraview/internal/components/summary"
-	"github.com/marvinlanhenke/terraview/internal/components/tree"
 	"github.com/marvinlanhenke/terraview/internal/plan"
-	"github.com/marvinlanhenke/terraview/internal/theme"
+	"github.com/marvinlanhenke/terraview/internal/ui/details"
+	"github.com/marvinlanhenke/terraview/internal/ui/filter"
+	"github.com/marvinlanhenke/terraview/internal/ui/search"
+	"github.com/marvinlanhenke/terraview/internal/ui/summary"
+	"github.com/marvinlanhenke/terraview/internal/ui/theme"
+	"github.com/marvinlanhenke/terraview/internal/ui/tree"
 )
 
 const defaultMargin = 4

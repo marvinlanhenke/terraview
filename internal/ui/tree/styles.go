@@ -3,7 +3,7 @@ package tree
 import (
 	"charm.land/lipgloss/v2"
 	"github.com/marvinlanhenke/terraview/internal/plan"
-	"github.com/marvinlanhenke/terraview/internal/theme"
+	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
 type actionStyle struct {
