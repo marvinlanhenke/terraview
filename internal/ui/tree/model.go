@@ -1,10 +1,7 @@
 package tree
 
 import (
-	"encoding/json"
-	"fmt"
 	"maps"
-	"regexp"
 	"strings"
 
 	"charm.land/bubbles/v2/viewport"
@@ -17,9 +14,8 @@ type Tree struct {
 	root    *planview.Node
 	visible []*planview.Node
 	cursor  int
-	query   string
-	queryRE *regexp.Regexp
 	filters map[planview.Action]bool
+	matcher matcher
 	header  string
 
 	width    int
@@ -60,15 +56,7 @@ func (t *Tree) SetRoot(n *planview.Node) {
 }
 
 func (t *Tree) SetCriteria(query string, filters map[planview.Action]bool) {
-	t.query = strings.TrimSpace(query)
-	t.queryRE = nil
-
-	if isRegexQuery(t.query) {
-		re, err := regexp.Compile("(?i)" + unwrapRegex(t.query))
-		if err == nil {
-			t.queryRE = re
-		}
-	}
+	t.matcher = newMatcher(query)
 
 	t.filters = maps.Clone(filters)
 	if t.filters == nil {
@@ -108,7 +96,7 @@ func (t Tree) renderNode(n *planview.Node, selected bool) string {
 
 	icon := " "
 	if n.HasChildren() {
-		if n.Expanded || t.query != "" {
+		if n.Expanded || t.matcher.Active() {
 			icon = "◉"
 		} else {
 			icon = "○"
@@ -233,13 +221,13 @@ func (t *Tree) rebuildVisible() {
 }
 
 func (t *Tree) walk(n *planview.Node) {
-	if t.query != "" && !t.matches(n) && !t.hasMatchingDescendant(n) {
+	if t.matcher.Active() && !t.matcher.MatchNode(n) && !t.hasMatchingDescendant(n) {
 		return
 	}
 
 	t.visible = append(t.visible, n)
 
-	if n.Expanded || t.query != "" {
+	if n.Expanded || t.matcher.Active() {
 		for _, child := range n.Children {
 			if child == nil {
 				continue
@@ -250,27 +238,13 @@ func (t *Tree) walk(n *planview.Node) {
 	}
 }
 
-func (t *Tree) matches(n *planview.Node) bool {
-	return t.matchField(n.Id) ||
-		t.matchField(n.Label) ||
-		t.matchField(string(n.Action)) ||
-		t.matchField(convertPayload(n.Payload))
-}
-
-func (t *Tree) matchField(v string) bool {
-	if t.queryRE != nil {
-		return t.queryRE.MatchString(v)
-	}
-	return strings.Contains(strings.ToLower(v), strings.ToLower(t.query))
-}
-
 func (t *Tree) hasMatchingDescendant(n *planview.Node) bool {
 	for _, child := range n.Children {
 		if child == nil {
 			continue
 		}
 
-		if t.matches(child) || t.hasMatchingDescendant(child) {
+		if t.matcher.MatchNode(child) || t.hasMatchingDescendant(child) {
 			return true
 		}
 	}
@@ -286,41 +260,4 @@ func hasActiveFilters(f map[planview.Action]bool) bool {
 	}
 
 	return false
-}
-
-func isRegexQuery(query string) bool {
-	if len(query) < 3 {
-		// Require at lest /x/, so "/" and "//" stay plain text.
-		return false
-	}
-
-	if query[0] != '/' || query[len(query)-1] != '/' {
-		return false
-	}
-
-	return strings.TrimSpace(unwrapRegex(query)) != ""
-}
-
-func unwrapRegex(query string) string {
-	if len(query) < 3 {
-		return ""
-	}
-	return query[1 : len(query)-1]
-}
-
-func convertPayload(v any) string {
-	if v == nil {
-		return "null"
-	}
-
-	switch t := v.(type) {
-	case string:
-		return t
-	default:
-		b, err := json.Marshal(t)
-		if err != nil {
-			return fmt.Sprintf("%v", t)
-		}
-		return "\n" + string(b)
-	}
 }
