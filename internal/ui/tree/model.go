@@ -40,10 +40,6 @@ func New(t theme.Theme) Tree {
 	}
 }
 
-func (t Tree) GetVisible() int {
-	return len(t.visible)
-}
-
 func (t *Tree) SetRoot(n *planview.Node) {
 	t.root = n
 	t.rebuildVisible()
@@ -68,6 +64,10 @@ func (t *Tree) Selected() *planview.Node {
 	}
 
 	return t.visible[t.cursor]
+}
+
+func (t Tree) VisibleCount() int {
+	return len(t.visible)
 }
 
 func (t *Tree) ApplyFilters(f map[planview.Action]bool) {
@@ -222,6 +222,9 @@ func (t *Tree) rebuildVisible() {
 	}
 
 	for _, child := range t.root.Children {
+		if child == nil {
+			continue
+		}
 		// We filter out empty group nodes
 		// We only show active filters
 		if child.HasChildren() && (t.filters[child.Action] || !hasActiveFilters(t.filters)) {
@@ -239,6 +242,10 @@ func (t *Tree) walk(n *planview.Node) {
 
 	if n.Expanded || t.query != "" {
 		for _, child := range n.Children {
+			if child == nil {
+				continue
+			}
+
 			t.walk(child)
 		}
 	}
@@ -260,6 +267,10 @@ func (t *Tree) matchField(v string) bool {
 
 func (t *Tree) hasMatchingDescendant(n *planview.Node) bool {
 	for _, child := range n.Children {
+		if child == nil {
+			continue
+		}
+
 		if t.matches(child) || t.hasMatchingDescendant(child) {
 			return true
 		}

@@ -93,12 +93,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case FocusSearch:
 		cmds = append(cmds, m.components.search.Update(msg))
 		m.components.tree.ApplyQuery(m.components.search.Value())
-		m.components.search.SetMatches(m.components.tree.GetVisible())
+		m.components.search.SetMatches(m.components.tree.VisibleCount())
 
 	case FocusTree:
 		cmds = append(cmds, m.components.tree.Update(msg))
 		m.components.details.SetNode(m.components.tree.Selected())
-		m.components.search.SetMatches(m.components.tree.GetVisible())
+		m.components.search.SetMatches(m.components.tree.VisibleCount())
 
 	case FocusDetails:
 		cmds = append(cmds, m.components.details.Update(msg))
@@ -107,7 +107,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmds = append(cmds, m.components.filter.Update(msg))
 		m.components.tree.ApplyFilters(m.components.filter.Filters())
 		m.components.details.SetNode(m.components.tree.Selected())
-		m.components.search.SetMatches(m.components.tree.GetVisible())
+		m.components.search.SetMatches(m.components.tree.VisibleCount())
 	}
 
 	return m, tea.Batch(cmds...)
