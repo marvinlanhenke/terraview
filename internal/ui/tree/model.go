@@ -11,27 +11,31 @@ import (
 )
 
 type Tree struct {
-	root    *planview.Node
-	visible []*planview.Node
-	cursor  int
+	root     *planview.Node
+	rows     []row
+	expanded map[string]bool
+	cursor   int
+
 	filters map[planview.Action]bool
 	matcher matcher
-	header  string
 
 	width    int
 	height   int
+	header   string
 	viewport viewport.Model
 	styles   styles
 }
 
 func New(t theme.Theme) Tree {
 	s := newStyles(t)
+	expanded := make(map[string]bool)
 
 	vp := viewport.New()
 	vp.FillHeight = true
 	vp.Style = s.background
 
 	return Tree{
+		expanded: expanded,
 		viewport: vp,
 		styles:   s,
 	}
@@ -39,7 +43,8 @@ func New(t theme.Theme) Tree {
 
 func (t *Tree) SetRoot(n *planview.Node) {
 	t.root = n
-	t.rebuildVisible()
+	t.expanded = seedExpanded(n, t.expanded)
+	t.rebuildRows()
 	t.clampCursor()
 	t.syncViewport()
 }
@@ -52,7 +57,7 @@ func (t *Tree) SetCriteria(query string, filters map[planview.Action]bool) {
 		t.filters = make(map[planview.Action]bool)
 	}
 
-	t.rebuildVisible()
+	t.rebuildRows()
 	t.clampCursor()
 	t.syncViewport()
 }
@@ -68,20 +73,29 @@ func (t *Tree) SetSize(width, height int) {
 	t.syncViewport()
 }
 
+// TODO do we need to expose full node?
 func (t *Tree) Selected() *planview.Node {
-	if len(t.visible) == 0 {
+	if len(t.rows) == 0 {
 		return nil
 	}
 
-	return t.visible[t.cursor]
+	return t.rows[t.cursor].node
 }
 
 func (t *Tree) VisibleCount() int {
-	return len(t.visible)
+	return len(t.rows)
 }
 
-func (t Tree) contentHeight() int {
+func (t *Tree) contentHeight() int {
 	return max(0, t.height-lipgloss.Height(t.header))
+}
+
+func (t *Tree) selectedRow() (row, bool) {
+	if len(t.rows) == 0 {
+		return row{}, false
+	}
+
+	return t.rows[t.cursor], true
 }
 
 func (t *Tree) setHeader(text string) {
@@ -91,12 +105,43 @@ func (t *Tree) setHeader(text string) {
 		Render(text)
 }
 
-func (t *Tree) renderNode(n *planview.Node, selected bool) string {
-	indent := strings.Repeat(" ", max(1, n.Depth))
+func (t *Tree) setExpanded(id string, expanded bool) {
+	if expanded {
+		t.expanded[id] = true
+		return
+	}
+
+	delete(t.expanded, id)
+}
+
+func (t *Tree) syncViewport() {
+	if t.width <= 0 || t.height <= 0 {
+		t.viewport.SetContentLines(nil)
+		return
+	}
+
+	if len(t.rows) == 0 {
+		t.viewport.SetContentLines(nil)
+		t.viewport.SetYOffset(0)
+		return
+	}
+
+	lines := make([]string, len(t.rows))
+	for i, r := range t.rows {
+		lines[i] = t.renderRow(r, i == t.cursor)
+	}
+
+	t.viewport.SetContentLines(lines)
+	t.keepCursorVisible()
+}
+
+func (t *Tree) renderRow(r row, selected bool) string {
+	n := r.node
+	indent := strings.Repeat(" ", r.depth+1)
 
 	icon := " "
-	if n.HasChildren() {
-		if n.Expanded || t.matcher.Active() {
+	if r.expandable {
+		if r.open(t.matcher.Active()) {
 			icon = "◉"
 		} else {
 			icon = "○"
@@ -144,32 +189,10 @@ func (t *Tree) renderLine(rawPrefix, rawLabel, rawLabelCount string, actionMarke
 	return style.Width(t.width).MaxWidth(t.width).Render(line)
 }
 
-func (t *Tree) syncViewport() {
-	if t.width <= 0 || t.height <= 0 {
-		t.viewport.SetContentLines(nil)
-		return
-	}
-
-	if len(t.visible) == 0 {
-		t.viewport.SetContentLines(nil)
-		t.viewport.SetYOffset(0)
-		return
-	}
-
-	lines := make([]string, len(t.visible))
-	for i, n := range t.visible {
-		selected := i == t.cursor
-		lines[i] = t.renderNode(n, selected)
-	}
-
-	t.viewport.SetContentLines(lines)
-	t.keepCursorVisible()
-}
-
 func (t *Tree) keepCursorVisible() {
 	h := t.viewport.Height()
 
-	if len(t.visible) == 0 || h <= 0 {
+	if len(t.rows) == 0 || h <= 0 {
 		return
 	}
 
@@ -187,7 +210,7 @@ func (t *Tree) keepCursorVisible() {
 }
 
 func (t *Tree) clampCursor() {
-	if len(t.visible) == 0 {
+	if len(t.rows) == 0 {
 		t.cursor = 0
 		return
 	}
@@ -196,13 +219,13 @@ func (t *Tree) clampCursor() {
 		t.cursor = 0
 	}
 
-	if t.cursor >= len(t.visible) {
-		t.cursor = len(t.visible) - 1
+	if t.cursor >= len(t.rows) {
+		t.cursor = len(t.rows) - 1
 	}
 }
 
-func (t *Tree) rebuildVisible() {
-	t.visible = buildVisible(t.root, criteria{
+func (t *Tree) rebuildRows() {
+	t.rows = buildRows(t.root, t.expanded, criteria{
 		matcher: t.matcher,
 		filters: t.filters,
 	})

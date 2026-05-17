@@ -5,7 +5,7 @@ import (
 )
 
 func (t *Tree) View() string {
-	if len(t.visible) == 0 {
+	if len(t.rows) == 0 {
 		empty := t.styles.empty.
 			Width(t.width).
 			MaxWidth(t.width).

@@ -19,29 +19,26 @@ func (t *Tree) Update(msg tea.Msg) tea.Cmd {
 
 		// Expand
 		case key.Matches(msg, keys.expand):
-			selected := t.Selected()
-			if selected != nil && selected.HasChildren() {
-				selected.Expanded = !selected.Expanded
-				t.rebuildVisible()
+			selected, ok := t.selectedRow()
+			if ok && selected.expandable {
+				t.setExpanded(selected.node.Id, !selected.expanded)
+				t.rebuildRows()
 			}
 
 		// Collapse
 		case key.Matches(msg, keys.collapse):
-			selected := t.Selected()
-			if selected == nil {
+			selected, ok := t.selectedRow()
+			if !ok {
 				break
 			}
-			if selected.HasChildren() && selected.Expanded {
-				selected.Expanded = false
-				t.rebuildVisible()
-			} else if selected.Parent != nil {
-				for i, n := range t.visible {
-					if n == selected.Parent {
-						t.cursor = i
-						break
-					}
-				}
+
+			if selected.expandable && selected.expanded {
+				t.setExpanded(selected.node.Id, false)
+				t.rebuildRows()
+			} else if selected.parent >= 0 {
+				t.cursor = selected.parent
 			}
+
 		}
 	}
 
