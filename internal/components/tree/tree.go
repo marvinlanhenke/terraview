@@ -1,6 +1,9 @@
 package tree
 
 import (
+	"encoding/json"
+	"fmt"
+	"regexp"
 	"strings"
 
 	"charm.land/bubbles/v2/key"
@@ -15,6 +18,7 @@ type Tree struct {
 	visible []*Node
 	cursor  int
 	query   string
+	queryRE *regexp.Regexp
 	filters map[Action]bool
 	header  string
 
@@ -75,7 +79,16 @@ func (t *Tree) ApplyFilters(f map[Action]bool) {
 }
 
 func (t *Tree) ApplyQuery(query string) {
-	t.query = strings.TrimSpace(strings.ToLower(query))
+	t.query = strings.TrimSpace(query)
+	t.queryRE = nil
+
+	if isRegexQuery(t.query) {
+		re, err := regexp.Compile("(?i)" + unwrapRegex(t.query))
+		if err == nil {
+			t.queryRE = re
+		}
+	}
+
 	t.rebuildVisible()
 	t.clampCursor()
 	t.syncViewport()
@@ -281,7 +294,7 @@ func (t *Tree) rebuildVisible() {
 }
 
 func (t *Tree) walk(n *Node) {
-	if t.query != "" && !matches(n, t.query) && !hasMatchingDescendant(n, t.query) {
+	if t.query != "" && !t.matches(n) && !t.hasMatchingDescendant(n) {
 		return
 	}
 
@@ -294,15 +307,23 @@ func (t *Tree) walk(n *Node) {
 	}
 }
 
-func matches(n *Node, query string) bool {
-	return strings.Contains(strings.ToLower(n.Label), query) ||
-		strings.Contains(strings.ToLower(n.Id), query) ||
-		strings.Contains(strings.ToLower(string(n.Action)), query)
+func (t *Tree) matches(n *Node) bool {
+	return t.matchField(n.Id) ||
+		t.matchField(n.Label) ||
+		t.matchField(string(n.Action)) ||
+		t.matchField(convertPayload(n.Payload))
 }
 
-func hasMatchingDescendant(n *Node, query string) bool {
+func (t *Tree) matchField(v string) bool {
+	if t.queryRE != nil {
+		return t.queryRE.MatchString(v)
+	}
+	return strings.Contains(strings.ToLower(v), strings.ToLower(t.query))
+}
+
+func (t *Tree) hasMatchingDescendant(n *Node) bool {
 	for _, child := range n.Children {
-		if matches(child, query) || hasMatchingDescendant(child, query) {
+		if t.matches(child) || t.hasMatchingDescendant(child) {
 			return true
 		}
 	}
@@ -318,4 +339,41 @@ func hasActiveFilters(f map[Action]bool) bool {
 	}
 
 	return false
+}
+
+func isRegexQuery(query string) bool {
+	if len(query) < 3 {
+		// Require at lest /x/, so "/" and "//" stay plain text.
+		return false
+	}
+
+	if query[0] != '/' || query[len(query)-1] != '/' {
+		return false
+	}
+
+	return strings.TrimSpace(unwrapRegex(query)) != ""
+}
+
+func unwrapRegex(query string) string {
+	if len(query) < 3 {
+		return ""
+	}
+	return query[1 : len(query)-1]
+}
+
+func convertPayload(v any) string {
+	if v == nil {
+		return "null"
+	}
+
+	switch t := v.(type) {
+	case string:
+		return t
+	default:
+		b, err := json.Marshal(t)
+		if err != nil {
+			return fmt.Sprintf("%v", t)
+		}
+		return "\n" + string(b)
+	}
 }
