@@ -6,6 +6,7 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/components/search"
 	"github.com/marvinlanhenke/terraview/internal/components/summary"
 	"github.com/marvinlanhenke/terraview/internal/components/tree"
+	"github.com/marvinlanhenke/terraview/internal/plan"
 	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
@@ -40,7 +41,7 @@ type Model struct {
 	components Components
 }
 
-func New(root *tree.Node) Model {
+func New(root *plan.Node) Model {
 	t := theme.Default()
 
 	c := Components{

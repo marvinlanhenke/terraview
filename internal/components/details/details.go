@@ -8,12 +8,12 @@ import (
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	"github.com/marvinlanhenke/terraview/internal/components/tree"
+	"github.com/marvinlanhenke/terraview/internal/plan"
 	"github.com/marvinlanhenke/terraview/internal/theme"
 )
 
 type Details struct {
-	node     *tree.Node
+	node     *plan.Node
 	changes  []changeLine
 	header   string
 	showPlan bool
@@ -51,7 +51,7 @@ func (d *Details) SetSize(width, height int) {
 	d.syncViewport()
 }
 
-func (d *Details) SetNode(n *tree.Node) {
+func (d *Details) SetNode(n *plan.Node) {
 	hasChanged := d.node != n
 	d.node = n
 
@@ -97,7 +97,7 @@ func (d *Details) Update(msg tea.Msg) tea.Cmd {
 }
 
 func (d Details) View() string {
-	if d.node == nil || d.node.Kind == tree.NodeGroup {
+	if d.node == nil || d.node.Kind == plan.NodeGroup {
 		empty := d.styles.empty.
 			Width(d.width).
 			MaxWidth(d.width).

@@ -3,7 +3,7 @@ package details
 import (
 	"sort"
 
-	"github.com/marvinlanhenke/terraview/internal/components/tree"
+	"github.com/marvinlanhenke/terraview/internal/plan"
 )
 
 type changeLine struct {
@@ -12,7 +12,7 @@ type changeLine struct {
 	after  any
 }
 
-func flattenChanges(n *tree.Node) []changeLine {
+func flattenChanges(n *plan.Node) []changeLine {
 	lines := make([]changeLine, 0)
 
 	flattenChangeMap("", n.Changes.Before, n.Changes.After, &lines)
