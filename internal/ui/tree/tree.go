@@ -10,17 +10,17 @@ import (
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	"github.com/marvinlanhenke/terraview/internal/plan"
+	"github.com/marvinlanhenke/terraview/internal/planview"
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
 type Tree struct {
-	root    *plan.Node
-	visible []*plan.Node
+	root    *planview.Node
+	visible []*planview.Node
 	cursor  int
 	query   string
 	queryRE *regexp.Regexp
-	filters map[plan.Action]bool
+	filters map[planview.Action]bool
 	header  string
 
 	width    int
@@ -46,7 +46,7 @@ func (t Tree) GetVisible() int {
 	return len(t.visible)
 }
 
-func (t *Tree) SetRoot(n *plan.Node) {
+func (t *Tree) SetRoot(n *planview.Node) {
 	t.root = n
 	t.rebuildVisible()
 	t.clampCursor()
@@ -64,7 +64,7 @@ func (t *Tree) SetSize(width, height int) {
 	t.syncViewport()
 }
 
-func (t *Tree) Selected() *plan.Node {
+func (t *Tree) Selected() *planview.Node {
 	if len(t.visible) == 0 {
 		return nil
 	}
@@ -72,7 +72,7 @@ func (t *Tree) Selected() *plan.Node {
 	return t.visible[t.cursor]
 }
 
-func (t *Tree) ApplyFilters(f map[plan.Action]bool) {
+func (t *Tree) ApplyFilters(f map[planview.Action]bool) {
 	t.filters = f
 	t.rebuildVisible()
 	t.clampCursor()
@@ -168,7 +168,7 @@ func (t *Tree) setHeader(text string) {
 		Render(text)
 }
 
-func (t Tree) renderNode(n *plan.Node, selected bool) string {
+func (t Tree) renderNode(n *planview.Node, selected bool) string {
 	indent := strings.Repeat(" ", max(1, n.Depth))
 
 	icon := " "
@@ -182,7 +182,7 @@ func (t Tree) renderNode(n *plan.Node, selected bool) string {
 
 	actionMarker := t.styles.actionMarker(n.Action)
 	rawPrefix := indent + " " + icon + " "
-	wrap := n.Kind == plan.NodeResource
+	wrap := n.Kind == planview.NodeResource
 
 	return t.renderLine(rawPrefix, n.Label, n.LabelCount, actionMarker, selected, wrap)
 }
@@ -294,7 +294,7 @@ func (t *Tree) rebuildVisible() {
 	}
 }
 
-func (t *Tree) walk(n *plan.Node) {
+func (t *Tree) walk(n *planview.Node) {
 	if t.query != "" && !t.matches(n) && !t.hasMatchingDescendant(n) {
 		return
 	}
@@ -308,7 +308,7 @@ func (t *Tree) walk(n *plan.Node) {
 	}
 }
 
-func (t *Tree) matches(n *plan.Node) bool {
+func (t *Tree) matches(n *planview.Node) bool {
 	return t.matchField(n.Id) ||
 		t.matchField(n.Label) ||
 		t.matchField(string(n.Action)) ||
@@ -322,7 +322,7 @@ func (t *Tree) matchField(v string) bool {
 	return strings.Contains(strings.ToLower(v), strings.ToLower(t.query))
 }
 
-func (t *Tree) hasMatchingDescendant(n *plan.Node) bool {
+func (t *Tree) hasMatchingDescendant(n *planview.Node) bool {
 	for _, child := range n.Children {
 		if t.matches(child) || t.hasMatchingDescendant(child) {
 			return true
@@ -332,7 +332,7 @@ func (t *Tree) hasMatchingDescendant(n *plan.Node) bool {
 	return false
 }
 
-func hasActiveFilters(f map[plan.Action]bool) bool {
+func hasActiveFilters(f map[planview.Action]bool) bool {
 	for _, isActive := range f {
 		if isActive {
 			return true

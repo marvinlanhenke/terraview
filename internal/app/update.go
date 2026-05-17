@@ -3,7 +3,7 @@ package app
 import (
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
-	"github.com/marvinlanhenke/terraview/internal/plan"
+	"github.com/marvinlanhenke/terraview/internal/planview"
 )
 
 type keymap struct {
@@ -105,7 +105,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, keys.Enter) && m.focus == FocusTree:
 			selected := m.components.tree.Selected()
-			if selected != nil && selected.Kind == plan.NodeResource {
+			if selected != nil && selected.Kind == planview.NodeResource {
 				m.focus = FocusDetails
 				m.components.details.Focus()
 			}

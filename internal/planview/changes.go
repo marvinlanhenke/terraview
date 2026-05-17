@@ -1,4 +1,4 @@
-package plan
+package planview
 
 type Changes struct {
 	Before map[string]any

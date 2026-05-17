@@ -6,7 +6,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/marvinlanhenke/terraview/internal/app"
-	"github.com/marvinlanhenke/terraview/internal/mapper"
+	"github.com/marvinlanhenke/terraview/internal/planview"
 	"github.com/marvinlanhenke/terraview/internal/terraform"
 )
 
@@ -26,7 +26,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	root, err := mapper.BuildTree(plan)
+	root, err := planview.BuildTree(plan)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to build tree from plan: %v\n", err)
 		os.Exit(1)

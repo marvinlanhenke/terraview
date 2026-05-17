@@ -6,18 +6,18 @@ import (
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	"github.com/marvinlanhenke/terraview/internal/plan"
+	"github.com/marvinlanhenke/terraview/internal/planview"
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
 type option struct {
-	action plan.Action
+	action planview.Action
 	label  string
 	count  string
 }
 
 type FilterModal struct {
-	filters map[plan.Action]bool
+	filters map[planview.Action]bool
 	options []option
 
 	cursor int
@@ -28,7 +28,7 @@ type FilterModal struct {
 
 func New(t theme.Theme) FilterModal {
 	s := newStyles(t)
-	f := make(map[plan.Action]bool)
+	f := make(map[planview.Action]bool)
 
 	return FilterModal{
 		filters: f,
@@ -36,10 +36,10 @@ func New(t theme.Theme) FilterModal {
 	}
 }
 
-func (f *FilterModal) SetOptions(nodes []*plan.Node) {
+func (f *FilterModal) SetOptions(nodes []*planview.Node) {
 	f.options = f.options[:0]
 
-	seen := make(map[plan.Action]struct{})
+	seen := make(map[planview.Action]struct{})
 
 	for _, n := range nodes {
 		if _, exists := seen[n.Action]; !exists {
@@ -128,13 +128,13 @@ func (f *FilterModal) Selected() *option {
 	return &f.options[f.cursor]
 }
 
-func (f *FilterModal) ToggleFilters(actions []plan.Action) {
+func (f *FilterModal) ToggleFilters(actions []planview.Action) {
 	for _, action := range actions {
 		f.ToggleSingleFilter(action)
 	}
 }
 
-func (f *FilterModal) ToggleSingleFilter(action plan.Action) {
+func (f *FilterModal) ToggleSingleFilter(action planview.Action) {
 	before, exists := f.filters[action]
 
 	if !exists {
@@ -147,10 +147,10 @@ func (f *FilterModal) ToggleSingleFilter(action plan.Action) {
 
 func (f *FilterModal) ResetFilters() {
 	f.filters = nil
-	f.filters = make(map[plan.Action]bool)
+	f.filters = make(map[planview.Action]bool)
 }
 
-func (f FilterModal) GetFilters() map[plan.Action]bool {
+func (f FilterModal) GetFilters() map[planview.Action]bool {
 	return f.filters
 }
 

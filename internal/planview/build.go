@@ -1,4 +1,4 @@
-package mapper
+package planview
 
 import (
 	"errors"
@@ -6,35 +6,35 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/marvinlanhenke/terraview/internal/plan"
 	"github.com/marvinlanhenke/terraview/internal/terraform"
 )
 
-var actionIndex = map[plan.Action]int{
-	plan.ActionCreate:  0,
-	plan.ActionUpdate:  1,
-	plan.ActionDelete:  2,
-	plan.ActionReplace: 3,
-	plan.ActionNoOp:    4,
-	plan.ActionError:   5,
+var actionIndex = map[Action]int{
+	ActionCreate:  0,
+	ActionUpdate:  1,
+	ActionDelete:  2,
+	ActionReplace: 3,
+	ActionNoOp:    4,
+	ActionError:   5,
 }
 
-func BuildTree(p terraform.Plan) (*plan.Node, error) {
-	root := &plan.Node{
+func BuildTree(tfplan terraform.Plan) (*Node, error) {
+	root := &Node{
 		Id:       "root",
-		Label:    fmt.Sprintf("Terraform plan %s", p.TerraformVersion),
-		Kind:     plan.NodeGroup,
-		Action:   plan.ActionNoOp,
+		Label:    fmt.Sprintf("Terraform plan %s", tfplan.TerraformVersion),
+		Kind:     NodeGroup,
+		Action:   ActionNoOp,
 		Depth:    0,
 		Expanded: true,
 	}
 
-	nodeGroups := make([]*plan.Node, len(actionIndex))
+	nodeGroups := make([]*Node, len(actionIndex))
+
 	for action, idx := range actionIndex {
-		nodeGroups[idx] = &plan.Node{
+		nodeGroups[idx] = &Node{
 			Id:       fmt.Sprintf("%s-node-group", string(action)),
 			Label:    fmt.Sprintf("%s", strings.ToUpper(string(action[0]))+string(action[1:])),
-			Kind:     plan.NodeGroup,
+			Kind:     NodeGroup,
 			Action:   action,
 			Depth:    0,
 			Expanded: false,
@@ -43,11 +43,11 @@ func BuildTree(p terraform.Plan) (*plan.Node, error) {
 
 	root.Children = nodeGroups
 
-	totalChanges := len(p.ResourceChanges)
+	totalChanges := len(tfplan.ResourceChanges)
 
-	childCounter := make(map[plan.Action]int)
+	childCounter := make(map[Action]int)
 
-	for _, rc := range p.ResourceChanges {
+	for _, rc := range tfplan.ResourceChanges {
 		action, err := actionFromString(rc.Change.Actions)
 
 		if err != nil {
@@ -62,10 +62,10 @@ func BuildTree(p terraform.Plan) (*plan.Node, error) {
 
 		changes := compareChanges(rc.Change.Before, rc.Change.After)
 
-		child := &plan.Node{
+		child := &Node{
 			Id:       rc.Address,
 			Label:    rc.Address,
-			Kind:     plan.NodeResource,
+			Kind:     NodeResource,
 			Action:   action,
 			Changes:  changes,
 			Depth:    0,
@@ -94,8 +94,8 @@ func BuildTree(p terraform.Plan) (*plan.Node, error) {
 	return root, nil
 }
 
-func compareChanges(before, after map[string]any) plan.Changes {
-	result := plan.Changes{
+func compareChanges(before, after map[string]any) Changes {
+	result := Changes{
 		Before: map[string]any{},
 		After:  map[string]any{},
 	}
@@ -143,32 +143,32 @@ func compareChanges(before, after map[string]any) plan.Changes {
 	return result
 }
 
-func actionFromString(action []string) (plan.Action, error) {
+func actionFromString(action []string) (Action, error) {
 	if len(action) <= 0 {
-		return plan.ActionError, errors.New("failed to determine ActionType. No input actions provided.")
+		return ActionError, errors.New("failed to determine ActionType. No input actions provided.")
 	}
 
 	if len(action) >= 2 {
 		switch {
-		case string(plan.ActionCreate) == action[0] && string(plan.ActionDelete) == action[1]:
-			return plan.ActionReplace, nil
-		case string(plan.ActionDelete) == action[0] && string(plan.ActionCreate) == action[1]:
-			return plan.ActionReplace, nil
+		case string(ActionCreate) == action[0] && string(ActionDelete) == action[1]:
+			return ActionReplace, nil
+		case string(ActionDelete) == action[0] && string(ActionCreate) == action[1]:
+			return ActionReplace, nil
 		}
 	}
 
 	switch {
-	case string(plan.ActionCreate) == action[0]:
-		return plan.ActionCreate, nil
-	case string(plan.ActionUpdate) == action[0]:
-		return plan.ActionUpdate, nil
-	case string(plan.ActionDelete) == action[0]:
-		return plan.ActionDelete, nil
-	case string(plan.ActionReplace) == action[0]:
-		return plan.ActionReplace, nil
-	case string(plan.ActionNoOp) == action[0]:
-		return plan.ActionNoOp, nil
+	case string(ActionCreate) == action[0]:
+		return ActionCreate, nil
+	case string(ActionUpdate) == action[0]:
+		return ActionUpdate, nil
+	case string(ActionDelete) == action[0]:
+		return ActionDelete, nil
+	case string(ActionReplace) == action[0]:
+		return ActionReplace, nil
+	case string(ActionNoOp) == action[0]:
+		return ActionNoOp, nil
 	default:
-		return plan.ActionError, nil
+		return ActionError, nil
 	}
 }

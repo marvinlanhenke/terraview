@@ -1,4 +1,4 @@
-package plan
+package planview
 
 type Action string
 

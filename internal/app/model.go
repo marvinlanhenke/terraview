@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/marvinlanhenke/terraview/internal/plan"
+	"github.com/marvinlanhenke/terraview/internal/planview"
 	"github.com/marvinlanhenke/terraview/internal/ui/details"
 	"github.com/marvinlanhenke/terraview/internal/ui/filter"
 	"github.com/marvinlanhenke/terraview/internal/ui/search"
@@ -41,7 +41,7 @@ type Model struct {
 	components Components
 }
 
-func New(root *plan.Node) Model {
+func New(root *planview.Node) Model {
 	t := theme.Default()
 
 	c := Components{
