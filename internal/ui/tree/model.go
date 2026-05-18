@@ -43,6 +43,8 @@ func New(t theme.Theme) Tree {
 
 func (t *Tree) SetRoot(n *planview.Node) {
 	t.root = n
+	t.expanded = rebaseExpanded(n, t.expanded)
+
 	t.rebuildRows()
 	t.clampCursor()
 	t.syncViewport()
@@ -228,4 +230,32 @@ func (t *Tree) rebuildRows() {
 		matcher: t.matcher,
 		filters: t.filters,
 	})
+}
+
+func rebaseExpanded(root *planview.Node, previous map[string]bool) map[string]bool {
+	next := make(map[string]bool)
+
+	if root == nil || len(previous) == 0 {
+		return next
+	}
+
+	var visit func(*planview.Node)
+
+	visit = func(n *planview.Node) {
+		if n == nil {
+			return
+		}
+
+		if previous[n.Id] {
+			next[n.Id] = true
+		}
+
+		for _, child := range n.Children {
+			visit(child)
+		}
+	}
+
+	visit(root)
+
+	return next
 }

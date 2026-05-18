@@ -14,13 +14,8 @@ type Node struct {
 	Kind       NodeKind
 	Action     Action
 	Changes    Changes
-	Depth      int
-	Expanded   bool
-
-	Parent   *Node
-	Children []*Node
-
-	Payload any
+	Children   []*Node
+	Payload    any
 }
 
 func (n *Node) HasChildren() bool {

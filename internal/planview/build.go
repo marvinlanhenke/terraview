@@ -19,24 +19,20 @@ var actionIndex = map[Action]int{
 
 func FromTerraform(tfplan terraform.Plan) (*Node, error) {
 	root := &Node{
-		Id:       "root",
-		Label:    fmt.Sprintf("Terraform plan %s", tfplan.TerraformVersion),
-		Kind:     NodeGroup,
-		Action:   ActionNoOp,
-		Depth:    0,
-		Expanded: true,
+		Id:     "root",
+		Label:  fmt.Sprintf("Terraform plan %s", tfplan.TerraformVersion),
+		Kind:   NodeGroup,
+		Action: ActionNoOp,
 	}
 
 	nodeGroups := make([]*Node, len(actionIndex))
 
 	for action, idx := range actionIndex {
 		nodeGroups[idx] = &Node{
-			Id:       fmt.Sprintf("%s-node-group", string(action)),
-			Label:    fmt.Sprintf("%s", strings.ToUpper(string(action[0]))+string(action[1:])),
-			Kind:     NodeGroup,
-			Action:   action,
-			Depth:    0,
-			Expanded: false,
+			Id:     fmt.Sprintf("%s-node-group", string(action)),
+			Label:  fmt.Sprintf("%s", strings.ToUpper(string(action[0]))+string(action[1:])),
+			Kind:   NodeGroup,
+			Action: action,
 		}
 	}
 
@@ -62,15 +58,12 @@ func FromTerraform(tfplan terraform.Plan) (*Node, error) {
 		changes := compareChanges(rc.Change.Before, rc.Change.After)
 
 		child := &Node{
-			Id:       rc.Address,
-			Label:    rc.Address,
-			Kind:     NodeResource,
-			Action:   action,
-			Changes:  changes,
-			Depth:    0,
-			Expanded: false,
-			Parent:   root.Children[idx],
-			Payload:  rc,
+			Id:      rc.Address,
+			Label:   rc.Address,
+			Kind:    NodeResource,
+			Action:  action,
+			Changes: changes,
+			Payload: rc,
 		}
 
 		childCounter[action]++
