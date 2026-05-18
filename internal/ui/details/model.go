@@ -48,11 +48,13 @@ func (d *Details) SetSize(width, height int) {
 	d.width = max(0, width)
 	d.height = max(0, height)
 
-	// TODO show which mode (summary/plan)
-	d.setHeader("▤ Details")
+	d.header = lipgloss.NewStyle().
+		Width(d.width).
+		Render("▤ Details")
 
+	contentHeight := max(0, d.height-lipgloss.Height(d.header))
+	d.viewport.SetHeight(contentHeight)
 	d.viewport.SetWidth(d.width)
-	d.viewport.SetHeight(d.contentHeight())
 	d.syncViewport()
 }
 
@@ -99,17 +101,6 @@ func (d *Details) syncViewport() {
 	lines := d.renderLines()
 
 	d.viewport.SetContentLines(lines)
-}
-
-func (d Details) contentHeight() int {
-	return max(0, d.height-lipgloss.Height(d.header))
-}
-
-func (d *Details) setHeader(text string) {
-	d.header = lipgloss.
-		NewStyle().
-		Width(d.width).
-		Render(text)
 }
 
 func (d *Details) renderLines() []string {
