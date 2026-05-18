@@ -76,6 +76,8 @@ func (t *Tree) SetSize(width, height int) {
 	t.syncViewport()
 }
 
+// TODO: Instead of exposing the full node, we can export a smaller subset
+// We only require: n.Id, n.Label, n.Kind, n.Changes, n.Payload
 func (t *Tree) Selected() *planview.Node {
 	if len(t.rows) == 0 {
 		return nil
