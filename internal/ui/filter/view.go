@@ -21,7 +21,7 @@ func (f *Modal) View(active map[planview.Action]bool) string {
 
 		icon := "[ ]"
 
-		if active[option.action] {
+		if active[option.Action] {
 			icon = "[x]"
 		}
 
@@ -29,8 +29,8 @@ func (f *Modal) View(active map[planview.Action]bool) string {
 			row = f.styles.rowAlt
 		}
 
-		label := option.label
-		count := option.count
+		label := option.Label
+		count := option.Count
 
 		iconCol := row.Width(iconWidth).Render(icon)
 		labelCol := row.Width(labelWidth).Render(label)

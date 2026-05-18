@@ -11,14 +11,14 @@ type Intent struct {
 	Reset        bool
 }
 
-type option struct {
-	action planview.Action
-	label  string
-	count  string
+type Option struct {
+	Action planview.Action
+	Label  string
+	Count  string
 }
 
 type Modal struct {
-	options []option
+	options []Option
 
 	cursor int
 	styles styles
@@ -30,33 +30,12 @@ func New(t theme.Theme) Modal {
 	}
 }
 
-func (f *Modal) SetOptions(nodes []*planview.Node) {
-	f.options = f.options[:0]
-
-	seen := make(map[planview.Action]struct{})
-
-	for _, n := range nodes {
-		if n == nil {
-			continue
-		}
-
-		if _, exists := seen[n.Action]; !exists {
-			option := option{
-				action: n.Action,
-				label:  n.Label,
-				count:  n.LabelCount,
-			}
-
-			f.options = append(f.options, option)
-		}
-
-		seen[n.Action] = struct{}{}
-	}
-
+func (f *Modal) SetOptions(options []Option) {
+	f.options = options
 	f.clampCursor()
 }
 
-func (f *Modal) selected() *option {
+func (f *Modal) selected() *Option {
 	if len(f.options) == 0 {
 		return nil
 	}

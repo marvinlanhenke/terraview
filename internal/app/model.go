@@ -74,7 +74,7 @@ func New(root *planview.Node) Model {
 
 	m.components.status.SetWidth(m.size.width - defaultMargin)
 
-	m.components.filter.SetOptions(root.Children)
+	m.components.filter.SetOptions(buildFilterOptions(root.Children))
 
 	treeWidth, treeHeight := treePaneSize(0, 0)
 	m.components.tree.SetSize(treeWidth, treeHeight)
@@ -96,4 +96,29 @@ func (m *Model) refreshTreeFromControls() {
 func (m *Model) syncTreeOutputs() {
 	m.components.details.SetNode(m.components.tree.Selected())
 	m.components.search.SetMatches(m.components.tree.VisibleCount())
+}
+
+func buildFilterOptions(nodes []*planview.Node) []filter.Option {
+	seen := make(map[planview.Action]struct{})
+	options := make([]filter.Option, 0, len(nodes))
+
+	for _, n := range nodes {
+		if n == nil {
+			continue
+		}
+
+		if _, exists := seen[n.Action]; !exists {
+			option := filter.Option{
+				Action: n.Action,
+				Label:  n.Label,
+				Count:  n.LabelCount,
+			}
+
+			options = append(options, option)
+		}
+
+		seen[n.Action] = struct{}{}
+	}
+
+	return options
 }
