@@ -114,10 +114,13 @@ func buildDetailsContent(n *planview.Node) details.Content {
 		content.Kind = details.KindGroup
 	case planview.NodeResource:
 		content.Kind = details.KindResource
+
+		diff := n.Diff()
 		content.Changes = details.ChangeSet{
-			Before: n.Changes.Before,
-			After:  n.Changes.After,
+			Before: diff.Before,
+			After:  diff.After,
 		}
+
 		content.Payload = n.Payload
 	default:
 		content.Kind = details.KindNone
