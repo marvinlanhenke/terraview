@@ -13,34 +13,25 @@ func (d *Details) syncViewport() {
 		return
 	}
 
-	if d.node == nil {
+	if d.showEmptyState() {
 		d.viewport.SetContentLines(nil)
 		d.viewport.SetYOffset(0)
 		return
 	}
 
 	lines := d.renderLines()
-
 	d.viewport.SetContentLines(lines)
 }
 
 func (d *Details) renderLines() []string {
 	lines := make([]string, 0)
 
-	if d.showPlan {
-		plan, err := json.MarshalIndent(d.node.Payload, "", " ")
-		if err != nil {
-			line := "error while marshaling json payload."
-			lines = append(lines, line)
-			return lines
-		}
-
-		lines = append(lines, string(plan))
+	if d.showingPlan() {
+		lines = append(lines, formatPayload(d.content.Payload))
 		return lines
 	}
 
-	header := lipgloss.
-		NewStyle().
+	header := lipgloss.NewStyle().
 		Width(d.width).
 		Render("Changed Attributes:")
 
@@ -51,11 +42,10 @@ func (d *Details) renderLines() []string {
 	afterIcon := "+"
 
 	for _, cl := range d.changes {
-		beforeLine := indent + beforeIcon + renderValue(cl.before) + "\n"
-		afterLine := indent + afterIcon + renderValue(cl.after) + "\n"
+		beforeLine := indent + beforeIcon + formatPayload(cl.before) + "\n"
+		afterLine := indent + afterIcon + formatPayload(cl.after) + "\n"
 
-		path := lipgloss.
-			NewStyle().
+		path := lipgloss.NewStyle().
 			Border(lipgloss.ASCIIBorder(), false, false, true, false).
 			Render(cl.path + ":")
 
@@ -66,7 +56,34 @@ func (d *Details) renderLines() []string {
 	return lines
 }
 
-func renderValue(v any) string {
+func (d *Details) showEmptyState() bool {
+	return !d.hasViewportContent()
+}
+
+func (d *Details) hasViewportContent() bool {
+	return d.showingPlan() || d.hasDiffContent()
+}
+
+func (d *Details) showingPlan() bool {
+	return d.showPlan && d.content.Payload != nil
+}
+
+func (d *Details) hasDiffContent() bool {
+	return len(d.changes) > 0
+}
+
+func (d *Details) emptyStateMessage() string {
+	switch d.content.Kind {
+	case KindNone, KindGroup:
+		return "Select a resource to inspect changes."
+	case KindResource:
+		return "No changed attributes for this resource."
+	default:
+		return "Nothing to show yet..."
+	}
+}
+
+func formatPayload(v any) string {
 	if v == nil {
 		return "null"
 	}
@@ -79,6 +96,6 @@ func renderValue(v any) string {
 		if err != nil {
 			return fmt.Sprintf("%v", t)
 		}
-		return "\n" + string(b)
+		return string(b)
 	}
 }

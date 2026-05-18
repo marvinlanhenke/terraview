@@ -79,11 +79,12 @@ func New(root *planview.Node) Model {
 	treeWidth, treeHeight := treePaneSize(0, 0)
 	m.components.tree.SetSize(treeWidth, treeHeight)
 	m.components.tree.SetRoot(root)
-	m.refreshTreeFromControls()
 
 	detailsWidth := detailsWidth(m.size.width, treeWidth)
 	detailsHeight := treeHeight
 	m.components.details.SetSize(detailsWidth, detailsHeight)
+
+	m.refreshTreeFromControls()
 
 	return m
 }
@@ -94,8 +95,35 @@ func (m *Model) refreshTreeFromControls() {
 }
 
 func (m *Model) syncTreeOutputs() {
-	m.components.details.SetNode(m.components.tree.Selected())
+	m.components.details.SetContent(buildDetailsContent(m.components.tree.Selected()))
 	m.components.search.SetMatches(m.components.tree.VisibleCount())
+}
+
+func buildDetailsContent(n *planview.Node) details.Content {
+	if n == nil {
+		return details.Content{Kind: details.KindNone}
+	}
+
+	content := details.Content{
+		Key:   n.Id,
+		Label: n.Label,
+	}
+
+	switch n.Kind {
+	case planview.NodeGroup:
+		content.Kind = details.KindGroup
+	case planview.NodeResource:
+		content.Kind = details.KindResource
+		content.Changes = details.ChangeSet{
+			Before: n.Changes.Before,
+			After:  n.Changes.After,
+		}
+		content.Payload = n.Payload
+	default:
+		content.Kind = details.KindNone
+	}
+
+	return content
 }
 
 func buildFilterOptions(nodes []*planview.Node) []filter.Option {

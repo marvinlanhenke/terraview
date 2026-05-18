@@ -19,7 +19,7 @@ func newStyles(t theme.Theme) styles {
 	s := t.Styles
 
 	base := lipgloss.NewStyle().Padding(0, 1).Background(p.Surface)
-	header := lipgloss.NewStyle().Padding(0, 1).Border(lipgloss.ASCIIBorder(), true, false)
+	header := lipgloss.NewStyle()
 
 	return styles{
 		palette:       p,

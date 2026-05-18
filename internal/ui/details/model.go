@@ -3,12 +3,32 @@ package details
 import (
 	"charm.land/bubbles/v2/viewport"
 	"charm.land/lipgloss/v2"
-	"github.com/marvinlanhenke/terraview/internal/planview"
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
+type Kind int
+
+const (
+	KindNone Kind = iota
+	KindGroup
+	KindResource
+)
+
+type ChangeSet struct {
+	Before map[string]any
+	After  map[string]any
+}
+
+type Content struct {
+	Key     string
+	Kind    Kind
+	Label   string
+	Changes ChangeSet
+	Payload any
+}
+
 type Details struct {
-	node     *planview.Node
+	content  Content
 	changes  []change
 	header   string
 	showPlan bool
@@ -38,9 +58,7 @@ func (d *Details) SetSize(width, height int) {
 	d.width = max(0, width)
 	d.height = max(0, height)
 
-	d.header = lipgloss.NewStyle().
-		Width(d.width).
-		Render("▤ Details")
+	d.setHeader()
 
 	contentHeight := max(0, d.height-lipgloss.Height(d.header))
 	d.viewport.SetHeight(contentHeight)
@@ -48,23 +66,17 @@ func (d *Details) SetSize(width, height int) {
 	d.syncViewport()
 }
 
-func (d *Details) SetNode(n *planview.Node) {
-	hasChanged := d.node != n
-	d.node = n
+func (d *Details) SetContent(content Content) {
+	changed := d.content.Key != content.Key
 
-	if n == nil {
-		d.changes = nil
-		d.viewport.SetYOffset(0)
-		d.syncViewport()
-		return
-	}
+	d.content = content
+	d.changes = flattenChanges(content.Changes)
 
-	d.changes = flattenChanges(n)
-
-	if hasChanged {
+	if changed {
 		d.viewport.SetYOffset(0)
 	}
 
+	d.setHeader()
 	d.syncViewport()
 }
 
@@ -74,4 +86,16 @@ func (d *Details) Focus() {
 
 func (d *Details) Blur() {
 	d.viewport.Style = d.styles.background
+}
+
+func (d *Details) setHeader() {
+	label := "▤ Details · Diff"
+
+	if d.showPlan && d.content.Payload != nil {
+		label = "▤ Details · Plan"
+	}
+
+	d.header = d.styles.header.
+		Width(d.width).
+		Render(label)
 }

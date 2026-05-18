@@ -11,6 +11,6 @@ type keymap struct {
 var keys = keymap{
 	toggle: key.NewBinding(
 		key.WithKeys("p", "t"),
-		key.WithHelp("p/t", "toggle view"),
+		key.WithHelp("p/t", "toggle diff/plan"),
 	),
 }

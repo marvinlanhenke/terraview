@@ -1,10 +1,6 @@
 package details
 
-import (
-	"sort"
-
-	"github.com/marvinlanhenke/terraview/internal/planview"
-)
+import "sort"
 
 type change struct {
 	path   string
@@ -12,49 +8,82 @@ type change struct {
 	after  any
 }
 
-func flattenChanges(n *planview.Node) []change {
-	lines := make([]change, 0)
+func flattenChanges(ch ChangeSet) []change {
+	rows := make([]change, 0)
 
-	flattenChangeMap("", n.Changes.Before, n.Changes.After, &lines)
+	flattenChangeMap("", normalizeMap(ch.Before), normalizeMap(ch.After), &rows)
 
-	return lines
+	return rows
 }
 
-func flattenChangeMap(prefix string, before, after map[string]any, lines *[]change) {
-	keys := make(map[string]struct{})
-	for k := range before {
-		keys[k] = struct{}{}
-	}
-	for k := range after {
-		keys[k] = struct{}{}
-	}
-
-	sortedKeys := make([]string, 0, len(keys))
-	for k := range keys {
-		sortedKeys = append(sortedKeys, k)
-	}
-	sort.Strings(sortedKeys)
-
-	for _, key := range sortedKeys {
+func flattenChangeMap(prefix string, before, after map[string]any, rows *[]change) {
+	for _, key := range sortedUnionKeys(before, after) {
 		path := key
 		if prefix != "" {
 			path = prefix + "." + key
 		}
 
-		beforeVal := before[key]
-		afterVal := after[key]
+		appendValueChange(path, before[key], after[key], rows)
+	}
+}
 
-		beforeMap, beforeIsMap := beforeVal.(map[string]any)
-		afterMap, afterIsMap := afterVal.(map[string]any)
+func appendValueChange(path string, before, after any, rows *[]change) {
+	beforeMap, beforeIsMap := asMap(before)
+	afterMap, afterIsMap := asMap(after)
 
-		if beforeIsMap && afterIsMap {
-			flattenChangeMap(path, beforeMap, afterMap, lines)
+	if beforeIsMap || afterIsMap {
+		start := len(*rows)
+
+		flattenChangeMap(path, normalizeMap(beforeMap), normalizeMap(afterMap), rows)
+
+		if len(*rows) == start {
+			*rows = append(*rows, change{
+				path:   path,
+				before: before,
+				after:  after,
+			})
 		}
 
-		*lines = append(*lines, change{
-			path:   path,
-			before: beforeVal,
-			after:  afterVal,
-		})
+		return
 	}
+
+	*rows = append(*rows, change{
+		path:   path,
+		before: before,
+		after:  after,
+	})
+}
+
+func asMap(v any) (map[string]any, bool) {
+	m, ok := v.(map[string]any)
+	return m, ok
+}
+
+func normalizeMap(m map[string]any) map[string]any {
+	if m == nil {
+		return map[string]any{}
+	}
+
+	return m
+}
+
+func sortedUnionKeys(before, after map[string]any) []string {
+	keys := make(map[string]struct{}, len(before)+len(after))
+
+	for k := range before {
+		keys[k] = struct{}{}
+	}
+
+	for k := range after {
+		keys[k] = struct{}{}
+	}
+
+	sorted := make([]string, 0, len(keys))
+	for k := range keys {
+		sorted = append(sorted, k)
+	}
+
+	sort.Strings(sorted)
+
+	return sorted
 }
