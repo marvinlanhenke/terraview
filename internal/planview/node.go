@@ -13,7 +13,7 @@ type Node struct {
 	LabelCount string
 	Kind       NodeKind
 	Action     Action
-	Changes    Changes
+	Changes    changeSet
 	Children   []*Node
 	Payload    any
 }

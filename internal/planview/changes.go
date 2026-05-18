@@ -2,13 +2,13 @@ package planview
 
 import "reflect"
 
-type Changes struct {
+type changeSet struct {
 	Before map[string]any
 	After  map[string]any
 }
 
-func compareChanges(before, after map[string]any) Changes {
-	result := Changes{
+func compareChanges(before, after map[string]any) changeSet {
+	result := changeSet{
 		Before: map[string]any{},
 		After:  map[string]any{},
 	}
