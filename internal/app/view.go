@@ -18,7 +18,6 @@ func (m Model) View() tea.View {
 		details,
 	)
 
-	// TODO
 	footer := m.theme.Styles.Footer.Render("/ search • esc back • q quit")
 
 	appContent := lipgloss.JoinVertical(
