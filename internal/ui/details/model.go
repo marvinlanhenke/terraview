@@ -1,25 +1,15 @@
 package details
 
 import (
-	"encoding/json"
-	"fmt"
-	"sort"
-
 	"charm.land/bubbles/v2/viewport"
 	"charm.land/lipgloss/v2"
 	"github.com/marvinlanhenke/terraview/internal/planview"
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
-type changeLine struct {
-	path   string
-	before any
-	after  any
-}
-
 type Details struct {
 	node     *planview.Node
-	changes  []changeLine
+	changes  []change
 	header   string
 	showPlan bool
 
@@ -84,127 +74,4 @@ func (d *Details) Focus() {
 
 func (d *Details) Blur() {
 	d.viewport.Style = d.styles.background
-}
-
-func (d *Details) syncViewport() {
-	if d.width <= 0 || d.height <= 0 {
-		d.viewport.SetContentLines(nil)
-		return
-	}
-
-	if d.node == nil {
-		d.viewport.SetContentLines(nil)
-		d.viewport.SetYOffset(0)
-		return
-	}
-
-	lines := d.renderLines()
-
-	d.viewport.SetContentLines(lines)
-}
-
-func (d *Details) renderLines() []string {
-	lines := make([]string, 0)
-
-	if d.showPlan {
-		plan, err := json.MarshalIndent(d.node.Payload, "", " ")
-		if err != nil {
-			line := "error while marshaling json payload."
-			lines = append(lines, line)
-			return lines
-		}
-
-		lines = append(lines, string(plan))
-		return lines
-	}
-
-	header := lipgloss.
-		NewStyle().
-		Width(d.width).
-		Render("Changed Attributes:")
-
-	lines = append(lines, header)
-
-	indent := " "
-	beforeIcon := "−"
-	afterIcon := "+"
-
-	for _, cl := range d.changes {
-		beforeLine := indent + beforeIcon + renderValue(cl.before) + "\n"
-		afterLine := indent + afterIcon + renderValue(cl.after) + "\n"
-
-		path := lipgloss.
-			NewStyle().
-			Border(lipgloss.ASCIIBorder(), false, false, true, false).
-			Render(cl.path + ":")
-
-		line := path + "\n" + beforeLine + afterLine
-		lines = append(lines, line)
-	}
-
-	return lines
-}
-
-func renderValue(v any) string {
-	if v == nil {
-		return "null"
-	}
-
-	switch t := v.(type) {
-	case string:
-		return t
-	default:
-		b, err := json.MarshalIndent(t, "", " ")
-		if err != nil {
-			return fmt.Sprintf("%v", t)
-		}
-		return "\n" + string(b)
-	}
-}
-
-func flattenChanges(n *planview.Node) []changeLine {
-	lines := make([]changeLine, 0)
-
-	flattenChangeMap("", n.Changes.Before, n.Changes.After, &lines)
-
-	return lines
-}
-
-func flattenChangeMap(prefix string, before, after map[string]any, lines *[]changeLine) {
-	keys := make(map[string]struct{})
-	for k := range before {
-		keys[k] = struct{}{}
-	}
-	for k := range after {
-		keys[k] = struct{}{}
-	}
-
-	sortedKeys := make([]string, 0, len(keys))
-	for k := range keys {
-		sortedKeys = append(sortedKeys, k)
-	}
-	sort.Strings(sortedKeys)
-
-	for _, key := range sortedKeys {
-		path := key
-		if prefix != "" {
-			path = prefix + "." + key
-		}
-
-		beforeVal := before[key]
-		afterVal := after[key]
-
-		beforeMap, beforeIsMap := beforeVal.(map[string]any)
-		afterMap, afterIsMap := afterVal.(map[string]any)
-
-		if beforeIsMap && afterIsMap {
-			flattenChangeMap(path, beforeMap, afterMap, lines)
-		}
-
-		*lines = append(*lines, changeLine{
-			path:   path,
-			before: beforeVal,
-			after:  afterVal,
-		})
-	}
 }
