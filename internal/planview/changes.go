@@ -60,6 +60,17 @@ func compareChanges(before, after map[string]any) changeSet {
 	return result
 }
 
+func cloneValue(v any) any {
+	switch t := v.(type) {
+	case map[string]any:
+		return cloneMap(t)
+	case []any:
+		return cloneSlice(t)
+	default:
+		return t
+	}
+}
+
 func cloneMap(src map[string]any) map[string]any {
 	if src == nil {
 		return nil
@@ -84,15 +95,4 @@ func cloneSlice(src []any) []any {
 	}
 
 	return dst
-}
-
-func cloneValue(v any) any {
-	switch t := v.(type) {
-	case map[string]any:
-		return cloneMap(t)
-	case []any:
-		return cloneSlice(t)
-	default:
-		return t
-	}
 }
