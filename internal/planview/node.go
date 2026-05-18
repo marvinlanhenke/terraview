@@ -1,7 +1,5 @@
 package planview
 
-import "maps"
-
 type NodeKind int
 
 const (
@@ -15,26 +13,23 @@ type Node struct {
 	LabelCount string
 	Kind       NodeKind
 	Action     Action
-	Changes    ChangeSet
 	Children   []*Node
 	Payload    any
+	changes    changeSet
 }
 
 func (n *Node) HasChildren() bool {
 	return len(n.Children) > 0
 }
 
-func (n *Node) Diff() ChangeSet {
-	if n == nil {
-		return ChangeSet{}
-	}
-
-	return ChangeSet{
-		Before: maps.Clone(n.Changes.Before),
-		After:  maps.Clone(n.Changes.After),
-	}
-}
-
 func (n *Node) IsResource() bool {
 	return n != nil && n.Kind == NodeResource
+}
+
+func (n *Node) ChangeSetBefore() map[string]any {
+	return n.changes.changeSetBefore()
+}
+
+func (n *Node) ChangeSetAfter() map[string]any {
+	return n.changes.changeSetAfter()
 }

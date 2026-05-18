@@ -62,7 +62,7 @@ func FromTerraform(tfplan terraform.Plan) (*Node, error) {
 			Label:   rc.Address,
 			Kind:    NodeResource,
 			Action:  action,
-			Changes: changes,
+			changes: changes,
 			Payload: rc,
 		}
 

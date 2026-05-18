@@ -2,15 +2,19 @@ package planview
 
 import "reflect"
 
-type ChangeSet struct {
-	Before map[string]any
-	After  map[string]any
+type changeSet struct {
+	before map[string]any
+	after  map[string]any
 }
 
-func compareChanges(before, after map[string]any) ChangeSet {
-	result := ChangeSet{
-		Before: map[string]any{},
-		After:  map[string]any{},
+func (c changeSet) changeSetBefore() map[string]any { return cloneMap(c.before) }
+
+func (c changeSet) changeSetAfter() map[string]any { return cloneMap(c.after) }
+
+func compareChanges(before, after map[string]any) changeSet {
+	result := changeSet{
+		before: map[string]any{},
+		after:  map[string]any{},
 	}
 
 	for key, beforeVal := range before {
@@ -18,8 +22,8 @@ func compareChanges(before, after map[string]any) ChangeSet {
 
 		// Removed field
 		if !exists {
-			result.Before[key] = beforeVal
-			result.After[key] = nil
+			result.before[key] = beforeVal
+			result.after[key] = nil
 			continue
 		}
 
@@ -30,9 +34,9 @@ func compareChanges(before, after map[string]any) ChangeSet {
 		if beforeIsMap && afterIsMap {
 			nested := compareChanges(beforeMap, afterMap)
 
-			if len(nested.Before) > 0 || len(nested.After) > 0 {
-				result.Before[key] = nested.Before
-				result.After[key] = nested.After
+			if len(nested.before) > 0 || len(nested.after) > 0 {
+				result.before[key] = nested.before
+				result.after[key] = nested.after
 			}
 
 			continue
@@ -40,18 +44,55 @@ func compareChanges(before, after map[string]any) ChangeSet {
 
 		// Value changed
 		if !reflect.DeepEqual(beforeVal, afterVal) {
-			result.Before[key] = beforeVal
-			result.After[key] = afterVal
+			result.before[key] = beforeVal
+			result.after[key] = afterVal
 		}
 	}
 
 	// Added fields
 	for key, afterVal := range after {
 		if _, exists := before[key]; !exists {
-			result.Before[key] = nil
-			result.After[key] = afterVal
+			result.before[key] = nil
+			result.after[key] = afterVal
 		}
 	}
 
 	return result
+}
+
+func cloneMap(src map[string]any) map[string]any {
+	if src == nil {
+		return nil
+	}
+
+	dst := make(map[string]any, len(src))
+	for k, v := range src {
+		dst[k] = cloneValue(v)
+	}
+
+	return dst
+}
+
+func cloneSlice(src []any) []any {
+	if src == nil {
+		return nil
+	}
+
+	dst := make([]any, len(src))
+	for i, v := range src {
+		dst[i] = cloneValue(v)
+	}
+
+	return dst
+}
+
+func cloneValue(v any) any {
+	switch t := v.(type) {
+	case map[string]any:
+		return cloneMap(t)
+	case []any:
+		return cloneSlice(t)
+	default:
+		return t
+	}
 }
