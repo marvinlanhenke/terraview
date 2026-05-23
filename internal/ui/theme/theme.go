@@ -6,9 +6,10 @@ import (
 )
 
 type Palette struct {
-	Surface      color.Color
-	SurfaceAlt   color.Color
-	SurfaceMuted color.Color
+	Surface         color.Color
+	SurfaceAlt      color.Color
+	SurfaceMuted    color.Color
+	SurfaceEmbedded color.Color
 
 	Text      color.Color
 	TextMuted color.Color
@@ -35,9 +36,10 @@ type Theme struct {
 
 func Default() Theme {
 	p := Palette{
-		Surface:      lipgloss.Color("#303446"),
-		SurfaceAlt:   lipgloss.Color("#3d4258"),
-		SurfaceMuted: lipgloss.Color("#292c3c"),
+		Surface:         lipgloss.Color("#303446"),
+		SurfaceAlt:      lipgloss.Color("#3d4258"),
+		SurfaceMuted:    lipgloss.Color("#292c3c"),
+		SurfaceEmbedded: lipgloss.Color("#373b4f"),
 
 		Text:      lipgloss.Color("#bcc0cc"),
 		TextMuted: lipgloss.Color("#51576d"),

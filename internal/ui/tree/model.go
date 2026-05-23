@@ -47,7 +47,7 @@ func (n *Node) HasChildren() bool {
 }
 
 func (n *Node) IsResource() bool {
-	return n != nil && n.Kind == NodeResource
+	return n != nil && n.Kind == NodeResource && n.Action != ActionNoOp
 }
 
 type Tree struct {

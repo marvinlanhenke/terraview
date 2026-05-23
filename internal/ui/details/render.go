@@ -32,29 +32,46 @@ func (d *Details) syncViewport() {
 func (d *Details) renderLines() []string {
 	lines := make([]string, 0)
 
-	lines = append(lines, "")
+	bg := lipgloss.NewStyle().Background(d.styles.palette.Surface)
 
 	if d.showingPlan() {
-		jsonStr := getJsonStr(d.content.Payload)
+		bg = lipgloss.NewStyle().Background(d.styles.palette.Surface)
 
-		lines = append(lines, d.highlightJson(jsonStr))
+		if d.focus {
+			bg = lipgloss.NewStyle().Background(d.styles.palette.SurfaceAlt)
+		}
+
+		jsonStr := getJsonStr(d.content.Payload, strings.Repeat(" ", 2))
+
+		lines = append(lines, d.highlightJson(jsonStr, bg))
 
 		return lines
 	}
 
 	indent := strings.Repeat(" ", 2)
-	beforeIcon := "(−) "
-	afterIcon := "(+) "
+	beforeIcon := indent + "(−) before:"
+	afterIcon := indent + "(+) after:"
+
+	if d.focus {
+		bg = lipgloss.NewStyle().Background(d.styles.palette.SurfaceEmbedded)
+	}
 
 	for _, cl := range d.changes {
-		beforeLine := indent + beforeIcon + getJsonStr(cl.before)
-		afterLine := indent + afterIcon + getJsonStr(cl.after)
+		prefixIndent := indent + indent + indent
+
+		beforeStr := getJsonStr(cl.before, prefixIndent)
+		beforeLine := beforeIcon + "\n" + d.highlightJson(beforeStr, bg) + "\n"
+		beforeLine = bg.Render(beforeLine)
+
+		afterStr := getJsonStr(cl.after, prefixIndent)
+		afterLine := afterIcon + "\n" + d.highlightJson(afterStr, bg) + "\n"
+		afterLine = bg.Render(afterLine)
 
 		path := d.styles.subheader.
 			Width(d.width).
 			Render("attribute: " + cl.path)
 
-		line := lipgloss.JoinVertical(lipgloss.Left, path, beforeLine, afterLine, "")
+		line := lipgloss.JoinVertical(lipgloss.Left, path, beforeLine, afterLine)
 
 		lines = append(lines, line)
 	}
@@ -62,20 +79,15 @@ func (d *Details) renderLines() []string {
 	return lines
 }
 
-func (d *Details) highlightJson(jsonStr string) string {
+func (d *Details) highlightJson(jsonStr string, bg lipgloss.Style) string {
 	var buf bytes.Buffer
 
-	err := quick.Highlight(&buf, jsonStr, "json", "terminal256", "monokai")
+	err := quick.Highlight(&buf, jsonStr, "json", "terminal256", "catppuccin-macchiato")
 	if err != nil {
 		return fmt.Sprintf("%v", jsonStr)
 	}
 
-	style := lipgloss.NewStyle().Background(d.styles.palette.Surface)
-	if d.focus {
-		style = lipgloss.NewStyle().Background(d.styles.palette.SurfaceAlt)
-	}
-
-	highlighted := style.
+	highlighted := bg.
 		Width(d.width).
 		Render(ansiBackground.ReplaceAllString(buf.String(), ""))
 
@@ -109,9 +121,9 @@ func (d *Details) emptyStateMessage() string {
 	}
 }
 
-func getJsonStr(v any) string {
+func getJsonStr(v any, prefix string) string {
 	if v == nil {
-		return "null"
+		return prefix + "null"
 	}
 
 	b, err := json.MarshalIndent(v, "", " ")
@@ -119,5 +131,5 @@ func getJsonStr(v any) string {
 		return fmt.Sprintf("%v", v)
 	}
 
-	return string(b)
+	return prefix + strings.ReplaceAll(string(b), "\n", "\n"+prefix)
 }
