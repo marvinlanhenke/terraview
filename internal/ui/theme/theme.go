@@ -36,7 +36,7 @@ type Theme struct {
 func Default() Theme {
 	p := Palette{
 		Surface:      lipgloss.Color("#303446"),
-		SurfaceAlt:   lipgloss.Color("#414559"),
+		SurfaceAlt:   lipgloss.Color("#3d4258"),
 		SurfaceMuted: lipgloss.Color("#292c3c"),
 
 		Text:      lipgloss.Color("#bcc0cc"),

@@ -32,6 +32,7 @@ type Details struct {
 	changes  []change
 	header   string
 	showPlan bool
+	focus    bool
 
 	width    int
 	height   int
@@ -81,11 +82,15 @@ func (d *Details) SetContent(content Content) {
 }
 
 func (d *Details) Focus() {
+	d.focus = true
 	d.viewport.Style = d.styles.backgroundAlt
+	d.syncViewport()
 }
 
 func (d *Details) Blur() {
+	d.focus = false
 	d.viewport.Style = d.styles.background
+	d.syncViewport()
 }
 
 func (d *Details) setHeader() {
