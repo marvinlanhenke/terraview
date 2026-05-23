@@ -35,7 +35,7 @@ func (d *Details) renderLines() []string {
 	lines = append(lines, "")
 
 	if d.showingPlan() {
-		jsonStr := getPayloadStr(d.content.Payload)
+		jsonStr := getJsonStr(d.content.Payload)
 
 		lines = append(lines, d.highlightJson(jsonStr))
 
@@ -47,8 +47,8 @@ func (d *Details) renderLines() []string {
 	afterIcon := "(+) "
 
 	for _, cl := range d.changes {
-		beforeLine := indent + beforeIcon + getPayloadStr(cl.before)
-		afterLine := indent + afterIcon + getPayloadStr(cl.after)
+		beforeLine := indent + beforeIcon + getJsonStr(cl.before)
+		afterLine := indent + afterIcon + getJsonStr(cl.after)
 
 		path := d.styles.subheader.
 			Width(d.width).
@@ -109,7 +109,7 @@ func (d *Details) emptyStateMessage() string {
 	}
 }
 
-func getPayloadStr(v any) string {
+func getJsonStr(v any) string {
 	if v == nil {
 		return "null"
 	}
