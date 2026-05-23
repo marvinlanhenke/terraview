@@ -67,7 +67,7 @@ func (d *Details) highlightJson(jsonStr string) string {
 
 	err := quick.Highlight(&buf, jsonStr, "json", "terminal256", "monokai")
 	if err != nil {
-		return fmt.Sprintf("%v", err)
+		return fmt.Sprintf("%v", jsonStr)
 	}
 
 	style := lipgloss.NewStyle().Background(d.styles.palette.Surface)
@@ -114,14 +114,10 @@ func getPayloadStr(v any) string {
 		return "null"
 	}
 
-	switch t := v.(type) {
-	case string:
-		return t
-	default:
-		b, err := json.MarshalIndent(t, "", " ")
-		if err != nil {
-			return fmt.Sprintf("%v", t)
-		}
-		return string(b)
+	b, err := json.MarshalIndent(v, "", " ")
+	if err != nil {
+		return fmt.Sprintf("%v", v)
 	}
+
+	return string(b)
 }
