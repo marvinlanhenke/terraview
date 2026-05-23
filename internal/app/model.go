@@ -82,6 +82,7 @@ func New(root *planview.Node) Model {
 	m.components.search.SetWidth(m.size.width - defaultMargin)
 
 	m.components.status.SetWidth(m.size.width - defaultMargin)
+	m.components.status.SetStats(buildStats(root))
 
 	m.components.filter.SetOptions(buildFilterOptions(root.Children))
 
@@ -131,6 +132,44 @@ func buildTreeNode(n *planview.Node) *tree.Node {
 	}
 
 	return out
+}
+
+func buildStats(n *planview.Node) *status.Stats {
+	if n == nil {
+		return nil
+	}
+
+	stats := &status.Stats{}
+	collectStats(n, stats)
+
+	return stats
+}
+
+func collectStats(n *planview.Node, stats *status.Stats) {
+	if n == nil {
+		return
+	}
+
+	if n.Kind == planview.NodeResource {
+		switch n.Action {
+		case planview.ActionCreate:
+			stats.Create++
+		case planview.ActionUpdate:
+			stats.Update++
+		case planview.ActionDelete:
+			stats.Delete++
+		case planview.ActionReplace:
+			stats.Replace++
+		case planview.ActionNoOp:
+			stats.NoOp++
+		case planview.ActionError:
+			stats.Errors++
+		}
+	}
+
+	for _, child := range n.Children {
+		collectStats(child, stats)
+	}
 }
 
 func buildDetailsContent(n *tree.Node) details.Content {

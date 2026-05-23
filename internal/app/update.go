@@ -113,6 +113,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.applyFilterIntent(intent) {
 			m.refreshTreeFromControls()
 		}
+
+		m.components.status.SetActiveFilterCount(len(m.controls.filters))
 	}
 
 	return m, tea.Batch(cmds...)

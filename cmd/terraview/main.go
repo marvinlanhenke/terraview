@@ -13,7 +13,6 @@ import (
 const filepath = "/home/mlanhenke/dev/projects/terraview/testdata/plans"
 
 func main() {
-	// TODO create flags for filepath; add STDIN
 	data, err := os.ReadFile(filepath + "/mixed.json")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to read terraform plan: %v\n", err)

@@ -14,7 +14,10 @@ type styles struct {
 func newStyles(t theme.Theme) styles {
 	p := t.Palette
 
-	base := lipgloss.NewStyle().Padding(0, 1).Background(p.Surface)
+	base := lipgloss.NewStyle().
+		Padding(0, 1).
+		Background(p.Surface)
+
 	borderBar := base.
 		Foreground(p.Text).
 		Border(lipgloss.NormalBorder(), true, false, true, false).

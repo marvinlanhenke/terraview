@@ -6,32 +6,32 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
-type actions struct {
-	add     int
-	change  int
-	destroy int
-	replace int
-	noOp    int
-	errors  int
+type Stats struct {
+	Create  int
+	Update  int
+	Delete  int
+	Replace int
+	NoOp    int
+	Errors  int
 }
 
-func (s actions) String() string {
+func (s Stats) String() string {
 	return fmt.Sprintf(
-		"+%d ~%d -%d -/+%d =%d !%d",
-		s.add,
-		s.change,
-		s.destroy,
-		s.replace,
-		s.noOp,
-		s.errors,
+		"[+%d] [~%d] [-%d] [*%d] [=%d] [!%d]",
+		s.Create,
+		s.Update,
+		s.Delete,
+		s.Replace,
+		s.NoOp,
+		s.Errors,
 	)
 }
 
 type Status struct {
-	actions actions
-
-	width  int
-	styles styles
+	stats             *Stats
+	activeFilterCount int
+	width             int
+	styles            styles
 }
 
 func New(t theme.Theme) Status {
@@ -40,10 +40,18 @@ func New(t theme.Theme) Status {
 	}
 }
 
-func (s *Status) SetStats(st actions) {
-	s.actions = st
+func (s *Status) SetStats(st *Stats) {
+	s.stats = st
+}
+
+func (s *Status) SetActiveFilterCount(count int) {
+	s.activeFilterCount = max(0, count)
 }
 
 func (s *Status) SetWidth(width int) {
 	s.width = max(0, width)
+}
+
+func (s *Status) hasActiveFilter() bool {
+	return s.activeFilterCount > 0
 }
