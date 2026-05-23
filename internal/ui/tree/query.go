@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-
-	"github.com/marvinlanhenke/terraview/internal/planview"
 )
 
 type matcher struct {
@@ -39,7 +37,7 @@ func (m matcher) Active() bool {
 	return m.raw != ""
 }
 
-func (m matcher) MatchNode(n *planview.Node) bool {
+func (m matcher) MatchNode(n *Node) bool {
 	if n == nil {
 		return false
 	}

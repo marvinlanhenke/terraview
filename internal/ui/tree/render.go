@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
-	"github.com/marvinlanhenke/terraview/internal/planview"
 )
 
 func (t *Tree) syncViewport() {
@@ -43,7 +42,7 @@ func (t *Tree) renderRow(r row, selected bool) string {
 
 	actionMarker := t.styles.actionMarker(n.Action)
 	rawPrefix := indent + " " + icon + " "
-	wrap := n.Kind == planview.NodeResource
+	wrap := n.Kind == NodeResource
 
 	return t.renderLine(rawPrefix, n.Label, n.LabelCount, actionMarker, selected, wrap)
 }

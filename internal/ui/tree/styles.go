@@ -2,7 +2,6 @@ package tree
 
 import (
 	"charm.land/lipgloss/v2"
-	"github.com/marvinlanhenke/terraview/internal/planview"
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
@@ -54,19 +53,19 @@ func newStyles(t theme.Theme) styles {
 	}
 }
 
-func (s styles) actionMarker(action planview.Action) actionStyle {
+func (s styles) actionMarker(action Action) actionStyle {
 	switch action {
-	case planview.ActionCreate:
+	case ActionCreate:
 		return actionStyle{"+", s.create}
-	case planview.ActionUpdate:
+	case ActionUpdate:
 		return actionStyle{"~", s.update}
-	case planview.ActionDelete:
+	case ActionDelete:
 		return actionStyle{"-", s.delete}
-	case planview.ActionReplace:
+	case ActionReplace:
 		return actionStyle{"*", s.replace}
-	case planview.ActionNoOp:
+	case ActionNoOp:
 		return actionStyle{"=", s.noOp}
-	case planview.ActionError:
+	case ActionError:
 		return actionStyle{"!", s.error}
 	default:
 		return actionStyle{" ", lipgloss.NewStyle()}

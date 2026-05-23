@@ -1,14 +1,12 @@
 package tree
 
-import "github.com/marvinlanhenke/terraview/internal/planview"
-
 type criteria struct {
 	matcher matcher
-	filters map[planview.Action]bool
+	filters map[Action]bool
 }
 
 type row struct {
-	node       *planview.Node
+	node       *Node
 	depth      int
 	parent     int
 	expandable bool
@@ -19,7 +17,7 @@ func (r row) open(searchActive bool) bool {
 	return r.expanded || searchActive
 }
 
-func buildRows(root *planview.Node, expanded map[string]bool, c criteria) []row {
+func buildRows(root *Node, expanded map[string]bool, c criteria) []row {
 	if root == nil {
 		return nil
 	}
@@ -38,7 +36,7 @@ func buildRows(root *planview.Node, expanded map[string]bool, c criteria) []row 
 	return rows
 }
 
-func includeRootChild(n *planview.Node, filters map[planview.Action]bool, filtering bool) bool {
+func includeRootChild(n *Node, filters map[Action]bool, filtering bool) bool {
 	if n == nil {
 		return false
 	}
@@ -54,7 +52,7 @@ func includeRootChild(n *planview.Node, filters map[planview.Action]bool, filter
 	return filters[n.Action]
 }
 
-func appendRows(rows []row, n *planview.Node, parentIndex, depth int, expanded map[string]bool, m matcher) []row {
+func appendRows(rows []row, n *Node, parentIndex, depth int, expanded map[string]bool, m matcher) []row {
 	if n == nil {
 		return rows
 	}
@@ -85,7 +83,7 @@ func appendRows(rows []row, n *planview.Node, parentIndex, depth int, expanded m
 	return rows
 }
 
-func subtreeMatches(n *planview.Node, m matcher) bool {
+func subtreeMatches(n *Node, m matcher) bool {
 	if n == nil {
 		return false
 	}
@@ -103,7 +101,7 @@ func subtreeMatches(n *planview.Node, m matcher) bool {
 	return false
 }
 
-func hasActiveFilters(filters map[planview.Action]bool) bool {
+func hasActiveFilters(filters map[Action]bool) bool {
 	for _, isActive := range filters {
 		if isActive {
 			return true

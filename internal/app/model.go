@@ -23,7 +23,17 @@ const (
 
 type TreeControls struct {
 	query   string
-	filters map[planview.Action]bool
+	filters map[tree.Action]bool
+}
+
+// TODO replace output type with filter package view struct
+func (t *TreeControls) filterView() map[planview.Action]bool {
+	f := make(map[planview.Action]bool, len(t.filters))
+	for k, v := range t.filters {
+		f[planview.Action(k)] = v
+	}
+
+	return f
 }
 
 type Components struct {
@@ -59,7 +69,7 @@ func New(root *planview.Node) Model {
 	}
 
 	controls := TreeControls{
-		filters: make(map[planview.Action]bool),
+		filters: make(map[tree.Action]bool),
 	}
 
 	m := Model{
@@ -78,7 +88,7 @@ func New(root *planview.Node) Model {
 
 	treeWidth, treeHeight := treePaneSize(0, 0)
 	m.components.tree.SetSize(treeWidth, treeHeight)
-	m.components.tree.SetRoot(root)
+	m.components.tree.SetRoot(buildTreeNode(root))
 
 	detailsWidth := detailsWidth(m.size.width, treeWidth)
 	detailsHeight := treeHeight
@@ -99,7 +109,32 @@ func (m *Model) syncTreeOutputs() {
 	m.components.search.SetMatches(m.components.tree.VisibleCount())
 }
 
-func buildDetailsContent(n *planview.Node) details.Content {
+func buildTreeNode(n *planview.Node) *tree.Node {
+	if n == nil {
+		return nil
+	}
+
+	out := &tree.Node{
+		Id:         n.Id,
+		Label:      n.Label,
+		LabelCount: n.LabelCount,
+		Kind:       tree.NodeKind(n.Kind),
+		Action:     tree.Action(n.Action),
+		Payload:    n.Payload,
+		Changes:    tree.ChangeSet{Before: n.ChangeSetBefore(), After: n.ChangeSetAfter()},
+	}
+
+	if len(n.Children) > 0 {
+		out.Children = make([]*tree.Node, len(n.Children))
+		for i, child := range n.Children {
+			out.Children[i] = buildTreeNode(child)
+		}
+	}
+
+	return out
+}
+
+func buildDetailsContent(n *tree.Node) details.Content {
 	if n == nil {
 		return details.Content{Kind: details.KindNone}
 	}
@@ -110,14 +145,14 @@ func buildDetailsContent(n *planview.Node) details.Content {
 	}
 
 	switch n.Kind {
-	case planview.NodeGroup:
+	case tree.NodeGroup:
 		content.Kind = details.KindGroup
-	case planview.NodeResource:
+	case tree.NodeResource:
 		content.Kind = details.KindResource
 
 		content.Changes = details.ChangeSet{
-			Before: n.ChangeSetBefore(),
-			After:  n.ChangeSetAfter(),
+			Before: n.Changes.Before,
+			After:  n.Changes.After,
 		}
 
 		content.Payload = n.Payload

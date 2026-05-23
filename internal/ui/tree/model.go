@@ -5,17 +5,58 @@ import (
 
 	"charm.land/bubbles/v2/viewport"
 	"charm.land/lipgloss/v2"
-	"github.com/marvinlanhenke/terraview/internal/planview"
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
+type Action string
+
+const (
+	ActionCreate  Action = "create"
+	ActionUpdate  Action = "update"
+	ActionDelete  Action = "delete"
+	ActionReplace Action = "replace"
+	ActionNoOp    Action = "no-op"
+	ActionError   Action = "error"
+)
+
+type NodeKind int
+
+const (
+	NodeGroup NodeKind = iota
+	NodeResource
+)
+
+type ChangeSet struct {
+	Before map[string]any
+	After  map[string]any
+}
+
+type Node struct {
+	Id         string
+	Label      string
+	LabelCount string
+	Kind       NodeKind
+	Action     Action
+	Children   []*Node
+	Payload    any
+	Changes    ChangeSet
+}
+
+func (n *Node) HasChildren() bool {
+	return len(n.Children) > 0
+}
+
+func (n *Node) IsResource() bool {
+	return n != nil && n.Kind == NodeResource
+}
+
 type Tree struct {
-	root     *planview.Node
+	root     *Node
 	rows     []row
 	expanded map[string]bool
 	cursor   int
 
-	filters map[planview.Action]bool
+	filters map[Action]bool
 	matcher matcher
 
 	width    int
@@ -40,7 +81,7 @@ func New(t theme.Theme) Tree {
 	}
 }
 
-func (t *Tree) SetRoot(n *planview.Node) {
+func (t *Tree) SetRoot(n *Node) {
 	t.root = n
 	t.expanded = rebaseExpanded(n, t.expanded)
 
@@ -49,12 +90,12 @@ func (t *Tree) SetRoot(n *planview.Node) {
 	t.syncViewport()
 }
 
-func (t *Tree) SetCriteria(query string, filters map[planview.Action]bool) {
+func (t *Tree) SetCriteria(query string, filters map[Action]bool) {
 	t.matcher = newMatcher(query)
 
 	t.filters = maps.Clone(filters)
 	if t.filters == nil {
-		t.filters = make(map[planview.Action]bool)
+		t.filters = make(map[Action]bool)
 	}
 
 	t.rebuildRows()
@@ -76,9 +117,7 @@ func (t *Tree) SetSize(width, height int) {
 	t.syncViewport()
 }
 
-// TODO: Instead of exposing the full node, we can export a smaller subset
-// We only require: n.Id, n.Label, n.Kind, n.Changes, n.Payload
-func (t *Tree) Selected() *planview.Node {
+func (t *Tree) Selected() *Node {
 	if len(t.rows) == 0 {
 		return nil
 	}
@@ -114,16 +153,16 @@ func (t *Tree) rebuildRows() {
 	})
 }
 
-func rebaseExpanded(root *planview.Node, previous map[string]bool) map[string]bool {
+func rebaseExpanded(root *Node, previous map[string]bool) map[string]bool {
 	next := make(map[string]bool)
 
 	if root == nil || len(previous) == 0 {
 		return next
 	}
 
-	var visit func(*planview.Node)
+	var visit func(*Node)
 
-	visit = func(n *planview.Node) {
+	visit = func(n *Node) {
 		if n == nil {
 			return
 		}
