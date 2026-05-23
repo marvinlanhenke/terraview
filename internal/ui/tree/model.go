@@ -125,8 +125,16 @@ func (t *Tree) Selected() *Node {
 	return t.rows[t.cursor].node
 }
 
-func (t *Tree) VisibleCount() int {
-	return len(t.rows)
+func (t *Tree) VisibleResourceCount() int {
+	var count int
+
+	for _, row := range t.rows {
+		if row.node.Kind == NodeResource {
+			count++
+		}
+	}
+
+	return count
 }
 
 func (t *Tree) selectedRow() (row, bool) {

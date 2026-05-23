@@ -106,7 +106,7 @@ func (m *Model) refreshTreeFromControls() {
 
 func (m *Model) syncTreeOutputs() {
 	m.components.details.SetContent(buildDetailsContent(m.components.tree.Selected()))
-	m.components.search.SetMatches(m.components.tree.VisibleCount())
+	m.components.search.SetMatches(m.components.tree.VisibleResourceCount())
 }
 
 func buildTreeNode(n *planview.Node) *tree.Node {
