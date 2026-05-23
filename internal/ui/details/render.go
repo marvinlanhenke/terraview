@@ -3,6 +3,7 @@ package details
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"charm.land/lipgloss/v2"
 )
@@ -26,30 +27,27 @@ func (d *Details) syncViewport() {
 func (d *Details) renderLines() []string {
 	lines := make([]string, 0)
 
+	lines = append(lines, "")
+
 	if d.showingPlan() {
 		lines = append(lines, formatPayload(d.content.Payload))
 		return lines
 	}
 
-	header := lipgloss.NewStyle().
-		Width(d.width).
-		Render("Changed Attributes:")
-
-	lines = append(lines, header)
-
-	indent := " "
-	beforeIcon := "−"
-	afterIcon := "+"
+	indent := strings.Repeat(" ", 2)
+	beforeIcon := "(−) "
+	afterIcon := "(+) "
 
 	for _, cl := range d.changes {
-		beforeLine := indent + beforeIcon + formatPayload(cl.before) + "\n"
-		afterLine := indent + afterIcon + formatPayload(cl.after) + "\n"
+		beforeLine := indent + beforeIcon + formatPayload(cl.before)
+		afterLine := indent + afterIcon + formatPayload(cl.after)
 
-		path := lipgloss.NewStyle().
-			Border(lipgloss.ASCIIBorder(), false, false, true, false).
-			Render(cl.path + ":")
+		path := d.styles.subheader.
+			Width(d.width).
+			Render("attribute: " + cl.path)
 
-		line := path + "\n" + beforeLine + afterLine
+		line := lipgloss.JoinVertical(lipgloss.Left, path, beforeLine, afterLine, "")
+
 		lines = append(lines, line)
 	}
 
