@@ -141,10 +141,10 @@ func (m *Model) applyFilterIntent(intent filter.Intent) bool {
 	}
 
 	if intent.HasToggle {
-		if m.controls.filters[tree.Action(intent.ToggleAction)] {
-			delete(m.controls.filters, tree.Action(intent.ToggleAction))
+		if m.controls.filters[tree.Action(intent.Action)] {
+			delete(m.controls.filters, tree.Action(intent.Action))
 		} else {
-			m.controls.filters[tree.Action(intent.ToggleAction)] = true
+			m.controls.filters[tree.Action(intent.Action)] = true
 		}
 
 		return true

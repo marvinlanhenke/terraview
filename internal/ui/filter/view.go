@@ -2,7 +2,6 @@ package filter
 
 import (
 	"charm.land/lipgloss/v2"
-	"github.com/marvinlanhenke/terraview/internal/planview"
 )
 
 const (
@@ -12,7 +11,7 @@ const (
 	modalWidth = 28
 )
 
-func (f *Modal) View(active map[planview.Action]bool) string {
+func (f *Modal) View(active map[Action]bool) string {
 	rows := make([]string, len(f.options))
 
 	for i, option := range f.options {

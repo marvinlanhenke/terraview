@@ -24,8 +24,8 @@ func (f *Modal) Update(msg tea.Msg) (Intent, tea.Cmd) {
 			selected := f.selected()
 			if selected != nil {
 				intent = Intent{
-					ToggleAction: selected.Action,
-					HasToggle:    true,
+					Action:    selected.Action,
+					HasToggle: true,
 				}
 			}
 

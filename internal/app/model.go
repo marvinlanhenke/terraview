@@ -26,11 +26,10 @@ type TreeControls struct {
 	filters map[tree.Action]bool
 }
 
-// TODO replace output type with filter package view struct
-func (t *TreeControls) filterView() map[planview.Action]bool {
-	f := make(map[planview.Action]bool, len(t.filters))
+func (t *TreeControls) filterView() map[filter.Action]bool {
+	f := make(map[filter.Action]bool, len(t.filters))
 	for k, v := range t.filters {
-		f[planview.Action(k)] = v
+		f[filter.Action(k)] = v
 	}
 
 	return f
@@ -164,7 +163,7 @@ func buildDetailsContent(n *tree.Node) details.Content {
 }
 
 func buildFilterOptions(nodes []*planview.Node) []filter.Option {
-	seen := make(map[planview.Action]struct{})
+	seen := make(map[filter.Action]struct{})
 	options := make([]filter.Option, 0, len(nodes))
 
 	for _, n := range nodes {
@@ -172,9 +171,11 @@ func buildFilterOptions(nodes []*planview.Node) []filter.Option {
 			continue
 		}
 
-		if _, exists := seen[n.Action]; !exists {
+		action := filter.Action(n.Action)
+
+		if _, exists := seen[action]; !exists {
 			option := filter.Option{
-				Action: n.Action,
+				Action: action,
 				Label:  n.Label,
 				Count:  n.LabelCount,
 			}
@@ -182,7 +183,7 @@ func buildFilterOptions(nodes []*planview.Node) []filter.Option {
 			options = append(options, option)
 		}
 
-		seen[n.Action] = struct{}{}
+		seen[action] = struct{}{}
 	}
 
 	return options

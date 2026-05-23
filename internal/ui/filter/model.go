@@ -1,18 +1,28 @@
 package filter
 
 import (
-	"github.com/marvinlanhenke/terraview/internal/planview"
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
+type Action string
+
+const (
+	ActionCreate  Action = "create"
+	ActionUpdate  Action = "update"
+	ActionDelete  Action = "delete"
+	ActionReplace Action = "replace"
+	ActionNoOp    Action = "no-op"
+	ActionError   Action = "error"
+)
+
 type Intent struct {
-	ToggleAction planview.Action
-	HasToggle    bool
-	Reset        bool
+	Action    Action
+	HasToggle bool
+	Reset     bool
 }
 
 type Option struct {
-	Action planview.Action
+	Action Action
 	Label  string
 	Count  string
 }
