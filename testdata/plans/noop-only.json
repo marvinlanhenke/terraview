@@ -1,0 +1,125 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.8.5",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_iam_role.app",
+          "mode": "managed",
+          "type": "aws_iam_role",
+          "name": "app",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "values": {
+            "name": "prod-app-role",
+            "tags": {
+              "env": "prod",
+              "team": "platform"
+            }
+          }
+        },
+        {
+          "address": "aws_route53_record.api",
+          "mode": "managed",
+          "type": "aws_route53_record",
+          "name": "api",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "values": {
+            "zone_id": "Z1234567890ABC",
+            "name": "api.example.com",
+            "type": "A",
+            "ttl": 60,
+            "records": ["198.51.100.20"]
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_iam_role.app",
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "app",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["no-op"],
+        "before": {
+          "name": "prod-app-role",
+          "tags": {
+            "env": "prod",
+            "team": "platform"
+          }
+        },
+        "after": {
+          "name": "prod-app-role",
+          "tags": {
+            "env": "prod",
+            "team": "platform"
+          }
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_route53_record.api",
+      "mode": "managed",
+      "type": "aws_route53_record",
+      "name": "api",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["no-op"],
+        "before": {
+          "zone_id": "Z1234567890ABC",
+          "name": "api.example.com",
+          "type": "A",
+          "ttl": 60,
+          "records": ["198.51.100.20"]
+        },
+        "after": {
+          "zone_id": "Z1234567890ABC",
+          "name": "api.example.com",
+          "type": "A",
+          "ttl": 60,
+          "records": ["198.51.100.20"]
+        },
+        "after_unknown": {}
+      }
+    }
+  ],
+  "output_changes": {
+    "api_dns_name": {
+      "actions": ["no-op"],
+      "before": "api.example.com",
+      "after": "api.example.com",
+      "after_unknown": false
+    }
+  },
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 5.0"
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_iam_role.app",
+          "mode": "managed",
+          "type": "aws_iam_role",
+          "name": "app",
+          "provider_config_key": "aws"
+        },
+        {
+          "address": "aws_route53_record.api",
+          "mode": "managed",
+          "type": "aws_route53_record",
+          "name": "api",
+          "provider_config_key": "aws"
+        }
+      ]
+    }
+  }
+}

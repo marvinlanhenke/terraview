@@ -1,0 +1,68 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.8.5",
+  "planned_values": {
+    "root_module": {}
+  },
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.legacy_artifacts",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "legacy_artifacts",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["delete"],
+        "before": {
+          "bucket": "example-prod-legacy-artifacts",
+          "force_destroy": true,
+          "tags": {
+            "env": "prod",
+            "deprecated": "true"
+          }
+        },
+        "after": null,
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_eip.legacy_nat",
+      "mode": "managed",
+      "type": "aws_eip",
+      "name": "legacy_nat",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["delete"],
+        "before": {
+          "id": "eipalloc-0123456789abcdef0",
+          "domain": "vpc",
+          "public_ip": "203.0.113.10",
+          "tags": {
+            "Name": "legacy-nat-eip",
+            "env": "prod"
+          }
+        },
+        "after": null,
+        "after_unknown": {}
+      }
+    }
+  ],
+  "output_changes": {
+    "legacy_nat_public_ip": {
+      "actions": ["delete"],
+      "before": "203.0.113.10",
+      "after": null,
+      "after_unknown": false
+    }
+  },
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 5.0"
+      }
+    },
+    "root_module": {}
+  }
+}

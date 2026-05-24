@@ -1,0 +1,136 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.8.5",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_security_group.api",
+          "mode": "managed",
+          "type": "aws_security_group",
+          "name": "api",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "values": {
+            "name": "prod-api-sg",
+            "description": "Security group for API service",
+            "vpc_id": "vpc-12345678",
+            "tags": {
+              "env": "prod",
+              "service": "api",
+              "owner": "platform"
+            }
+          }
+        },
+        {
+          "address": "aws_cloudwatch_log_group.api",
+          "mode": "managed",
+          "type": "aws_cloudwatch_log_group",
+          "name": "api",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "values": {
+            "name": "/ecs/prod-api",
+            "retention_in_days": 90,
+            "tags": {
+              "env": "prod",
+              "service": "api"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_security_group.api",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "api",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["update"],
+        "before": {
+          "name": "prod-api-sg",
+          "description": "Security group for API service",
+          "vpc_id": "vpc-12345678",
+          "tags": {
+            "env": "prod",
+            "service": "api"
+          }
+        },
+        "after": {
+          "name": "prod-api-sg",
+          "description": "Security group for API service",
+          "vpc_id": "vpc-12345678",
+          "tags": {
+            "env": "prod",
+            "service": "api",
+            "owner": "platform"
+          }
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_cloudwatch_log_group.api",
+      "mode": "managed",
+      "type": "aws_cloudwatch_log_group",
+      "name": "api",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["update"],
+        "before": {
+          "name": "/ecs/prod-api",
+          "retention_in_days": 30,
+          "tags": {
+            "env": "prod",
+            "service": "api"
+          }
+        },
+        "after": {
+          "name": "/ecs/prod-api",
+          "retention_in_days": 90,
+          "tags": {
+            "env": "prod",
+            "service": "api"
+          }
+        },
+        "after_unknown": {}
+      }
+    }
+  ],
+  "output_changes": {
+    "log_retention_days": {
+      "actions": ["update"],
+      "before": 30,
+      "after": 90,
+      "after_unknown": false
+    }
+  },
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 5.0"
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_security_group.api",
+          "mode": "managed",
+          "type": "aws_security_group",
+          "name": "api",
+          "provider_config_key": "aws"
+        },
+        {
+          "address": "aws_cloudwatch_log_group.api",
+          "mode": "managed",
+          "type": "aws_cloudwatch_log_group",
+          "name": "api",
+          "provider_config_key": "aws"
+        }
+      ]
+    }
+  }
+}

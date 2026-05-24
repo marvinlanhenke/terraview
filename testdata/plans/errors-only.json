@@ -1,0 +1,100 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.8.5",
+  "errored": true,
+  "planned_values": {
+    "root_module": {}
+  },
+  "resource_changes": [],
+  "output_changes": {},
+  "diagnostics": [
+    {
+      "severity": "error",
+      "summary": "Invalid value for variable",
+      "detail": "The value provided for variable \"environment\" is invalid. Expected one of: dev, staging, prod.",
+      "range": {
+        "filename": "variables.tf",
+        "start": {
+          "line": 12,
+          "column": 3,
+          "byte": 214
+        },
+        "end": {
+          "line": 12,
+          "column": 22,
+          "byte": 233
+        }
+      },
+      "snippet": {
+        "context": "variable \"environment\"",
+        "code": "validation {\n  condition     = contains([\"dev\", \"staging\", \"prod\"], var.environment)\n  error_message = \"Expected one of: dev, staging, prod.\"\n}",
+        "start_line": 10,
+        "highlight_start_offset": 17,
+        "highlight_end_offset": 69,
+        "values": []
+      }
+    },
+    {
+      "severity": "error",
+      "summary": "Reference to undeclared resource",
+      "detail": "A managed resource \"aws_security_group\" \"api\" has not been declared in the root module.",
+      "range": {
+        "filename": "main.tf",
+        "start": {
+          "line": 34,
+          "column": 23,
+          "byte": 821
+        },
+        "end": {
+          "line": 34,
+          "column": 45,
+          "byte": 843
+        }
+      },
+      "snippet": {
+        "context": "resource \"aws_instance\" \"web\"",
+        "code": "vpc_security_group_ids = [aws_security_group.api.id]",
+        "start_line": 34,
+        "highlight_start_offset": 26,
+        "highlight_end_offset": 47,
+        "values": []
+      }
+    },
+    {
+      "severity": "error",
+      "summary": "Provider configuration not present",
+      "detail": "To work with aws_db_instance.primary, its original provider configuration at provider[\"registry.terraform.io/hashicorp/aws\"].eu was required, but it has been removed.",
+      "range": {
+        "filename": "providers.tf",
+        "start": {
+          "line": 3,
+          "column": 1,
+          "byte": 41
+        },
+        "end": {
+          "line": 8,
+          "column": 2,
+          "byte": 129
+        }
+      },
+      "snippet": {
+        "context": "provider \"aws\"",
+        "code": "provider \"aws\" {\n  region = \"eu-central-1\"\n}",
+        "start_line": 3,
+        "highlight_start_offset": 0,
+        "highlight_end_offset": 50,
+        "values": []
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 5.0"
+      }
+    },
+    "root_module": {}
+  }
+}

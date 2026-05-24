@@ -1,0 +1,424 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.8.5",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_s3_bucket.app_uploads",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "app_uploads",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "values": {
+            "bucket": "example-prod-app-uploads",
+            "tags": {
+              "env": "prod",
+              "team": "platform",
+              "service": "uploads"
+            }
+          }
+        },
+        {
+          "address": "aws_cloudwatch_log_group.api",
+          "mode": "managed",
+          "type": "aws_cloudwatch_log_group",
+          "name": "api",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "values": {
+            "name": "/ecs/prod-api",
+            "retention_in_days": 30,
+            "tags": {
+              "env": "prod",
+              "service": "api"
+            }
+          }
+        },
+        {
+          "address": "aws_iam_role.ecs_task",
+          "mode": "managed",
+          "type": "aws_iam_role",
+          "name": "ecs_task",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "values": {
+            "name": "prod-ecs-task-role",
+            "assume_role_policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}",
+            "tags": {
+              "env": "prod",
+              "team": "platform"
+            }
+          }
+        },
+        {
+          "address": "aws_security_group.api",
+          "mode": "managed",
+          "type": "aws_security_group",
+          "name": "api",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "values": {
+            "name": "prod-api-sg",
+            "description": "Security group for API service",
+            "vpc_id": "vpc-12345678",
+            "tags": {
+              "env": "prod",
+              "service": "api"
+            }
+          }
+        }
+      ],
+      "child_modules": [
+        {
+          "address": "module.network",
+          "resources": [
+            {
+              "address": "module.network.aws_subnet.private_a",
+              "mode": "managed",
+              "type": "aws_subnet",
+              "name": "private_a",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "values": {
+                "vpc_id": "vpc-12345678",
+                "cidr_block": "10.20.1.0/24",
+                "availability_zone": "eu-central-1a",
+                "map_public_ip_on_launch": false,
+                "tags": {
+                  "Name": "prod-private-a",
+                  "env": "prod"
+                }
+              }
+            },
+            {
+              "address": "module.network.aws_subnet.private_b",
+              "mode": "managed",
+              "type": "aws_subnet",
+              "name": "private_b",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "values": {
+                "vpc_id": "vpc-12345678",
+                "cidr_block": "10.20.2.0/24",
+                "availability_zone": "eu-central-1b",
+                "map_public_ip_on_launch": false,
+                "tags": {
+                  "Name": "prod-private-b",
+                  "env": "prod"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "address": "module.compute",
+          "resources": [
+            {
+              "address": "module.compute.aws_ecs_cluster.main",
+              "mode": "managed",
+              "type": "aws_ecs_cluster",
+              "name": "main",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "values": {
+                "name": "prod-api-cluster",
+                "tags": {
+                  "env": "prod",
+                  "service": "api"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.app_uploads",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "app_uploads",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "bucket": "example-prod-app-uploads",
+          "acl": "private",
+          "force_destroy": false,
+          "tags": {
+            "env": "prod",
+            "team": "platform",
+            "service": "uploads"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "bucket_domain_name": true,
+          "bucket_regional_domain_name": true
+        }
+      }
+    },
+    {
+      "address": "aws_cloudwatch_log_group.api",
+      "mode": "managed",
+      "type": "aws_cloudwatch_log_group",
+      "name": "api",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "name": "/ecs/prod-api",
+          "retention_in_days": 30,
+          "tags": {
+            "env": "prod",
+            "service": "api"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "aws_iam_role.ecs_task",
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "ecs_task",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "name": "prod-ecs-task-role",
+          "assume_role_policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}",
+          "tags": {
+            "env": "prod",
+            "team": "platform"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "create_date": true,
+          "id": true,
+          "unique_id": true
+        }
+      }
+    },
+    {
+      "address": "aws_security_group.api",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "api",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "name": "prod-api-sg",
+          "description": "Security group for API service",
+          "vpc_id": "vpc-12345678",
+          "ingress": [
+            {
+              "from_port": 443,
+              "to_port": 443,
+              "protocol": "tcp",
+              "cidr_blocks": ["10.20.0.0/16"]
+            }
+          ],
+          "egress": [
+            {
+              "from_port": 0,
+              "to_port": 0,
+              "protocol": "-1",
+              "cidr_blocks": ["0.0.0.0/0"]
+            }
+          ],
+          "tags": {
+            "env": "prod",
+            "service": "api"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "owner_id": true
+        }
+      }
+    },
+    {
+      "address": "module.network.aws_subnet.private_a",
+      "module_address": "module.network",
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "private_a",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "vpc_id": "vpc-12345678",
+          "cidr_block": "10.20.1.0/24",
+          "availability_zone": "eu-central-1a",
+          "map_public_ip_on_launch": false,
+          "tags": {
+            "Name": "prod-private-a",
+            "env": "prod"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "owner_id": true
+        }
+      }
+    },
+    {
+      "address": "module.network.aws_subnet.private_b",
+      "module_address": "module.network",
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "private_b",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "vpc_id": "vpc-12345678",
+          "cidr_block": "10.20.2.0/24",
+          "availability_zone": "eu-central-1b",
+          "map_public_ip_on_launch": false,
+          "tags": {
+            "Name": "prod-private-b",
+            "env": "prod"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "owner_id": true
+        }
+      }
+    },
+    {
+      "address": "module.compute.aws_ecs_cluster.main",
+      "module_address": "module.compute",
+      "mode": "managed",
+      "type": "aws_ecs_cluster",
+      "name": "main",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "name": "prod-api-cluster",
+          "tags": {
+            "env": "prod",
+            "service": "api"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true
+        }
+      }
+    }
+  ],
+  "output_changes": {
+    "uploads_bucket_name": {
+      "actions": ["create"],
+      "before": null,
+      "after": "example-prod-app-uploads",
+      "after_unknown": false
+    },
+    "api_log_group_name": {
+      "actions": ["create"],
+      "before": null,
+      "after": "/ecs/prod-api",
+      "after_unknown": false
+    },
+    "ecs_cluster_arn": {
+      "actions": ["create"],
+      "before": null,
+      "after": null,
+      "after_unknown": true
+    }
+  },
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 5.0"
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_s3_bucket.app_uploads",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "app_uploads",
+          "provider_config_key": "aws"
+        },
+        {
+          "address": "aws_cloudwatch_log_group.api",
+          "mode": "managed",
+          "type": "aws_cloudwatch_log_group",
+          "name": "api",
+          "provider_config_key": "aws"
+        },
+        {
+          "address": "aws_iam_role.ecs_task",
+          "mode": "managed",
+          "type": "aws_iam_role",
+          "name": "ecs_task",
+          "provider_config_key": "aws"
+        },
+        {
+          "address": "aws_security_group.api",
+          "mode": "managed",
+          "type": "aws_security_group",
+          "name": "api",
+          "provider_config_key": "aws"
+        }
+      ],
+      "module_calls": {
+        "network": {
+          "source": "./modules/network",
+          "module": {
+            "resources": [
+              {
+                "address": "aws_subnet.private_a",
+                "mode": "managed",
+                "type": "aws_subnet",
+                "name": "private_a",
+                "provider_config_key": "aws"
+              },
+              {
+                "address": "aws_subnet.private_b",
+                "mode": "managed",
+                "type": "aws_subnet",
+                "name": "private_b",
+                "provider_config_key": "aws"
+              }
+            ]
+          }
+        },
+        "compute": {
+          "source": "./modules/compute",
+          "module": {
+            "resources": [
+              {
+                "address": "aws_ecs_cluster.main",
+                "mode": "managed",
+                "type": "aws_ecs_cluster",
+                "name": "main",
+                "provider_config_key": "aws"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

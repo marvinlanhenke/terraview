@@ -1,0 +1,154 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.8.5",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_db_instance.primary",
+          "mode": "managed",
+          "type": "aws_db_instance",
+          "name": "primary",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "values": {
+            "identifier": "prod-primary-db",
+            "engine": "postgres",
+            "engine_version": "16.1",
+            "instance_class": "db.t4g.medium",
+            "allocated_storage": 100,
+            "tags": {
+              "env": "prod",
+              "service": "database"
+            }
+          }
+        },
+        {
+          "address": "aws_subnet.private_a",
+          "mode": "managed",
+          "type": "aws_subnet",
+          "name": "private_a",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "values": {
+            "vpc_id": "vpc-12345678",
+            "cidr_block": "10.30.1.0/24",
+            "availability_zone": "eu-central-1a",
+            "tags": {
+              "Name": "prod-private-a",
+              "env": "prod"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_db_instance.primary",
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "primary",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["delete", "create"],
+        "before": {
+          "identifier": "prod-primary-db",
+          "engine": "postgres",
+          "engine_version": "14.9",
+          "instance_class": "db.t4g.medium",
+          "allocated_storage": 100,
+          "tags": {
+            "env": "prod",
+            "service": "database"
+          }
+        },
+        "after": {
+          "identifier": "prod-primary-db",
+          "engine": "postgres",
+          "engine_version": "16.1",
+          "instance_class": "db.t4g.medium",
+          "allocated_storage": 100,
+          "tags": {
+            "env": "prod",
+            "service": "database"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "endpoint": true,
+          "id": true,
+          "resource_id": true
+        },
+        "replace_paths": [["engine_version"]]
+      }
+    },
+    {
+      "address": "aws_subnet.private_a",
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "private_a",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["delete", "create"],
+        "before": {
+          "vpc_id": "vpc-12345678",
+          "cidr_block": "10.20.1.0/24",
+          "availability_zone": "eu-central-1a",
+          "tags": {
+            "Name": "prod-private-a",
+            "env": "prod"
+          }
+        },
+        "after": {
+          "vpc_id": "vpc-12345678",
+          "cidr_block": "10.30.1.0/24",
+          "availability_zone": "eu-central-1a",
+          "tags": {
+            "Name": "prod-private-a",
+            "env": "prod"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "owner_id": true
+        },
+        "replace_paths": [["cidr_block"]]
+      }
+    }
+  ],
+  "output_changes": {
+    "db_endpoint": {
+      "actions": ["delete", "create"],
+      "before": "prod-primary-db.abc123.eu-central-1.rds.amazonaws.com",
+      "after": null,
+      "after_unknown": true
+    }
+  },
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 5.0"
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_db_instance.primary",
+          "mode": "managed",
+          "type": "aws_db_instance",
+          "name": "primary",
+          "provider_config_key": "aws"
+        },
+        {
+          "address": "aws_subnet.private_a",
+          "mode": "managed",
+          "type": "aws_subnet",
+          "name": "private_a",
+          "provider_config_key": "aws"
+        }
+      ]
+    }
+  }
+}
