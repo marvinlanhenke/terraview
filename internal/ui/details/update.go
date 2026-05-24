@@ -12,7 +12,7 @@ func (d *Details) Update(msg tea.Msg) tea.Cmd {
 	case tea.KeyPressMsg:
 		switch {
 		case key.Matches(msg, keys.toggle):
-			if d.content.Payload != nil {
+			if d.content.Payload != nil && !d.content.IsError {
 				d.showPlan = !d.showPlan
 				d.setHeader()
 				d.syncViewport()

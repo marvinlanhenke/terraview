@@ -25,14 +25,15 @@ type Content struct {
 	Label   string
 	Changes ChangeSet
 	Payload any
+	IsError bool
 }
 
 type Details struct {
 	content  Content
 	changes  []change
 	header   string
-	showPlan bool
 	focus    bool
+	showPlan bool
 
 	width    int
 	height   int
@@ -72,6 +73,7 @@ func (d *Details) SetContent(content Content) {
 
 	d.content = content
 	d.changes = flattenChanges(content.Changes)
+	d.showPlan = content.IsError
 
 	if changed {
 		d.viewport.SetYOffset(0)

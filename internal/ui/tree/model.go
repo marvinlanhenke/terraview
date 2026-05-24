@@ -50,6 +50,10 @@ func (n *Node) IsResource() bool {
 	return n != nil && n.Kind == NodeResource && n.Action != ActionNoOp
 }
 
+func (n *Node) IsError() bool {
+	return n != nil && n.Kind == NodeResource && n.Action == ActionError
+}
+
 type Tree struct {
 	root     *Node
 	rows     []row

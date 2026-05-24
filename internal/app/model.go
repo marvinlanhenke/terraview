@@ -230,6 +230,8 @@ func buildDetailsContent(n *tree.Node) details.Content {
 		}
 
 		content.Payload = n.Payload
+
+		content.IsError = n.IsError()
 	default:
 		content.Kind = details.KindNone
 	}

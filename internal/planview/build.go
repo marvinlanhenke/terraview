@@ -1,6 +1,7 @@
 package planview
 
 import (
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"strings"
@@ -38,7 +39,7 @@ func FromTerraform(tfplan terraform.Plan) (*Node, error) {
 
 	root.Children = nodeGroups
 
-	totalChanges := len(tfplan.ResourceChanges)
+	totalChanges := len(tfplan.ResourceChanges) + len(tfplan.Diagnostics)
 
 	childCounter := make(map[Action]int)
 
@@ -64,6 +65,34 @@ func FromTerraform(tfplan terraform.Plan) (*Node, error) {
 			Action:  action,
 			changes: changes,
 			Payload: rc,
+		}
+
+		childCounter[action]++
+
+		root.Children[idx].Children = append(root.Children[idx].Children, child)
+	}
+
+	for i, d := range tfplan.Diagnostics {
+		if strings.ToLower(d.Severity) != "error" {
+			continue
+		}
+
+		id := sha256.Sum256([]byte(d.Summary))
+		summary := d.Summary
+		action := ActionError
+
+		idx, exists := actionIndex[action]
+
+		if !exists {
+			return nil, errors.New("failed to lookup node group index by action type")
+		}
+
+		child := &Node{
+			Id:      fmt.Sprintf("%s-%d", id, i),
+			Label:   summary,
+			Kind:    NodeResource,
+			Action:  action,
+			Payload: d,
 		}
 
 		childCounter[action]++

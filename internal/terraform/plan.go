@@ -6,6 +6,7 @@ type Plan struct {
 	PlannedValues    PlannedValues           `json:"planned_values"`
 	ResourceChanges  []ResourceChange        `json:"resource_changes"`
 	OutputChanges    map[string]OutputChange `json:"output_changes"`
+	Diagnostics      []Diagnostic            `json:"diagnostics"`
 	Configuration    Configuration           `json:"configuration"`
 }
 
@@ -36,6 +37,14 @@ type ResourceChange struct {
 	Name          string `json:"name"`
 	ProviderName  string `json:"provider_name"`
 	Change        Change `json:"change"`
+}
+
+type Diagnostic struct {
+	Severity string         `json:"severity"`
+	Summary  string         `json:"summary"`
+	Detail   string         `json:"detail"`
+	Range    map[string]any `json:"range"`
+	Snippet  map[string]any `json:"snippet"`
 }
 
 type Change struct {
