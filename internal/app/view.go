@@ -6,7 +6,7 @@ import (
 )
 
 func (m Model) View() tea.View {
-	searchBar := m.components.search.View()
+	search := m.components.search.View()
 	status := m.components.status.View()
 	tree := m.components.tree.View()
 	details := m.components.details.View()
@@ -31,7 +31,7 @@ func (m Model) View() tea.View {
 
 	appContent := lipgloss.JoinVertical(
 		lipgloss.Left,
-		searchBar,
+		search,
 		status,
 		" ",
 		body,
@@ -61,7 +61,7 @@ func (m Model) View() tea.View {
 }
 
 func treePaneSize(width, height int) (int, int) {
-	return max(20, width/3), max(5, height-10)
+	return max(20, width/3), max(5, height-13)
 }
 
 func detailsWidth(appWidth, treeWidth int) int {
