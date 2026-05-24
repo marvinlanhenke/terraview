@@ -1,0 +1,141 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.8.5",
+  "errored": true,
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_s3_bucket.logs",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "logs",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "values": {
+            "bucket": "example-prod-logs",
+            "tags": {
+              "env": "prod",
+              "team": "platform"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.logs",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "logs",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "bucket": "example-prod-logs",
+          "acl": "private",
+          "tags": {
+            "env": "prod",
+            "team": "platform"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "bucket_domain_name": true
+        }
+      }
+    },
+    {
+      "address": "aws_cloudwatch_log_group.api",
+      "mode": "managed",
+      "type": "aws_cloudwatch_log_group",
+      "name": "api",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["update"],
+        "before": {
+          "name": "/ecs/prod-api",
+          "retention_in_days": 30,
+          "tags": {
+            "env": "prod",
+            "service": "api"
+          }
+        },
+        "after": {
+          "name": "/ecs/prod-api",
+          "retention_in_days": 90,
+          "tags": {
+            "env": "prod",
+            "service": "api"
+          }
+        },
+        "after_unknown": {}
+      }
+    }
+  ],
+  "output_changes": {
+    "logs_bucket_name": {
+      "actions": ["create"],
+      "before": null,
+      "after": "example-prod-logs",
+      "after_unknown": false
+    }
+  },
+  "diagnostics": [
+    {
+      "severity": "error",
+      "summary": "Error reading IAM policy document",
+      "detail": "The data source data.aws_iam_policy_document.task_execution could not be evaluated because one of its statements references an undeclared local value.",
+      "range": {
+        "filename": "iam.tf",
+        "start": {
+          "line": 42,
+          "column": 19,
+          "byte": 1042
+        },
+        "end": {
+          "line": 42,
+          "column": 43,
+          "byte": 1066
+        }
+      },
+      "snippet": {
+        "context": "data \"aws_iam_policy_document\" \"task_execution\"",
+        "code": "resources = local.execution_policy_resources",
+        "start_line": 42,
+        "highlight_start_offset": 12,
+        "highlight_end_offset": 44,
+        "values": []
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 5.0"
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_s3_bucket.logs",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "logs",
+          "provider_config_key": "aws"
+        },
+        {
+          "address": "aws_cloudwatch_log_group.api",
+          "mode": "managed",
+          "type": "aws_cloudwatch_log_group",
+          "name": "api",
+          "provider_config_key": "aws"
+        }
+      ]
+    }
+  }
+}
