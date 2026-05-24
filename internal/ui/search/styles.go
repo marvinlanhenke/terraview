@@ -13,6 +13,7 @@ type styles struct {
 	status          lipgloss.Style
 	input           lipgloss.Style
 	inputAlt        lipgloss.Style
+	banner          lipgloss.Style
 }
 
 func newStyles(t theme.Theme) styles {
@@ -37,6 +38,10 @@ func newStyles(t theme.Theme) styles {
 
 	nugget := status.Bold(true)
 
+	banner := base.
+		Background(p.Surface).
+		Foreground(p.Info)
+
 	return styles{
 		palette:         p,
 		background:      background,
@@ -45,5 +50,6 @@ func newStyles(t theme.Theme) styles {
 		status:          status,
 		input:           input,
 		inputAlt:        inputAlt,
+		banner:          banner,
 	}
 }

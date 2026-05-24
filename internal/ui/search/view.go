@@ -12,6 +12,7 @@ func (s *Search) View() string {
 
 	label := s.styles.nugget.Render("[S]")
 	status := s.styles.status.Render(fmt.Sprintf("%d matches", s.matches))
+	banner := s.styles.banner.Render("◎─TERRAVIEW─◉")
 
 	inputStyle := s.styles.input
 
@@ -19,7 +20,7 @@ func (s *Search) View() string {
 		inputStyle = s.styles.inputAlt
 	}
 
-	availableWidth := max(0, s.width-lipgloss.Width(label)-lipgloss.Width(status))
+	availableWidth := max(0, s.width-lipgloss.Width(label)-lipgloss.Width(status)-lipgloss.Width(banner)-1)
 
 	input := inputStyle.Width(availableWidth).Render(s.input.View())
 
@@ -28,6 +29,8 @@ func (s *Search) View() string {
 		label,
 		input,
 		status,
+		" ",
+		banner,
 	)
 
 	return s.styles.
