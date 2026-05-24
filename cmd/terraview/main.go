@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -10,10 +11,16 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/terraform"
 )
 
-const filepath = "/home/mlanhenke/dev/projects/terraview/testdata/plans"
-
 func main() {
-	data, err := os.ReadFile(filepath + "/mixed.json")
+	planPath := flag.String("file", "", "path to terraform plan JSON file")
+	flag.Parse()
+
+	if *planPath == "" {
+		fmt.Fprintln(os.Stderr, "usage: terraview -file <path-to-plan.json>")
+		os.Exit(2)
+	}
+
+	data, err := os.ReadFile(*planPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to read terraform plan: %v\n", err)
 		os.Exit(1)
