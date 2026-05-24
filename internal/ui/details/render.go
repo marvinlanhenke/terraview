@@ -41,7 +41,7 @@ func (d *Details) renderLines() []string {
 			bg = lipgloss.NewStyle().Background(d.styles.palette.SurfaceAlt)
 		}
 
-		jsonStr := getJsonStr(d.content.Payload, strings.Repeat(" ", 2))
+		jsonStr := getJsonStr(d.content.Payload, "")
 
 		lines = append(lines, d.highlightJson(jsonStr, bg))
 
