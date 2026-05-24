@@ -1,0 +1,114 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.8.5",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_s3_bucket.logs",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "logs",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "values": {
+            "bucket": "example-prod-logs",
+            "arn": "arn:aws:s3:::example-prod-logs",
+            "tags": {
+              "env": "prod",
+              "team": "platform"
+            }
+          }
+        }
+      ]
+    },
+    "outputs": {
+      "logs_bucket_name": {
+        "sensitive": false,
+        "value": "example-prod-logs"
+      },
+      "logs_bucket_arn": {
+        "sensitive": false,
+        "value": "arn:aws:s3:::example-prod-logs"
+      },
+      "platform_metadata": {
+        "sensitive": false,
+        "value": {
+          "environment": "prod",
+          "team": "platform",
+          "managed_by": "terraform"
+        }
+      }
+    }
+  },
+  "resource_changes": [],
+  "output_changes": {
+    "logs_bucket_name": {
+      "actions": ["no-op"],
+      "before": "example-prod-logs",
+      "after": "example-prod-logs",
+      "after_unknown": false
+    },
+    "logs_bucket_arn": {
+      "actions": ["create"],
+      "before": null,
+      "after": "arn:aws:s3:::example-prod-logs",
+      "after_unknown": false
+    },
+    "legacy_bucket_domain_name": {
+      "actions": ["delete"],
+      "before": "example-prod-logs.s3.amazonaws.com",
+      "after": null,
+      "after_unknown": false
+    },
+    "platform_metadata": {
+      "actions": ["update"],
+      "before": {
+        "environment": "prod",
+        "team": "platform"
+      },
+      "after": {
+        "environment": "prod",
+        "team": "platform",
+        "managed_by": "terraform"
+      },
+      "after_unknown": false
+    }
+  },
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 5.0"
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_s3_bucket.logs",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "logs",
+          "provider_config_key": "aws"
+        }
+      ],
+      "outputs": {
+        "logs_bucket_name": {
+          "expression": {
+            "references": ["aws_s3_bucket.logs.bucket"]
+          }
+        },
+        "logs_bucket_arn": {
+          "expression": {
+            "references": ["aws_s3_bucket.logs.arn"]
+          }
+        },
+        "platform_metadata": {
+          "expression": {
+            "references": ["aws_s3_bucket.logs.tags"]
+          }
+        }
+      }
+    }
+  }
+}
