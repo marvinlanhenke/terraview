@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 
 	tea "charm.land/bubbletea/v2"
@@ -12,17 +13,12 @@ import (
 )
 
 func main() {
-	planPath := flag.String("file", "", "path to terraform plan JSON file")
+	planPath := flag.String("file", "", "path to terraform plan JSON file, or - for stdin")
 	flag.Parse()
 
-	if *planPath == "" {
-		fmt.Fprintln(os.Stderr, "usage: terraview -file <path-to-plan.json>")
-		os.Exit(2)
-	}
-
-	data, err := os.ReadFile(*planPath)
+	data, err := readPlanInput(*planPath)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to read terraform plan: %v\n", err)
+		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
 	}
 
@@ -43,5 +39,27 @@ func main() {
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to run terraview: %v\n", err)
 		os.Exit(1)
+	}
+}
+
+func readPlanInput(planPath string) ([]byte, error) {
+	switch {
+	case planPath == "-":
+		return io.ReadAll(os.Stdin)
+
+	case planPath != "":
+		return os.ReadFile(planPath)
+
+	default:
+		info, err := os.Stdin.Stat()
+		if err != nil {
+			return nil, fmt.Errorf("failed to inspect stdin: %w", err)
+		}
+
+		if info.Mode()&os.ModeCharDevice == 0 {
+			return io.ReadAll(os.Stdin)
+		}
+
+		return nil, fmt.Errorf("usage: terraview -file <plan.json> or terraview -file -")
 	}
 }
