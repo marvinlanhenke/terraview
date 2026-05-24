@@ -56,7 +56,7 @@ func Default() Theme {
 		Palette: p,
 		Styles: CommonStyles{
 			App:           lipgloss.NewStyle().Padding(1, 2),
-			Footer:        lipgloss.NewStyle().Faint(true),
+			Footer:        lipgloss.NewStyle(),
 			Background:    lipgloss.NewStyle().Background(p.Surface),
 			BackgroundAlt: lipgloss.NewStyle().Background(p.SurfaceAlt),
 		},

@@ -60,7 +60,7 @@ func (d *Details) renderLines() []string {
 		prefixIndent := indent + indent + indent
 
 		beforeStr := getJsonStr(cl.before, prefixIndent)
-		beforeLine := beforeIcon + "\n" + d.highlightJson(beforeStr, bg) + "\n"
+		beforeLine := "\n" + beforeIcon + "\n" + d.highlightJson(beforeStr, bg) + "\n"
 		beforeLine = bg.Render(beforeLine)
 
 		afterStr := getJsonStr(cl.after, prefixIndent)

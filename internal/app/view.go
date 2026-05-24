@@ -18,7 +18,16 @@ func (m Model) View() tea.View {
 		details,
 	)
 
-	footer := m.theme.Styles.Footer.Render("/ search • esc back • q quit")
+	general := m.help.ShortHelpView(m.generalFooterBindings())
+	specific := m.help.ShortHelpView(m.specificFooterBindings())
+
+	bindings := []string{general}
+
+	if specific != "" {
+		bindings = append(bindings, specific)
+	}
+
+	footer := m.theme.Styles.Footer.Render(lipgloss.JoinVertical(lipgloss.Left, bindings...))
 
 	appContent := lipgloss.JoinVertical(
 		lipgloss.Left,

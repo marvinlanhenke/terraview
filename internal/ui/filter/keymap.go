@@ -1,6 +1,7 @@
 package filter
 
 import (
+	"charm.land/bubbles/v2/help"
 	"charm.land/bubbles/v2/key"
 )
 
@@ -28,4 +29,24 @@ var keys = keymap{
 		key.WithKeys("enter", "space"),
 		key.WithHelp("enter/space", "toggle filter"),
 	),
+}
+
+func (k keymap) ShortHelp() []key.Binding {
+	return []key.Binding{
+		k.up,
+		k.down,
+		k.reset,
+		k.toggle,
+	}
+}
+
+func (k keymap) FullHelp() [][]key.Binding {
+	return [][]key.Binding{
+		{k.up, k.down},
+		{k.reset, k.toggle},
+	}
+}
+
+func KeyMap() help.KeyMap {
+	return keys
 }

@@ -1,6 +1,7 @@
 package tree
 
 import (
+	"charm.land/bubbles/v2/help"
 	"charm.land/bubbles/v2/key"
 )
 
@@ -28,4 +29,24 @@ var keys = keymap{
 		key.WithKeys("enter", "c", "left", "h"),
 		key.WithHelp("←/h", "collapse"),
 	),
+}
+
+func (k keymap) ShortHelp() []key.Binding {
+	return []key.Binding{
+		k.up,
+		k.down,
+		k.expand,
+		k.collapse,
+	}
+}
+
+func (k keymap) FullHelp() [][]key.Binding {
+	return [][]key.Binding{
+		{k.up, k.down},
+		{k.expand, k.collapse},
+	}
+}
+
+func KeyMap() help.KeyMap {
+	return keys
 }

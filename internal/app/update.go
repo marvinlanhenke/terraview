@@ -19,6 +19,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.size.width = msg.Width
 		m.size.height = msg.Height
 
+		m.help.SetWidth(msg.Width - defaultMargin)
+
 		m.components.search.SetWidth(msg.Width - defaultMargin)
 		m.components.status.SetWidth(msg.Width - defaultMargin)
 
@@ -60,11 +62,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 
 		// Tree -> Details
-		case key.Matches(msg, keys.RightPane) && m.focus == FocusTree:
-			m.focus = FocusDetails
-			m.components.details.Focus()
-
-		case key.Matches(msg, keys.Enter) && m.focus == FocusTree:
+		case key.Matches(msg, keys.RightPane) || key.Matches(msg, keys.Enter) && m.focus == FocusTree:
 			selected := m.components.tree.Selected()
 			if selected != nil && selected.IsResource() {
 				m.focus = FocusDetails

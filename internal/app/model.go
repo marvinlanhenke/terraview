@@ -1,6 +1,8 @@
 package app
 
 import (
+	"charm.land/bubbles/v2/help"
+	"charm.land/bubbles/v2/key"
 	"github.com/marvinlanhenke/terraview/internal/planview"
 	"github.com/marvinlanhenke/terraview/internal/ui/details"
 	"github.com/marvinlanhenke/terraview/internal/ui/filter"
@@ -54,6 +56,7 @@ type Model struct {
 	focus      Focus
 	controls   TreeControls
 	components Components
+	help       help.Model
 }
 
 func New(root *planview.Node) Model {
@@ -77,7 +80,10 @@ func New(root *planview.Node) Model {
 		focus:      FocusTree,
 		controls:   controls,
 		components: c,
+		help:       help.New(),
 	}
+
+	m.help.SetWidth(m.size.width - defaultMargin)
 
 	m.components.search.SetWidth(m.size.width - defaultMargin)
 
@@ -107,6 +113,36 @@ func (m *Model) refreshTreeFromControls() {
 func (m *Model) syncTreeOutputs() {
 	m.components.details.SetContent(buildDetailsContent(m.components.tree.Selected()))
 	m.components.search.SetMatches(m.components.tree.VisibleResourceCount())
+}
+
+func (m *Model) generalFooterBindings() []key.Binding {
+	bindings := []key.Binding{
+		keys.Quit,
+		keys.Escape,
+		keys.Search,
+		keys.Filter,
+	}
+
+	return bindings
+}
+
+func (m *Model) specificFooterBindings() []key.Binding {
+	bindings := make([]key.Binding, 0)
+
+	switch m.focus {
+	case FocusTree:
+		bindings = append(bindings, keys.LeftPane)
+		bindings = append(bindings, keys.RightPane)
+		bindings = append(bindings, tree.KeyMap().ShortHelp()...)
+	case FocusDetails:
+		bindings = append(bindings, keys.LeftPane)
+		bindings = append(bindings, keys.RightPane)
+		bindings = append(bindings, details.KeyMap().ShortHelp()...)
+	case FocusFilter:
+		bindings = append(bindings, filter.KeyMap().ShortHelp()...)
+	}
+
+	return bindings
 }
 
 func buildTreeNode(n *planview.Node) *tree.Node {
