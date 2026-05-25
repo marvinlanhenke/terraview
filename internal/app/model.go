@@ -94,26 +94,33 @@ func New(root *planview.Node) Model {
 		children = root.Children
 	}
 
-	m.help.SetWidth(m.size.width - defaultMargin)
+	m.applyLayout(0, 0)
 
-	m.components.search.SetWidth(m.size.width - defaultMargin)
-
-	m.components.status.SetWidth(m.size.width - defaultMargin)
 	m.components.status.SetStats(buildStats(root))
 
 	m.components.filter.SetOptions(buildFilterOptions(children))
 
-	treeWidth, treeHeight := treePaneSize(0, 0)
-	m.components.tree.SetSize(treeWidth, treeHeight)
 	m.components.tree.SetRoot(buildTreeNode(root))
-
-	detailsWidth := detailsWidth(m.size.width, treeWidth)
-	detailsHeight := treeHeight
-	m.components.details.SetSize(detailsWidth, detailsHeight)
 
 	m.refreshTreeFromControls()
 
 	return m
+}
+
+func (m *Model) applyLayout(width, height int) {
+	m.size.width = width
+	m.size.height = height
+
+	contentWidth := max(0, width-defaultMargin)
+	m.help.SetWidth(contentWidth)
+	m.components.search.SetWidth(contentWidth)
+	m.components.status.SetWidth(contentWidth)
+
+	treeWidth, treeHeight := treePaneSize(width, height)
+	m.components.tree.SetSize(treeWidth, treeHeight)
+
+	detailsWidth := detailsWidth(m.size.width, treeWidth)
+	m.components.details.SetSize(detailsWidth, treeHeight)
 }
 
 // refreshTreeFromControls reapplies the current query and filters to the tree.

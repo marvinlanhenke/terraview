@@ -18,21 +18,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		m.size.width = msg.Width
-		m.size.height = msg.Height
-
-		m.help.SetWidth(msg.Width - defaultMargin)
-
-		m.components.search.SetWidth(msg.Width - defaultMargin)
-		m.components.status.SetWidth(msg.Width - defaultMargin)
-
-		treeWidth, treeHeight := treePaneSize(msg.Width, msg.Height)
-		m.components.tree.SetSize(treeWidth, treeHeight)
-
-		detailsWidth := detailsWidth(m.size.width, treeWidth)
-		detailsHeight := treeHeight
-		m.components.details.SetSize(detailsWidth, detailsHeight)
-
+		m.applyLayout(msg.Width, msg.Height)
 		return m, nil
 
 	case tea.KeyPressMsg:
