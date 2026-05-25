@@ -46,14 +46,14 @@ func (m *Model) routeKeyPress(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 
 	case key.Matches(msg, keys.Enter) && m.focus == focusSearch:
 		m.focusTree()
-		return nil, false
+		return nil, true
 
 	case key.Matches(msg, keys.Escape) && m.focus == focusSearch:
 		m.components.search.Clear()
 		m.controls.query = ""
 		m.refreshTreeFromControls()
 		m.focusTree()
-		return nil, false
+		return nil, true
 
 	case m.focus == focusTree && (key.Matches(msg, keys.RightPane) || key.Matches(msg, keys.Enter)):
 		m.focusDetailsIfResource()
