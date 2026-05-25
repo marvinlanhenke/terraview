@@ -7,18 +7,37 @@ import (
 
 // View satisfies tea.Model and renders the composed Terraview UI.
 func (m Model) View() tea.View {
-	search := m.components.search.View()
-	status := m.components.status.View()
-	tree := m.components.tree.View()
-	details := m.components.details.View()
+	content := m.renderAppContent()
 
-	body := lipgloss.JoinHorizontal(
-		lipgloss.Top,
-		tree,
+	if m.focus == focusFilter {
+		content = m.renderFilterOverlay(content)
+	}
+
+	return m.newView(content)
+}
+
+func (m Model) renderAppContent() string {
+	return lipgloss.JoinVertical(
+		lipgloss.Left,
+		m.components.search.View(),
+		m.components.status.View(),
 		" ",
-		details,
+		m.renderBody(),
+		" ",
+		m.renderFooter(),
 	)
+}
 
+func (m Model) renderBody() string {
+	return lipgloss.JoinHorizontal(
+		lipgloss.Top,
+		m.components.tree.View(),
+		" ",
+		m.components.details.View(),
+	)
+}
+
+func (m Model) renderFooter() string {
 	general := m.help.ShortHelpView(m.generalFooterBindings())
 	specific := m.help.ShortHelpView(m.specificFooterBindings())
 
@@ -28,32 +47,23 @@ func (m Model) View() tea.View {
 		bindings = append(bindings, specific)
 	}
 
-	footer := m.theme.Styles.Footer.Render(lipgloss.JoinVertical(lipgloss.Left, bindings...))
+	return m.theme.Styles.Footer.
+		Render(lipgloss.JoinVertical(lipgloss.Left, bindings...))
+}
 
-	appContent := lipgloss.JoinVertical(
-		lipgloss.Left,
-		search,
-		status,
-		" ",
-		body,
-		" ",
-		footer,
-	)
+func (m Model) renderFilterOverlay(baseContent string) string {
+	modal := m.components.filter.View(m.controls.filters)
 
-	content := appContent
+	x := max(0, (m.size.width-lipgloss.Width(modal))/2)
+	y := max(0, (m.size.height-lipgloss.Width(modal))/2)
 
-	if m.focus == focusFilter {
-		modal := m.components.filter.View(m.controls.filters)
+	base := lipgloss.NewLayer(baseContent).Z(1)
+	popup := lipgloss.NewLayer(modal).X(x).Y(y).Z(2)
 
-		x := max(0, (m.size.width-lipgloss.Width(modal))/2)
-		y := max(0, (m.size.height-lipgloss.Height(modal))/2)
+	return lipgloss.NewCompositor(base, popup).Render()
+}
 
-		base := lipgloss.NewLayer(appContent).Z(1)
-		popup := lipgloss.NewLayer(modal).X(x).Y(y).Z(2)
-
-		content = lipgloss.NewCompositor(base, popup).Render()
-	}
-
+func (m Model) newView(content string) tea.View {
 	view := tea.NewView(m.theme.Styles.App.Render(content))
 	view.AltScreen = true
 	view.MouseMode = tea.MouseModeCellMotion
