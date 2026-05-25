@@ -11,6 +11,8 @@ func (c changeSet) changeSetBefore() map[string]any { return cloneMap(c.before) 
 
 func (c changeSet) changeSetAfter() map[string]any { return cloneMap(c.after) }
 
+// compareChanges returns only the attributes that differ between before and after.
+// Nested maps are compared recursively, and missing values are represented as nil.
 func compareChanges(before, after map[string]any) changeSet {
 	result := changeSet{
 		before: map[string]any{},

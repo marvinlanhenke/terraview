@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// Action identifies the change category represented by a node.
 type Action string
 
 const (
@@ -25,6 +26,8 @@ var validActions = map[string]Action{
 	"error":   ActionError,
 }
 
+// parseAction normalizes Terraform action lists into a single Action value.
+// Replacements are encoded by Terraform as create+delete or delete+create.
 func parseAction(actions []string) (Action, error) {
 	if len(actions) == 0 {
 		return ActionError, errors.New("failed to determine action: no input actions provided")

@@ -1,3 +1,4 @@
+// Package planview builds the action-grouped tree used by the Terraview UI.
 package planview
 
 import (
@@ -9,6 +10,7 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/terraform"
 )
 
+// actionIndex defines the stable ordering of top-level action groups in the UI.
 var actionIndex = map[Action]int{
 	ActionCreate:  0,
 	ActionUpdate:  1,
@@ -18,6 +20,8 @@ var actionIndex = map[Action]int{
 	ActionError:   5,
 }
 
+// FromTerraform converts a Terraform plan into an action-grouped node tree.
+// Error diagnostics are included as ActionError nodes.
 func FromTerraform(tfplan terraform.Plan) (*Node, error) {
 	root := createRoot(tfplan)
 
