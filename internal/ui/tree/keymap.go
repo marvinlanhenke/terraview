@@ -5,6 +5,7 @@ import (
 	"charm.land/bubbles/v2/key"
 )
 
+// keymap holds the key bindings used by the tree component.
 type keymap struct {
 	up          key.Binding
 	down        key.Binding
@@ -41,6 +42,7 @@ var keys = keymap{
 	),
 }
 
+// ShortHelp returns the key bindings shown in the condensed help line.
 func (k keymap) ShortHelp() []key.Binding {
 	return []key.Binding{
 		k.up,
@@ -52,6 +54,8 @@ func (k keymap) ShortHelp() []key.Binding {
 	}
 }
 
+// FullHelp returns all key bindings grouped into columns for the expanded help
+// view.
 func (k keymap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
 		{k.up, k.down},
@@ -60,6 +64,8 @@ func (k keymap) FullHelp() [][]key.Binding {
 	}
 }
 
+// KeyMap returns the tree's key bindings as a help.KeyMap so callers can embed
+// them in a shared help bar.
 func KeyMap() help.KeyMap {
 	return keys
 }

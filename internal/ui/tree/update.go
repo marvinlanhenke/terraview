@@ -5,6 +5,10 @@ import (
 	tea "charm.land/bubbletea/v2"
 )
 
+// Update handles incoming Bubble Tea messages and mutates the tree state
+// accordingly. It processes cursor movement, expand/collapse key presses, and
+// delegates unhandled messages to the inner viewport. The cursor is always
+// re-clamped and the viewport re-synced before returning.
 func (t *Tree) Update(msg tea.Msg) tea.Cmd {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
@@ -56,6 +60,8 @@ func (t *Tree) Update(msg tea.Msg) tea.Cmd {
 	return nil
 }
 
+// expandAll sets the expanded state of every expandable row to expand and
+// rebuilds the row list. Passing false collapses all nodes.
 func (t *Tree) expandAll(expand bool) {
 	if len(t.rows) > 0 {
 		for _, r := range t.rows {

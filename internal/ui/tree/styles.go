@@ -5,11 +5,15 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/ui"
 )
 
+// actionStyle pairs a one-character action marker (e.g. "+", "-") with the
+// lipgloss style used to render it.
 type actionStyle struct {
 	marker string
 	style  lipgloss.Style
 }
 
+// styles holds all pre-built lipgloss styles for the tree component, derived
+// from the active theme at construction time.
 type styles struct {
 	palette       ui.Palette
 	base          lipgloss.Style
@@ -27,6 +31,8 @@ type styles struct {
 	labelAlt      lipgloss.Style
 }
 
+// newStyles constructs a styles value from the provided theme, deriving all
+// colours and base style rules from the theme's palette and shared style set.
 func newStyles(t ui.Theme) styles {
 	p := t.Palette
 	s := t.Styles
@@ -53,6 +59,8 @@ func newStyles(t ui.Theme) styles {
 	}
 }
 
+// actionMarker returns the actionStyle (marker character + colour) that
+// corresponds to the given Terraform action.
 func (s styles) actionMarker(a ui.Action) actionStyle {
 	switch a {
 	case ui.ActionCreate:

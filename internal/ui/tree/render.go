@@ -6,6 +6,9 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
+// syncViewport re-renders all rows and pushes the resulting lines into the
+// embedded viewport. It is called whenever rows, cursor position, or
+// dimensions change.
 func (t *Tree) syncViewport() {
 	if t.width <= 0 || t.height <= 0 {
 		t.viewport.SetContentLines(nil)
@@ -27,6 +30,9 @@ func (t *Tree) syncViewport() {
 	t.keepCursorVisible()
 }
 
+// renderRow converts a single row into a styled string. It computes the
+// indentation, chooses the expand/collapse icon, and delegates the final
+// layout to renderLine.
 func (t *Tree) renderRow(r row, selected bool) string {
 	n := r.node
 	indent := strings.Repeat(" ", r.depth+1)
@@ -47,6 +53,9 @@ func (t *Tree) renderRow(r row, selected bool) string {
 	return t.renderLine(rawPrefix, n.Label, n.LabelCount, actionMarker, selected, wrap)
 }
 
+// renderLine assembles the prefix, action marker, label, and optional label
+// count into a single fixed-width string. Resource rows are word-wrapped;
+// group rows align the count flush to the right edge.
 func (t *Tree) renderLine(rawPrefix, rawLabel, rawLabelCount string, actionMarker actionStyle, selected, wrap bool) string {
 	actionBackground := t.styles.palette.Surface
 	labelStyle := t.styles.label
@@ -81,6 +90,8 @@ func (t *Tree) renderLine(rawPrefix, rawLabel, rawLabelCount string, actionMarke
 	return style.Width(t.width).MaxWidth(t.width).Render(line)
 }
 
+// keepCursorVisible adjusts the viewport's Y offset so that the row at
+// t.cursor is always within the visible area.
 func (t *Tree) keepCursorVisible() {
 	h := t.viewport.Height()
 
@@ -101,6 +112,7 @@ func (t *Tree) keepCursorVisible() {
 	}
 }
 
+// clampCursor ensures t.cursor stays within the valid range [0, len(rows)-1].
 func (t *Tree) clampCursor() {
 	if len(t.rows) == 0 {
 		t.cursor = 0

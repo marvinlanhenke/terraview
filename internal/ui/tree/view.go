@@ -4,6 +4,9 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
+// View renders the tree as a string. When no rows are visible a centred
+// placeholder message is shown; otherwise the fixed header is joined with the
+// scrollable viewport content.
 func (t *Tree) View() string {
 	if len(t.rows) == 0 {
 		empty := t.styles.empty.
