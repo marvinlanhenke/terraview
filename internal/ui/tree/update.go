@@ -27,14 +27,7 @@ func (t *Tree) Update(msg tea.Msg) tea.Cmd {
 
 		// Expand All
 		case key.Matches(msg, keys.expandAll):
-			if len(t.rows) > 0 {
-				for _, r := range t.rows {
-					if r.expandable {
-						t.setExpanded(r.node.Id, true)
-					}
-				}
-				t.rebuildRows()
-			}
+			t.expandAll(true)
 
 		// Collapse
 		case key.Matches(msg, keys.collapse):
@@ -52,14 +45,7 @@ func (t *Tree) Update(msg tea.Msg) tea.Cmd {
 
 		// Collapse All
 		case key.Matches(msg, keys.collapseAll):
-			if len(t.rows) > 0 {
-				for _, r := range t.rows {
-					if r.expandable {
-						t.setExpanded(r.node.Id, false)
-					}
-				}
-				t.rebuildRows()
-			}
+			t.expandAll(false)
 
 		}
 	}
@@ -68,4 +54,15 @@ func (t *Tree) Update(msg tea.Msg) tea.Cmd {
 	t.syncViewport()
 
 	return nil
+}
+
+func (t *Tree) expandAll(expand bool) {
+	if len(t.rows) > 0 {
+		for _, r := range t.rows {
+			if r.expandable {
+				t.setExpanded(r.node.Id, expand)
+			}
+		}
+		t.rebuildRows()
+	}
 }
