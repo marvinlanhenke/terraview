@@ -59,7 +59,7 @@ func (m Model) renderFilterOverlay(baseContent string) string {
 	modal := m.components.filter.View(m.controls.filters)
 
 	x := max(0, (m.size.width-lipgloss.Width(modal))/2)
-	y := max(0, (m.size.height-lipgloss.Width(modal))/2)
+	y := max(0, (m.size.height-lipgloss.Height(modal))/2)
 
 	base := lipgloss.NewLayer(baseContent).Z(1)
 	popup := lipgloss.NewLayer(modal).X(x).Y(y).Z(2)
