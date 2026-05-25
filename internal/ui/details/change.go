@@ -53,6 +53,8 @@ func appendValueChange(path string, before, after any, rows *[]change) {
 				before: before,
 				after:  after,
 			})
+
+			return
 		}
 	}
 
