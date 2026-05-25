@@ -31,8 +31,6 @@ Terraview is a terminal UI for navigating `terraform show -json` output. Instead
 - **Stdin and file input** — pipe output directly from Terraform or point at a saved JSON file
 - **Rolling debug log** — optional structured debug log with automatic rotation
 
-## EDIT
-
 ## Installation
 
 ```bash
