@@ -1,6 +1,10 @@
 package details
 
-import "sort"
+import (
+	"sort"
+
+	"github.com/marvinlanhenke/terraview/internal/ui"
+)
 
 type change struct {
 	path   string
@@ -8,7 +12,7 @@ type change struct {
 	after  any
 }
 
-func flattenChanges(ch ChangeSet) []change {
+func flattenChanges(ch ui.ChangeSet) []change {
 	rows := make([]change, 0)
 
 	flattenChangeMap("", normalizeMap(ch.Before), normalizeMap(ch.After), &rows)

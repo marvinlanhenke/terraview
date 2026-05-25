@@ -3,6 +3,7 @@ package details
 import (
 	"charm.land/bubbles/v2/viewport"
 	"charm.land/lipgloss/v2"
+	"github.com/marvinlanhenke/terraview/internal/ui"
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
@@ -14,16 +15,11 @@ const (
 	KindResource
 )
 
-type ChangeSet struct {
-	Before map[string]any
-	After  map[string]any
-}
-
 type Content struct {
 	Key     string
 	Kind    Kind
 	Label   string
-	Changes ChangeSet
+	Changes ui.ChangeSet
 	Payload any
 	IsError bool
 }

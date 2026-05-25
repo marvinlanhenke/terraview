@@ -16,11 +16,6 @@ const (
 	NodeResource
 )
 
-type ChangeSet struct {
-	Before map[string]any
-	After  map[string]any
-}
-
 type Node struct {
 	Id         string
 	Label      string
@@ -29,7 +24,7 @@ type Node struct {
 	Action     ui.Action
 	Children   []*Node
 	Payload    any
-	Changes    ChangeSet
+	Changes    ui.ChangeSet
 }
 
 func (n *Node) HasChildren() bool {

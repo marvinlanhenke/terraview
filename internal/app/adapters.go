@@ -22,7 +22,7 @@ func buildTreeNode(n *planview.Node) *tree.Node {
 		Kind:       convertPlanNodeKind(n.Kind),
 		Action:     convertPlanAction(n.Action),
 		Payload:    n.Payload,
-		Changes:    tree.ChangeSet{Before: n.ChangeSetBefore(), After: n.ChangeSetAfter()},
+		Changes:    ui.ChangeSet{Before: n.ChangeSetBefore(), After: n.ChangeSetAfter()},
 	}
 
 	if len(n.Children) > 0 {
@@ -92,7 +92,7 @@ func buildDetailsContent(n *tree.Node) details.Content {
 	case tree.NodeResource:
 		content.Kind = details.KindResource
 
-		content.Changes = details.ChangeSet{
+		content.Changes = ui.ChangeSet{
 			Before: n.Changes.Before,
 			After:  n.Changes.After,
 		}

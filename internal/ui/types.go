@@ -10,3 +10,8 @@ const (
 	ActionNoOp    Action = "no-op"
 	ActionError   Action = "error"
 )
+
+type ChangeSet struct {
+	Before map[string]any
+	After  map[string]any
+}
