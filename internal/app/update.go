@@ -56,7 +56,7 @@ func (m *Model) routeKeyPress(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 		return nil, true
 
 	case m.focus == focusTree && (key.Matches(msg, keys.RightPane) || key.Matches(msg, keys.Enter)):
-		m.focusDetailsIfResource()
+		m.focusDetailsIfInspectable()
 		return nil, false
 
 	case m.focus == focusDetails && (key.Matches(msg, keys.LeftPane) || key.Matches(msg, keys.Enter) || key.Matches(msg, keys.Escape)):
@@ -89,10 +89,10 @@ func (m *Model) focusTree() {
 	m.components.details.Blur()
 }
 
-// focusDetailsIfResource moves focus to details when a resource row is selected.
-func (m *Model) focusDetailsIfResource() {
+// focusDetailsIfInspectable moves focus to details when a resource row is selected.
+func (m *Model) focusDetailsIfInspectable() {
 	selected := m.components.tree.Selected()
-	if selected == nil || !selected.IsResource() {
+	if selected == nil || !selected.IsInspectable() {
 		return
 	}
 

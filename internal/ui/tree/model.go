@@ -30,7 +30,7 @@ func (n *Node) HasChildren() bool {
 	return len(n.Children) > 0
 }
 
-func (n *Node) IsResource() bool {
+func (n *Node) IsInspectable() bool {
 	return n != nil && n.Kind == NodeResource && n.Action != ui.ActionNoOp
 }
 
