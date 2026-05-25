@@ -18,6 +18,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.applyLayout(msg.Width, msg.Height)
+		m.logger.Debug("window resized", "width", msg.Width, "height", msg.Height)
 		return m, nil
 
 	case tea.KeyPressMsg:
@@ -25,6 +26,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmds = append(cmds, cmd)
 
 		if consumed {
+			m.logger.Debug("tea cmd consumed", "key", msg.String(), "consumed", consumed)
 			return m, tea.Batch(cmds...)
 		}
 	}
@@ -39,6 +41,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *Model) routeKeyPress(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 	switch {
 	case key.Matches(msg, keys.Quit) && m.focus != focusSearch:
+		m.logger.Debug("key match", "key", keys.Quit)
 		return tea.Quit, true
 
 	case key.Matches(msg, keys.Search) && m.focus != focusSearch:
