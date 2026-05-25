@@ -24,6 +24,8 @@ type Node struct {
 	Children   []*Node
 	Payload    any
 	Changes    ui.ChangeSet
+
+	searchPayload string
 }
 
 func (n *Node) HasChildren() bool {
@@ -71,6 +73,8 @@ func New(t ui.Theme) Tree {
 
 func (t *Tree) SetRoot(n *Node) {
 	t.root = n
+	prepareSearchPayloads(t.root)
+
 	t.expanded = rebaseExpanded(n, t.expanded)
 
 	t.rebuildRows()

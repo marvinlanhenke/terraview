@@ -49,7 +49,7 @@ func (m matcher) MatchNode(n *Node) bool {
 	return m.MatchString(n.Id) ||
 		m.MatchString(n.Label) ||
 		m.MatchString(string(n.Action)) ||
-		m.MatchString(searchablePayload(n.Payload))
+		m.MatchString(n.searchPayload)
 }
 
 func (m matcher) MatchString(v string) bool {
@@ -82,6 +82,18 @@ func unwrapRegex(query string) string {
 		return ""
 	}
 	return query[1 : len(query)-1]
+}
+
+func prepareSearchPayloads(n *Node) {
+	if n == nil {
+		return
+	}
+
+	n.searchPayload = searchablePayload(n.Payload)
+
+	for _, child := range n.Children {
+		prepareSearchPayloads(child)
+	}
 }
 
 func searchablePayload(v any) string {
