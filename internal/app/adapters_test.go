@@ -95,14 +95,14 @@ func TestBuildStatsCountsResourceActions(t *testing.T) {
 	got := buildStats(root)
 	want := status.Stats{Create: 2, Update: 1, Delete: 1, Replace: 1, NoOp: 1, Errors: 1}
 
-	if got == nil || *got != want {
+	if got != want {
 		t.Fatalf("expected stats %#v, got %#v", want, got)
 	}
 }
 
 func TestBuildStatsNil(t *testing.T) {
 	got := buildStats(nil)
-	if got == nil || *got != (status.Stats{}) {
+	if got != (status.Stats{}) {
 		t.Fatalf("expected empty stats, got %#v", got)
 	}
 }

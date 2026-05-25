@@ -38,13 +38,13 @@ func buildTreeNode(n *planview.Node) *tree.Node {
 }
 
 // buildStats adapts the plan tree into status action counters.
-func buildStats(n *planview.Node) *status.Stats {
+func buildStats(n *planview.Node) status.Stats {
 	if n == nil {
-		return &status.Stats{}
+		return status.Stats{}
 	}
 
-	stats := &status.Stats{}
-	collectStats(n, stats)
+	stats := status.Stats{}
+	collectStats(n, &stats)
 
 	return stats
 }

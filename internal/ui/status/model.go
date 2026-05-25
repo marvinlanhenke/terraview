@@ -28,7 +28,7 @@ func (s Stats) String() string {
 }
 
 type Status struct {
-	stats             *Stats
+	stats             Stats
 	activeFilterCount int
 	width             int
 	styles            styles
@@ -40,7 +40,7 @@ func New(t theme.Theme) Status {
 	}
 }
 
-func (s *Status) SetStats(st *Stats) {
+func (s *Status) SetStats(st Stats) {
 	s.stats = st
 }
 
