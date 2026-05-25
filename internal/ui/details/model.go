@@ -101,3 +101,30 @@ func (d *Details) setHeader() {
 		Width(d.width).
 		Render(label)
 }
+
+func (d *Details) showEmptyState() bool {
+	return !d.hasViewportContent()
+}
+
+func (d *Details) hasViewportContent() bool {
+	return d.showingPlan() || d.hasDiffContent()
+}
+
+func (d *Details) showingPlan() bool {
+	return d.showPlan && d.content.Payload != nil
+}
+
+func (d *Details) hasDiffContent() bool {
+	return len(d.changes) > 0
+}
+
+func (d *Details) emptyStateMessage() string {
+	switch d.content.Kind {
+	case KindNone, KindGroup:
+		return "Select a resource to inspect changes."
+	case KindResource:
+		return "No changed attributes for this resource."
+	default:
+		return "Nothing to show yet..."
+	}
+}
