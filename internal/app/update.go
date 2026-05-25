@@ -49,7 +49,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 
 		// Tree -> Details
-		case key.Matches(msg, keys.RightPane) || key.Matches(msg, keys.Enter) && m.focus == focusTree:
+		case (key.Matches(msg, keys.RightPane) || key.Matches(msg, keys.Enter)) && m.focus == focusTree:
 			selected := m.components.tree.Selected()
 			if selected != nil && selected.IsResource() {
 				m.focus = focusDetails
@@ -62,7 +62,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.components.details.Blur()
 
 		// Filter Focus
-		case (key.Matches(msg, keys.Filter)) && m.focus != focusSearch:
+		case key.Matches(msg, keys.Filter) && m.focus != focusSearch:
 			if m.focus == focusFilter {
 				m.focus = focusTree
 			} else {
@@ -70,7 +70,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		// Filter Exit
-		case (key.Matches(msg, keys.Escape)) && m.focus == focusFilter:
+		case key.Matches(msg, keys.Escape) && m.focus == focusFilter:
 			m.focus = focusTree
 		}
 
