@@ -19,6 +19,24 @@ var actionIndex = map[Action]int{
 }
 
 func FromTerraform(tfplan terraform.Plan) (*Node, error) {
+	root := createRoot(tfplan)
+
+	totalChanges, childCounter := 0, make(map[Action]int)
+
+	if err := parseResourceChanges(root, tfplan.ResourceChanges, childCounter, &totalChanges); err != nil {
+		return nil, err
+	}
+
+	if err := parseDiagnostics(root, tfplan.Diagnostics, childCounter, &totalChanges); err != nil {
+		return nil, err
+	}
+
+	addLabelCount(root, childCounter, totalChanges)
+
+	return root, nil
+}
+
+func createRoot(tfplan terraform.Plan) *Node {
 	root := &Node{
 		Id:     "root",
 		Label:  fmt.Sprintf("Terraform plan %s", tfplan.TerraformVersion),
@@ -39,40 +57,45 @@ func FromTerraform(tfplan terraform.Plan) (*Node, error) {
 
 	root.Children = nodeGroups
 
-	totalChanges := len(tfplan.ResourceChanges) + len(tfplan.Diagnostics)
+	return root
+}
 
-	childCounter := make(map[Action]int)
-
-	for _, rc := range tfplan.ResourceChanges {
-		action, err := parseAction(rc.Change.Actions)
+func parseResourceChanges(root *Node, changes []terraform.ResourceChange, childCounter map[Action]int, total *int) error {
+	for _, c := range changes {
+		action, err := parseAction(c.Change.Actions)
 
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		idx, exists := actionIndex[action]
 
 		if !exists {
-			return nil, errors.New("failed to lookup node group index by action type")
+			return errors.New("failed to lookup node group index by action type")
 		}
 
-		changes := compareChanges(rc.Change.Before, rc.Change.After)
+		changes := compareChanges(c.Change.Before, c.Change.After)
 
 		child := &Node{
-			Id:      rc.Address,
-			Label:   rc.Address,
+			Id:      c.Address,
+			Label:   c.Address,
 			Kind:    NodeResource,
 			Action:  action,
 			changes: changes,
-			Payload: rc,
+			Payload: c,
 		}
 
+		*total++
 		childCounter[action]++
 
 		root.Children[idx].Children = append(root.Children[idx].Children, child)
 	}
 
-	for i, d := range tfplan.Diagnostics {
+	return nil
+}
+
+func parseDiagnostics(root *Node, diagnostics []terraform.Diagnostic, childCounter map[Action]int, total *int) error {
+	for i, d := range diagnostics {
 		if strings.ToLower(d.Severity) != "error" {
 			continue
 		}
@@ -84,7 +107,7 @@ func FromTerraform(tfplan terraform.Plan) (*Node, error) {
 		idx, exists := actionIndex[action]
 
 		if !exists {
-			return nil, errors.New("failed to lookup node group index by action type")
+			return errors.New("failed to lookup node group index by action type")
 		}
 
 		child := &Node{
@@ -95,15 +118,20 @@ func FromTerraform(tfplan terraform.Plan) (*Node, error) {
 			Payload: d,
 		}
 
+		*total++
 		childCounter[action]++
 
 		root.Children[idx].Children = append(root.Children[idx].Children, child)
 	}
 
-	for _, node := range root.Children {
-		numerator, exists := childCounter[node.Action]
+	return nil
+}
 
-		if !exists {
+func addLabelCount(root *Node, childCounter map[Action]int, totalChanges int) {
+	for _, node := range root.Children {
+		numerator, ok := childCounter[node.Action]
+
+		if !ok {
 			continue
 		}
 
@@ -111,6 +139,4 @@ func FromTerraform(tfplan terraform.Plan) (*Node, error) {
 
 		node.LabelCount = fmt.Sprintf("(%d/%d)", numerator, denominator)
 	}
-
-	return root, nil
 }
