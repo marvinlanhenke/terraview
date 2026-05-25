@@ -63,12 +63,29 @@ func (t *Tree) Update(msg tea.Msg) tea.Cmd {
 // expandAll sets the expanded state of every expandable row to expand and
 // rebuilds the row list. Passing false collapses all nodes.
 func (t *Tree) expandAll(expand bool) {
-	if len(t.rows) > 0 {
-		for _, r := range t.rows {
-			if r.expandable {
-				t.setExpanded(r.node.Id, expand)
-			}
-		}
-		t.rebuildRows()
+	if t.root == nil {
+		return
 	}
+
+	var visit func(*Node)
+
+	visit = func(n *Node) {
+		if n == nil {
+			return
+		}
+
+		if n.HasChildren() {
+			t.setExpanded(n.Id, expand)
+		}
+
+		for _, child := range n.Children {
+			visit(child)
+		}
+	}
+
+	for _, child := range t.root.Children {
+		visit(child)
+	}
+
+	t.rebuildRows()
 }
