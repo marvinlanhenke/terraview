@@ -89,6 +89,11 @@ func New(root *planview.Node) Model {
 		help:       help.New(),
 	}
 
+	children := make([]*planview.Node, 0)
+	if root != nil {
+		children = root.Children
+	}
+
 	m.help.SetWidth(m.size.width - defaultMargin)
 
 	m.components.search.SetWidth(m.size.width - defaultMargin)
@@ -96,7 +101,7 @@ func New(root *planview.Node) Model {
 	m.components.status.SetWidth(m.size.width - defaultMargin)
 	m.components.status.SetStats(buildStats(root))
 
-	m.components.filter.SetOptions(buildFilterOptions(root.Children))
+	m.components.filter.SetOptions(buildFilterOptions(children))
 
 	treeWidth, treeHeight := treePaneSize(0, 0)
 	m.components.tree.SetSize(treeWidth, treeHeight)
@@ -187,7 +192,7 @@ func buildTreeNode(n *planview.Node) *tree.Node {
 // buildStats counts resource nodes by action for the status component.
 func buildStats(n *planview.Node) *status.Stats {
 	if n == nil {
-		return nil
+		return &status.Stats{}
 	}
 
 	stats := &status.Stats{}
