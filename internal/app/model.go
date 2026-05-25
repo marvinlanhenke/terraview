@@ -262,28 +262,19 @@ func buildDetailsContent(n *tree.Node) details.Content {
 }
 
 // buildFilterOptions builds filter modal options from the action group nodes.
-func buildFilterOptions(nodes []*planview.Node) []filter.Option {
-	seen := make(map[filter.Action]struct{})
-	options := make([]filter.Option, 0, len(nodes))
+func buildFilterOptions(groups []*planview.Node) []filter.Option {
+	options := make([]filter.Option, 0, len(groups))
 
-	for _, n := range nodes {
-		if n == nil {
+	for _, group := range groups {
+		if group == nil {
 			continue
 		}
 
-		action := filter.Action(n.Action)
-
-		if _, exists := seen[action]; !exists {
-			option := filter.Option{
-				Action: action,
-				Label:  n.Label,
-				Count:  n.LabelCount,
-			}
-
-			options = append(options, option)
-		}
-
-		seen[action] = struct{}{}
+		options = append(options, filter.Option{
+			Action: filter.Action(group.Action),
+			Label:  group.Label,
+			Count:  group.LabelCount,
+		})
 	}
 
 	return options
