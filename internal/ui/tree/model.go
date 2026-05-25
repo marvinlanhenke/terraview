@@ -6,7 +6,6 @@ import (
 	"charm.land/bubbles/v2/viewport"
 	"charm.land/lipgloss/v2"
 	"github.com/marvinlanhenke/terraview/internal/ui"
-	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
 type NodeKind int
@@ -55,7 +54,7 @@ type Tree struct {
 	styles   styles
 }
 
-func New(t theme.Theme) Tree {
+func New(t ui.Theme) Tree {
 	s := newStyles(t)
 	expanded := make(map[string]bool)
 

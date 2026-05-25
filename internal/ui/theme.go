@@ -1,4 +1,4 @@
-package theme
+package ui
 
 import (
 	"charm.land/lipgloss/v2"
@@ -34,7 +34,7 @@ type Theme struct {
 	Styles  CommonStyles
 }
 
-func Default() Theme {
+func DefaultTheme() Theme {
 	p := Palette{
 		Surface:         lipgloss.Color("#303446"),
 		SurfaceAlt:      lipgloss.Color("#3d4258"),

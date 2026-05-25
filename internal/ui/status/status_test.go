@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"charm.land/lipgloss/v2"
+	"github.com/marvinlanhenke/terraview/internal/ui"
 	"github.com/marvinlanhenke/terraview/internal/ui/status"
-	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
 func TestStatsString(t *testing.T) {
@@ -26,7 +26,7 @@ func TestStatsString(t *testing.T) {
 }
 
 func TestViewReturnsEmptyWithoutPositiveWidth(t *testing.T) {
-	statusBar := status.New(theme.Default())
+	statusBar := status.New(ui.DefaultTheme())
 
 	if got := statusBar.View(); got != "" {
 		t.Fatalf("expected empty view before width is set, got %q", got)
@@ -80,7 +80,7 @@ func TestViewClampsNegativeFilterCount(t *testing.T) {
 }
 
 func newStatusBar(width int) status.Status {
-	statusBar := status.New(theme.Default())
+	statusBar := status.New(ui.DefaultTheme())
 	statusBar.SetWidth(width)
 
 	return statusBar

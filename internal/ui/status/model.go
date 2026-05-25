@@ -4,7 +4,7 @@ package status
 import (
 	"fmt"
 
-	"github.com/marvinlanhenke/terraview/internal/ui/theme"
+	"github.com/marvinlanhenke/terraview/internal/ui"
 )
 
 // Stats contains Terraform plan action counts shown in the status bar.
@@ -39,7 +39,7 @@ type Status struct {
 }
 
 // New returns an initialized Status using t for styling.
-func New(t theme.Theme) Status {
+func New(t ui.Theme) Status {
 	return Status{
 		styles: newStyles(t),
 	}

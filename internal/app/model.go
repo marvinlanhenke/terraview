@@ -10,7 +10,6 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/ui/filter"
 	"github.com/marvinlanhenke/terraview/internal/ui/search"
 	"github.com/marvinlanhenke/terraview/internal/ui/status"
-	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 	"github.com/marvinlanhenke/terraview/internal/ui/tree"
 )
 
@@ -50,7 +49,7 @@ type treeControls struct {
 
 // Model is the top-level Bubble Tea model for the Terraview app.
 type Model struct {
-	theme      theme.Theme
+	theme      ui.Theme
 	size       size
 	focus      focus
 	controls   treeControls
@@ -60,7 +59,7 @@ type Model struct {
 
 // New creates an initialized app model from a planview root node.
 func New(root *planview.Node) Model {
-	t := theme.Default()
+	t := ui.DefaultTheme()
 
 	c := components{
 		search:  search.New(t),

@@ -2,7 +2,7 @@ package status
 
 import (
 	"charm.land/lipgloss/v2"
-	"github.com/marvinlanhenke/terraview/internal/ui/theme"
+	"github.com/marvinlanhenke/terraview/internal/ui"
 )
 
 type styles struct {
@@ -11,7 +11,7 @@ type styles struct {
 }
 
 // newStyles builds the styles used by Status.
-func newStyles(t theme.Theme) styles {
+func newStyles(t ui.Theme) styles {
 	p := t.Palette
 
 	base := lipgloss.NewStyle().

@@ -2,7 +2,6 @@ package filter
 
 import (
 	"github.com/marvinlanhenke/terraview/internal/ui"
-	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
 type Intent struct {
@@ -24,7 +23,7 @@ type Modal struct {
 	styles styles
 }
 
-func New(t theme.Theme) Modal {
+func New(t ui.Theme) Modal {
 	return Modal{
 		styles: newStyles(t),
 	}

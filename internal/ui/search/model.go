@@ -5,7 +5,7 @@ import (
 
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
-	"github.com/marvinlanhenke/terraview/internal/ui/theme"
+	"github.com/marvinlanhenke/terraview/internal/ui"
 )
 
 const placeholder = "search resources..."
@@ -18,7 +18,7 @@ type Search struct {
 	styles  styles
 }
 
-func New(t theme.Theme) Search {
+func New(t ui.Theme) Search {
 	s := newStyles(t)
 	input := textinput.New()
 

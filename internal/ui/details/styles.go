@@ -2,11 +2,11 @@ package details
 
 import (
 	"charm.land/lipgloss/v2"
-	"github.com/marvinlanhenke/terraview/internal/ui/theme"
+	"github.com/marvinlanhenke/terraview/internal/ui"
 )
 
 type styles struct {
-	palette       theme.Palette
+	palette       ui.Palette
 	base          lipgloss.Style
 	empty         lipgloss.Style
 	header        lipgloss.Style
@@ -15,7 +15,7 @@ type styles struct {
 	backgroundAlt lipgloss.Style
 }
 
-func newStyles(t theme.Theme) styles {
+func newStyles(t ui.Theme) styles {
 	p := t.Palette
 	s := t.Styles
 

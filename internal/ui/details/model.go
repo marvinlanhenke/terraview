@@ -4,7 +4,6 @@ import (
 	"charm.land/bubbles/v2/viewport"
 	"charm.land/lipgloss/v2"
 	"github.com/marvinlanhenke/terraview/internal/ui"
-	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
 type Kind int
@@ -37,7 +36,7 @@ type Details struct {
 	styles   styles
 }
 
-func New(t theme.Theme) Details {
+func New(t ui.Theme) Details {
 	s := newStyles(t)
 
 	vp := viewport.New()
