@@ -21,66 +21,100 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case tea.KeyPressMsg:
-		switch {
-		// Quit
-		case key.Matches(msg, keys.Quit) && m.focus != focusSearch:
-			return m, tea.Quit
+		cmd, consumed := m.routeKeyPress(msg)
+		cmds = append(cmds, cmd)
 
-		// Search Focus
-		case key.Matches(msg, keys.Search) && m.focus != focusSearch:
-			m.focus = focusSearch
-			m.components.details.Blur()
-			cmds = append(cmds, m.components.search.Focus())
-			// We return here, such that the `/` is not used as query input
+		if consumed {
 			return m, tea.Batch(cmds...)
-
-		// Search Enter
-		case key.Matches(msg, keys.Enter) && m.focus == focusSearch:
-			m.focus = focusTree
-			m.components.search.Blur()
-			return m, nil
-
-		// Search Escape
-		case key.Matches(msg, keys.Escape) && m.focus == focusSearch:
-			m.focus = focusTree
-			m.components.search.Clear()
-			m.components.search.Blur()
-			m.controls.query = ""
-			m.refreshTreeFromControls()
-			return m, nil
-
-		// Tree -> Details
-		case (key.Matches(msg, keys.RightPane) || key.Matches(msg, keys.Enter)) && m.focus == focusTree:
-			selected := m.components.tree.Selected()
-			if selected != nil && selected.IsResource() {
-				m.focus = focusDetails
-				m.components.details.Focus()
-			}
-
-		// Details -> Tree
-		case (key.Matches(msg, keys.Escape) || key.Matches(msg, keys.Enter) || key.Matches(msg, keys.LeftPane)) && m.focus == focusDetails:
-			m.focus = focusTree
-			m.components.details.Blur()
-
-		// Filter Focus
-		case key.Matches(msg, keys.Filter) && m.focus != focusSearch:
-			if m.focus == focusFilter {
-				m.focus = focusTree
-				m.components.details.Blur()
-			} else {
-				m.focus = focusFilter
-			}
-
-		// Filter Exit
-		case key.Matches(msg, keys.Escape) && m.focus == focusFilter:
-			m.focus = focusTree
 		}
-
 	}
+
+	cmds = append(cmds, m.updateFocused(msg))
+
+	return m, tea.Batch(cmds...)
+}
+
+func (m *Model) routeKeyPress(msg tea.KeyPressMsg) (tea.Cmd, bool) {
+	switch {
+	case key.Matches(msg, keys.Quit) && m.focus != focusSearch:
+		return tea.Quit, true
+
+	case key.Matches(msg, keys.Search) && m.focus != focusSearch:
+		return m.focusSearch(), true
+
+	case key.Matches(msg, keys.Enter) && m.focus == focusSearch:
+		m.focusTree()
+		return nil, false
+
+	case key.Matches(msg, keys.Escape) && m.focus == focusSearch:
+		m.components.search.Clear()
+		m.controls.query = ""
+		m.refreshTreeFromControls()
+		m.focusTree()
+		return nil, false
+
+	case m.focus == focusTree && (key.Matches(msg, keys.RightPane) || key.Matches(msg, keys.Enter)):
+		m.focusDetailsIfResource()
+		return nil, false
+
+	case m.focus == focusDetails && (key.Matches(msg, keys.LeftPane) || key.Matches(msg, keys.Enter) || key.Matches(msg, keys.Escape)):
+		m.focusTree()
+		return nil, false
+
+	case key.Matches(msg, keys.Filter) && m.focus != focusSearch:
+		m.toggleFilter()
+		return nil, false
+
+	case key.Matches(msg, keys.Escape) && m.focus == focusFilter:
+		m.focusTree()
+		return nil, false
+	}
+
+	return nil, false
+}
+
+func (m *Model) focusSearch() tea.Cmd {
+	m.focus = focusSearch
+	m.components.details.Blur()
+	return m.components.search.Focus()
+}
+
+func (m *Model) focusTree() {
+	m.focus = focusTree
+	m.components.search.Blur()
+	m.components.details.Blur()
+}
+
+func (m *Model) focusDetailsIfResource() {
+	selected := m.components.tree.Selected()
+	if selected == nil || !selected.IsResource() {
+		return
+	}
+
+	m.focus = focusDetails
+	m.components.search.Blur()
+	m.components.details.Blur()
+	m.components.details.Focus()
+}
+
+func (m *Model) toggleFilter() {
+	if m.focus == focusFilter {
+		m.focusTree()
+		return
+	}
+
+	m.focus = focusFilter
+	m.components.search.Blur()
+	m.components.details.Blur()
+}
+
+func (m *Model) updateFocused(msg tea.Msg) tea.Cmd {
+	var cmds []tea.Cmd
 
 	switch m.focus {
 	case focusSearch:
 		cmds = append(cmds, m.components.search.Update(msg))
+
 		if m.applySearchQuery() {
 			m.refreshTreeFromControls()
 		}
@@ -94,7 +128,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case focusFilter:
 		intent, cmd := m.components.filter.Update(msg)
-
 		cmds = append(cmds, cmd)
 
 		if m.applyFilterIntent(intent) {
@@ -104,7 +137,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.components.status.SetActiveFilterCount(len(m.controls.filters))
 	}
 
-	return m, tea.Batch(cmds...)
+	return tea.Batch(cmds...)
 }
 
 // applySearchQuery stores the current search query and reports whether it changed.
