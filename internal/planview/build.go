@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"errors"
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/marvinlanhenke/terraview/internal/terraform"
@@ -22,20 +23,34 @@ var actionIndex = map[Action]int{
 
 // FromTerraform converts a Terraform plan into an action-grouped node tree.
 // Error diagnostics are included as ActionError nodes.
-func FromTerraform(tfplan terraform.Plan) (*Node, error) {
+func FromTerraform(tfplan terraform.Plan, logger *slog.Logger) (*Node, error) {
+	logger.Debug("building plan tree", "terraform_version", tfplan.TerraformVersion, "resource_changes", len(tfplan.ResourceChanges), "diagnostics", len(tfplan.Diagnostics))
+
 	root := createRoot(tfplan)
 
 	totalChanges, childCounter := 0, make(map[Action]int)
 
 	if err := parseResourceChanges(root, tfplan.ResourceChanges, childCounter, &totalChanges); err != nil {
+		logger.Debug("failed to parse resource changes", "error", err)
 		return nil, err
 	}
 
 	if err := parseDiagnostics(root, tfplan.Diagnostics, childCounter, &totalChanges); err != nil {
+		logger.Debug("failed to parse diagnostics", "error", err)
 		return nil, err
 	}
 
 	addLabelCount(root, childCounter, totalChanges)
+
+	logger.Debug("plan tree built",
+		"total_changes", totalChanges,
+		"create", childCounter[ActionCreate],
+		"update", childCounter[ActionUpdate],
+		"delete", childCounter[ActionDelete],
+		"replace", childCounter[ActionReplace],
+		"no_op", childCounter[ActionNoOp],
+		"errors", childCounter[ActionError],
+	)
 
 	return root, nil
 }

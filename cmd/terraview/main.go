@@ -20,24 +20,6 @@ func main() {
 	logFile := flag.String("log-file", "debug.log", "path to log file")
 	flag.Parse()
 
-	data, err := readPlanInput(*planPath)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		os.Exit(1)
-	}
-
-	plan, err := terraform.Parse(data)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to parse terraform plan\n: %v", err)
-		os.Exit(1)
-	}
-
-	root, err := planview.FromTerraform(plan)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to build tree from plan: %v\n", err)
-		os.Exit(1)
-	}
-
 	logger, f, err := setupLogger(debug, logFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to setup logger: %v\n", err)
@@ -48,7 +30,33 @@ func main() {
 		defer f.Close()
 	}
 
+	logger.Debug("starting terraview", "file", *planPath, "debug", *debug, "log_file", *logFile)
+
+	data, err := readPlanInput(*planPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
+
+	logger.Debug("plan input read", "bytes", len(data))
+
+	plan, err := terraform.Parse(data)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to parse terraform plan\n: %v", err)
+		os.Exit(1)
+	}
+
+	logger.Debug("terraform plan parsed", "terraform_version", plan.TerraformVersion, "resource_changes", len(plan.ResourceChanges), "diagnostics", len(plan.Diagnostics))
+
+	root, err := planview.FromTerraform(plan, logger)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to build tree from plan: %v\n", err)
+		os.Exit(1)
+	}
+
 	p := tea.NewProgram(app.New(root, logger))
+
+	logger.Debug("starting bubbletea program")
 
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to run terraview: %v\n", err)

@@ -1,6 +1,8 @@
 package planview
 
 import (
+	"io"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -10,12 +12,17 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/terraform"
 )
 
+// discardLogger returns a no-op logger suitable for tests.
+func discardLogger() *slog.Logger {
+	return slog.New(slog.NewTextHandler(io.Discard, nil))
+}
+
 func TestFromTerraformAllFixtures(t *testing.T) {
 	for _, name := range fixtureNames(t) {
 		plan := parseFixture(t, name)
 
 		t.Run(strings.TrimSuffix(name, filepath.Ext(name)), func(t *testing.T) {
-			root, err := FromTerraform(plan)
+			root, err := FromTerraform(plan, discardLogger())
 			if err != nil {
 				t.Fatalf("expected fixture to build successfully: %v", err)
 			}
@@ -234,7 +241,7 @@ func TestFromTerraformFixtureContracts(t *testing.T) {
 		plan := parseFixture(t, tc.name)
 
 		t.Run(strings.TrimSuffix(tc.name, filepath.Ext(tc.name)), func(t *testing.T) {
-			root, err := FromTerraform(plan)
+			root, err := FromTerraform(plan, discardLogger())
 			if err != nil {
 				t.Fatalf("expected fixture to build successfully: %v", err)
 			}
@@ -253,7 +260,7 @@ func TestFromTerraformIgnoresNonErrorDiagnostics(t *testing.T) {
 		},
 	}
 
-	root, err := FromTerraform(plan)
+	root, err := FromTerraform(plan, discardLogger())
 	if err != nil {
 		t.Fatalf("expected diagnostics-only plan to build successfully: %v", err)
 	}
@@ -277,7 +284,7 @@ func TestFromTerraformInvalidActionReturnsError(t *testing.T) {
 		},
 	}
 
-	if _, err := FromTerraform(plan); err == nil {
+	if _, err := FromTerraform(plan, discardLogger()); err == nil {
 		t.Fatal("expected invalid action to return an error")
 	}
 }
@@ -285,7 +292,7 @@ func TestFromTerraformInvalidActionReturnsError(t *testing.T) {
 func TestFromTerraformEmptyPlan(t *testing.T) {
 	plan := terraform.Plan{TerraformVersion: "1.8.5"}
 
-	root, err := FromTerraform(plan)
+	root, err := FromTerraform(plan, discardLogger())
 	if err != nil {
 		t.Fatalf("expected empty plan to build successfully: %v", err)
 	}
