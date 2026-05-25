@@ -60,6 +60,7 @@ func (s *Status) SetWidth(width int) {
 	s.width = max(0, width)
 }
 
+// hasActiveFilter reports whether any filter is enabled.
 func (s *Status) hasActiveFilter() bool {
 	return s.activeFilterCount > 0
 }

@@ -10,6 +10,7 @@ type styles struct {
 	borderBar lipgloss.Style
 }
 
+// newStyles builds the styles used by Status.
 func newStyles(t theme.Theme) styles {
 	p := t.Palette
 
