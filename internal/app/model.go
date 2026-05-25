@@ -119,8 +119,8 @@ func (m *Model) applyLayout(width, height int) {
 	treeWidth, treeHeight := treePaneSize(width, height)
 	m.components.tree.SetSize(treeWidth, treeHeight)
 
-	detailsWidth := detailsWidth(m.size.width, treeWidth)
-	m.components.details.SetSize(detailsWidth, treeHeight)
+	detailsPaneWidth := detailsWidth(m.size.width, treeWidth)
+	m.components.details.SetSize(detailsPaneWidth, treeHeight)
 }
 
 // refreshTreeFromControls reapplies the current query and filters to the tree.
