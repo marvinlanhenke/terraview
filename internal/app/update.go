@@ -38,6 +38,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keys.Enter) && m.focus == focusSearch:
 			m.focus = focusTree
 			m.components.search.Blur()
+			return m, nil
 
 		// Search Escape
 		case key.Matches(msg, keys.Escape) && m.focus == focusSearch:
