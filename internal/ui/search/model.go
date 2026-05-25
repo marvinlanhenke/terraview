@@ -44,16 +44,19 @@ func New(t ui.Theme) Search {
 
 func (s *Search) SetWidth(width int) {
 	s.width = max(0, width)
-	s.input.SetWidth(s.width)
+	s.syncInputWidth()
 }
 
 func (s *Search) SetMatches(matches int) {
 	s.matches = max(0, matches)
+	s.syncInputWidth()
 }
 
 func (s *Search) Focus() tea.Cmd {
 	s.input.Placeholder = ""
 	s.input.Focus()
+	s.syncInputWidth()
+
 	return textinput.Blink
 }
 
@@ -64,6 +67,7 @@ func (s *Search) Focused() bool {
 func (s *Search) Blur() {
 	s.input.Placeholder = placeholder
 	s.input.Blur()
+	s.syncInputWidth()
 }
 
 func (s *Search) Value() string {
@@ -71,7 +75,11 @@ func (s *Search) Value() string {
 }
 
 func (s *Search) Clear() {
-	s.input.SetValue("")
 	s.matches = 0
+	s.input.SetValue("")
 	s.input.Placeholder = placeholder
+}
+
+func (s *Search) syncInputWidth() {
+	s.input.SetWidth(s.layout().inputViewportWidth)
 }
