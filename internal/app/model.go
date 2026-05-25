@@ -123,6 +123,15 @@ func (m *Model) generalFooterBindings() []key.Binding {
 		keys.Filter,
 	}
 
+	switch m.focus {
+	case FocusTree:
+		bindings = append(bindings, keys.LeftPane)
+		bindings = append(bindings, keys.RightPane)
+	case FocusDetails:
+		bindings = append(bindings, keys.LeftPane)
+		bindings = append(bindings, keys.RightPane)
+	}
+
 	return bindings
 }
 
@@ -131,12 +140,8 @@ func (m *Model) specificFooterBindings() []key.Binding {
 
 	switch m.focus {
 	case FocusTree:
-		bindings = append(bindings, keys.LeftPane)
-		bindings = append(bindings, keys.RightPane)
 		bindings = append(bindings, tree.KeyMap().ShortHelp()...)
 	case FocusDetails:
-		bindings = append(bindings, keys.LeftPane)
-		bindings = append(bindings, keys.RightPane)
 		bindings = append(bindings, details.KeyMap().ShortHelp()...)
 	case FocusFilter:
 		bindings = append(bindings, filter.KeyMap().ShortHelp()...)
