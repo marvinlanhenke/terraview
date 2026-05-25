@@ -6,6 +6,7 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
+// View renders the status bar.
 func (s *Status) View() string {
 	if s.width <= 0 {
 		return ""
