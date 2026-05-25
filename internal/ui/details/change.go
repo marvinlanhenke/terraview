@@ -20,8 +20,10 @@ func flattenChanges(ch ui.ChangeSet) []change {
 	return rows
 }
 
-func flattenChangeMap(prefix string, before, after map[string]any, rows *[]change) {
-	for _, key := range sortedUnionKeys(before, after) {
+func flattenChangeMap(prefix string, before, after map[string]any, rows *[]change) bool {
+	keys := sortedUnionKeys(before, after)
+
+	for _, key := range keys {
 		path := key
 		if prefix != "" {
 			path = prefix + "." + key
@@ -29,6 +31,8 @@ func flattenChangeMap(prefix string, before, after map[string]any, rows *[]chang
 
 		appendValueChange(path, before[key], after[key], rows)
 	}
+
+	return len(keys) > 0
 }
 
 func appendValueChange(path string, before, after any, rows *[]change) {
@@ -36,19 +40,16 @@ func appendValueChange(path string, before, after any, rows *[]change) {
 	afterMap, afterIsMap := asMap(after)
 
 	if beforeIsMap || afterIsMap {
-		start := len(*rows)
+		ok := flattenChangeMap(path, normalizeMap(beforeMap), normalizeMap(afterMap), rows)
 
-		flattenChangeMap(path, normalizeMap(beforeMap), normalizeMap(afterMap), rows)
-
-		if len(*rows) == start {
+		// If both sides are empty we add the row as a leaf
+		if !ok {
 			*rows = append(*rows, change{
 				path:   path,
 				before: before,
 				after:  after,
 			})
 		}
-
-		return
 	}
 
 	*rows = append(*rows, change{
