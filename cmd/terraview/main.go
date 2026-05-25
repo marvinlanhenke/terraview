@@ -11,6 +11,7 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/app"
 	"github.com/marvinlanhenke/terraview/internal/planview"
 	"github.com/marvinlanhenke/terraview/internal/terraform"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func main() {
@@ -86,10 +87,13 @@ func setupLogger(debug *bool, logFile *string) (*slog.Logger, io.Closer, error) 
 		return nil, nil, fmt.Errorf("-log-file is required when -debug is enabled")
 	}
 
-	f, err := os.OpenFile(*logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to open log file %q: %w", *logFile, err)
+	rollingFile := &lumberjack.Logger{
+		Filename:   *logFile,
+		MaxSize:    10, // megabytes
+		MaxBackups: 5,  // how many files to keep
+		MaxAge:     30, // days
+		Compress:   true,
 	}
 
-	return slog.New(slog.NewTextHandler(f, &slog.HandlerOptions{Level: slog.LevelDebug})), f, nil
+	return slog.New(slog.NewTextHandler(rollingFile, &slog.HandlerOptions{Level: slog.LevelDebug})), rollingFile, nil
 }
