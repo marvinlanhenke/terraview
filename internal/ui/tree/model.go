@@ -5,18 +5,8 @@ import (
 
 	"charm.land/bubbles/v2/viewport"
 	"charm.land/lipgloss/v2"
+	"github.com/marvinlanhenke/terraview/internal/ui/action"
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
-)
-
-type Action string
-
-const (
-	ActionCreate  Action = "create"
-	ActionUpdate  Action = "update"
-	ActionDelete  Action = "delete"
-	ActionReplace Action = "replace"
-	ActionNoOp    Action = "no-op"
-	ActionError   Action = "error"
 )
 
 type NodeKind int
@@ -36,7 +26,7 @@ type Node struct {
 	Label      string
 	LabelCount string
 	Kind       NodeKind
-	Action     Action
+	Action     action.Action
 	Children   []*Node
 	Payload    any
 	Changes    ChangeSet
@@ -47,11 +37,11 @@ func (n *Node) HasChildren() bool {
 }
 
 func (n *Node) IsResource() bool {
-	return n != nil && n.Kind == NodeResource && n.Action != ActionNoOp
+	return n != nil && n.Kind == NodeResource && n.Action != action.ActionNoOp
 }
 
 func (n *Node) IsError() bool {
-	return n != nil && n.Kind == NodeResource && n.Action == ActionError
+	return n != nil && n.Kind == NodeResource && n.Action == action.ActionError
 }
 
 type Tree struct {
@@ -60,7 +50,7 @@ type Tree struct {
 	expanded map[string]bool
 	cursor   int
 
-	filters map[Action]bool
+	filters map[action.Action]bool
 	matcher matcher
 
 	width    int
@@ -94,12 +84,12 @@ func (t *Tree) SetRoot(n *Node) {
 	t.syncViewport()
 }
 
-func (t *Tree) SetCriteria(query string, filters map[Action]bool) {
+func (t *Tree) SetCriteria(query string, filters map[action.Action]bool) {
 	t.matcher = newMatcher(query)
 
 	t.filters = maps.Clone(filters)
 	if t.filters == nil {
-		t.filters = make(map[Action]bool)
+		t.filters = make(map[action.Action]bool)
 	}
 
 	t.rebuildRows()

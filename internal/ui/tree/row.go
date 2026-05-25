@@ -1,8 +1,10 @@
 package tree
 
+import "github.com/marvinlanhenke/terraview/internal/ui/action"
+
 type criteria struct {
 	matcher matcher
-	filters map[Action]bool
+	filters map[action.Action]bool
 }
 
 type row struct {
@@ -36,7 +38,7 @@ func buildRows(root *Node, expanded map[string]bool, c criteria) []row {
 	return rows
 }
 
-func includeRootChild(n *Node, filters map[Action]bool, filtering bool) bool {
+func includeRootChild(n *Node, filters map[action.Action]bool, filtering bool) bool {
 	if n == nil {
 		return false
 	}
@@ -101,7 +103,7 @@ func subtreeMatches(n *Node, m matcher) bool {
 	return false
 }
 
-func hasActiveFilters(filters map[Action]bool) bool {
+func hasActiveFilters(filters map[action.Action]bool) bool {
 	for _, isActive := range filters {
 		if isActive {
 			return true

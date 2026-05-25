@@ -1,28 +1,18 @@
 package filter
 
 import (
+	"github.com/marvinlanhenke/terraview/internal/ui/action"
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
-type Action string
-
-const (
-	ActionCreate  Action = "create"
-	ActionUpdate  Action = "update"
-	ActionDelete  Action = "delete"
-	ActionReplace Action = "replace"
-	ActionNoOp    Action = "no-op"
-	ActionError   Action = "error"
-)
-
 type Intent struct {
-	Action    Action
+	Action    action.Action
 	HasToggle bool
 	Reset     bool
 }
 
 type Option struct {
-	Action Action
+	Action action.Action
 	Label  string
 	Count  string
 }

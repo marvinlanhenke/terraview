@@ -4,7 +4,6 @@ import (
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
 	"github.com/marvinlanhenke/terraview/internal/ui/filter"
-	"github.com/marvinlanhenke/terraview/internal/ui/tree"
 )
 
 // Init satisfies tea.Model and returns no initial command.
@@ -131,10 +130,10 @@ func (m *Model) applyFilterIntent(intent filter.Intent) bool {
 	}
 
 	if intent.HasToggle {
-		if m.controls.filters[tree.Action(intent.Action)] {
-			delete(m.controls.filters, tree.Action(intent.Action))
+		if m.controls.filters[intent.Action] {
+			delete(m.controls.filters, intent.Action)
 		} else {
-			m.controls.filters[tree.Action(intent.Action)] = true
+			m.controls.filters[intent.Action] = true
 		}
 
 		return true
