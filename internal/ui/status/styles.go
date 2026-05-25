@@ -6,7 +6,6 @@ import (
 )
 
 type styles struct {
-	palette   theme.Palette
 	base      lipgloss.Style
 	borderBar lipgloss.Style
 }
@@ -24,7 +23,6 @@ func newStyles(t theme.Theme) styles {
 		BorderForeground(p.Secondary)
 
 	return styles{
-		palette:   p,
 		base:      base,
 		borderBar: borderBar,
 	}
