@@ -7,7 +7,6 @@ import (
 
 type styles struct {
 	palette       ui.Palette
-	base          lipgloss.Style
 	empty         lipgloss.Style
 	header        lipgloss.Style
 	subheader     lipgloss.Style
@@ -30,7 +29,6 @@ func newStyles(t ui.Theme) styles {
 
 	return styles{
 		palette:       p,
-		base:          base,
 		empty:         base.Faint(true),
 		header:        header,
 		subheader:     subheader,
