@@ -1,17 +1,15 @@
 package app
 
 import (
-	"log/slog"
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/marvinlanhenke/terraview/internal/planview"
 	"github.com/marvinlanhenke/terraview/internal/ui"
 	"github.com/marvinlanhenke/terraview/internal/ui/filter"
 )
 
 func TestRouteKeyPressConsumesSearchActivation(t *testing.T) {
-	m := New(testPlanRoot(), slog.Default())
+	m := New(testPlanRoot(), discardLogger())
 
 	cmd, consumed := m.routeKeyPress(keyText("/"))
 	if !consumed {
@@ -36,7 +34,7 @@ func TestRouteKeyPressConsumesSearchActivation(t *testing.T) {
 }
 
 func TestRouteKeyPressConsumesSearchEscape(t *testing.T) {
-	m := New(testPlanRoot(), slog.Default())
+	m := New(testPlanRoot(), discardLogger())
 	m = updateModel(t, m, keyText("/"))
 	m = updateModel(t, m, keyText("w"))
 
@@ -63,7 +61,7 @@ func TestRouteKeyPressConsumesSearchEscape(t *testing.T) {
 }
 
 func TestUpdateSearchInputUpdatesTreeControls(t *testing.T) {
-	m := New(testPlanRoot(), slog.Default())
+	m := New(testPlanRoot(), discardLogger())
 
 	m = updateModel(t, m, keyText("/"))
 	m = updateModel(t, m, keyText("w"))
@@ -80,7 +78,7 @@ func TestUpdateSearchInputUpdatesTreeControls(t *testing.T) {
 }
 
 func TestUpdateSearchEnterDoesNotExpandTree(t *testing.T) {
-	m := New(testPlanRoot(), slog.Default())
+	m := New(testPlanRoot(), discardLogger())
 	if got := m.components.tree.VisibleResourceCount(); got != 0 {
 		t.Fatalf("expected collapsed tree to have no visible resources, got %d", got)
 	}
@@ -98,7 +96,7 @@ func TestUpdateSearchEnterDoesNotExpandTree(t *testing.T) {
 }
 
 func TestUpdateRightPaneOnlyRoutesFromTreeFocus(t *testing.T) {
-	m := New(testPlanRoot(), slog.Default())
+	m := New(testPlanRoot(), discardLogger())
 	m.focus = focusSearch
 	m.components.search.Focus()
 
@@ -110,7 +108,7 @@ func TestUpdateRightPaneOnlyRoutesFromTreeFocus(t *testing.T) {
 }
 
 func TestUpdateCanFocusDetailsForSelectedResource(t *testing.T) {
-	m := New(testPlanRoot(), slog.Default())
+	m := New(testPlanRoot(), discardLogger())
 
 	m = updateModel(t, m, keyText("e"))
 	m = updateModel(t, m, keySpecial(tea.KeyDown))
@@ -122,7 +120,7 @@ func TestUpdateCanFocusDetailsForSelectedResource(t *testing.T) {
 }
 
 func TestUpdateFilterToggleAndReset(t *testing.T) {
-	m := New(testPlanRoot(), slog.Default())
+	m := New(testPlanRoot(), discardLogger())
 
 	m = updateModel(t, m, keyText("f"))
 	if m.focus != focusFilter {
@@ -141,7 +139,7 @@ func TestUpdateFilterToggleAndReset(t *testing.T) {
 }
 
 func TestUpdateWindowSizeAppliesLayout(t *testing.T) {
-	m := New(testPlanRoot(), slog.Default())
+	m := New(testPlanRoot(), discardLogger())
 	m = updateModel(t, m, tea.WindowSizeMsg{Width: 120, Height: 40})
 
 	if m.size.width != 120 || m.size.height != 40 {
@@ -150,7 +148,7 @@ func TestUpdateWindowSizeAppliesLayout(t *testing.T) {
 }
 
 func TestApplySearchQuery(t *testing.T) {
-	m := New(testPlanRoot(), slog.Default())
+	m := New(testPlanRoot(), discardLogger())
 
 	if m.applySearchQuery() {
 		t.Fatal("expected unchanged empty query")
@@ -165,7 +163,7 @@ func TestApplySearchQuery(t *testing.T) {
 }
 
 func TestApplyFilterIntent(t *testing.T) {
-	m := New(testPlanRoot(), slog.Default())
+	m := New(testPlanRoot(), discardLogger())
 
 	if !m.applyFilterIntent(filterIntent(ui.ActionCreate)) {
 		t.Fatal("expected create filter toggle to report a change")
@@ -228,47 +226,4 @@ func filterIntent(action ui.Action) filter.Intent {
 
 func filterResetIntent() filter.Intent {
 	return filter.ResetIntent()
-}
-
-func testPlanRoot() *planview.Node {
-	return &planview.Node{
-		Id:     "root",
-		Label:  "Root",
-		Kind:   planview.NodeGroup,
-		Action: planview.ActionNoOp,
-		Children: []*planview.Node{
-			{
-				Id:         "create-group",
-				Label:      "Create",
-				LabelCount: "(1/2)",
-				Kind:       planview.NodeGroup,
-				Action:     planview.ActionCreate,
-				Children: []*planview.Node{
-					{
-						Id:      "aws_instance.web",
-						Label:   "aws_instance.web",
-						Kind:    planview.NodeResource,
-						Action:  planview.ActionCreate,
-						Payload: map[string]any{"address": "aws_instance.web"},
-					},
-				},
-			},
-			{
-				Id:         "delete-group",
-				Label:      "Delete",
-				LabelCount: "(1/2)",
-				Kind:       planview.NodeGroup,
-				Action:     planview.ActionDelete,
-				Children: []*planview.Node{
-					{
-						Id:      "aws_s3_bucket.old",
-						Label:   "aws_s3_bucket.old",
-						Kind:    planview.NodeResource,
-						Action:  planview.ActionDelete,
-						Payload: map[string]any{"address": "aws_s3_bucket.old"},
-					},
-				},
-			},
-		},
-	}
 }

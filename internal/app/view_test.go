@@ -1,7 +1,6 @@
 package app
 
 import (
-	"log/slog"
 	"strings"
 	"testing"
 
@@ -9,7 +8,7 @@ import (
 )
 
 func TestViewUsesAppViewSettings(t *testing.T) {
-	m := New(testPlanRoot(), slog.Default())
+	m := New(testPlanRoot(), discardLogger())
 	m.applyLayout(100, 30)
 
 	view := m.View()
@@ -27,7 +26,7 @@ func TestViewUsesAppViewSettings(t *testing.T) {
 }
 
 func TestRenderFilterOverlayIncludesModal(t *testing.T) {
-	m := New(testPlanRoot(), slog.Default())
+	m := New(testPlanRoot(), discardLogger())
 	m.applyLayout(100, 30)
 	m.focus = focusFilter
 
