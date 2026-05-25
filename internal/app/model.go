@@ -2,6 +2,8 @@
 package app
 
 import (
+	"log/slog"
+
 	"charm.land/bubbles/v2/help"
 	"charm.land/bubbles/v2/key"
 	"github.com/marvinlanhenke/terraview/internal/planview"
@@ -55,10 +57,11 @@ type Model struct {
 	controls   treeControls
 	components components
 	help       help.Model
+	logger     *slog.Logger
 }
 
 // New creates an initialized app model from a planview root node.
-func New(root *planview.Node) Model {
+func New(root *planview.Node, logger *slog.Logger) Model {
 	t := ui.DefaultTheme()
 
 	c := components{
@@ -80,6 +83,7 @@ func New(root *planview.Node) Model {
 		controls:   controls,
 		components: c,
 		help:       help.New(),
+		logger:     logger,
 	}
 
 	children := make([]*planview.Node, 0)

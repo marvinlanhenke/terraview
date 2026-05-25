@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 
 	tea "charm.land/bubbletea/v2"
@@ -14,6 +15,8 @@ import (
 
 func main() {
 	planPath := flag.String("file", "", "path to terraform plan JSON file, or - for stdin")
+	debug := flag.Bool("debug", false, "enable debug logging")
+	logFile := flag.String("log-file", "debug.log", "path to log file")
 	flag.Parse()
 
 	data, err := readPlanInput(*planPath)
@@ -24,7 +27,7 @@ func main() {
 
 	plan, err := terraform.Parse(data)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to parse terraform plan: %v\n", err)
+		fmt.Fprintf(os.Stderr, "failed to parse terraform plan\n: %v", err)
 		os.Exit(1)
 	}
 
@@ -34,7 +37,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	p := tea.NewProgram(app.New(root))
+	logger, f, err := setupLogger(debug, logFile)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to setup logger: %v\n", err)
+		os.Exit(1)
+	}
+
+	if f != nil {
+		defer f.Close()
+	}
+
+	p := tea.NewProgram(app.New(root, logger))
 
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to run terraview: %v\n", err)
@@ -62,4 +75,21 @@ func readPlanInput(planPath string) ([]byte, error) {
 
 		return nil, fmt.Errorf("usage: terraview -file <plan.json> or terraview -file -")
 	}
+}
+
+func setupLogger(debug *bool, logFile *string) (*slog.Logger, io.Closer, error) {
+	if *debug == false {
+		return slog.New(slog.NewTextHandler(io.Discard, nil)), nil, nil
+	}
+
+	if *logFile == "" {
+		return nil, nil, fmt.Errorf("-log-file is required when -debug is enabled")
+	}
+
+	f, err := os.OpenFile(*logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to open log file %q: %w", *logFile, err)
+	}
+
+	return slog.New(slog.NewTextHandler(f, &slog.HandlerOptions{Level: slog.LevelDebug})), f, nil
 }
