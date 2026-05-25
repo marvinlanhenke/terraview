@@ -5,7 +5,7 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-// View satisfies tea.Model and renders the composed Terraview UI.
+// View satisfies tea.Model by rendering the app layout and active overlays.
 func (m Model) View() tea.View {
 	content := m.renderAppContent()
 
@@ -16,6 +16,7 @@ func (m Model) View() tea.View {
 	return m.newView(content)
 }
 
+// renderAppContent renders the base app layout without modal overlays.
 func (m Model) renderAppContent() string {
 	return lipgloss.JoinVertical(
 		lipgloss.Left,
@@ -28,6 +29,7 @@ func (m Model) renderAppContent() string {
 	)
 }
 
+// renderBody renders the main tree/details pane split.
 func (m Model) renderBody() string {
 	return lipgloss.JoinHorizontal(
 		lipgloss.Top,
@@ -37,6 +39,7 @@ func (m Model) renderBody() string {
 	)
 }
 
+// renderFooter renders general and focus-specific key help.
 func (m Model) renderFooter() string {
 	general := m.help.ShortHelpView(m.generalFooterBindings())
 	specific := m.help.ShortHelpView(m.specificFooterBindings())
@@ -51,6 +54,7 @@ func (m Model) renderFooter() string {
 		Render(lipgloss.JoinVertical(lipgloss.Left, bindings...))
 }
 
+// renderFilterOverlay layers the filter modal above the base app content.
 func (m Model) renderFilterOverlay(baseContent string) string {
 	modal := m.components.filter.View(m.controls.filters)
 
@@ -63,6 +67,7 @@ func (m Model) renderFilterOverlay(baseContent string) string {
 	return lipgloss.NewCompositor(base, popup).Render()
 }
 
+// newView wraps rendered content in the Bubble Tea view settings used by the app.
 func (m Model) newView(content string) tea.View {
 	view := tea.NewView(m.theme.Styles.App.Render(content))
 	view.AltScreen = true
@@ -71,10 +76,12 @@ func (m Model) newView(content string) tea.View {
 	return view
 }
 
+// treePaneSize returns the tree pane dimensions for an app size.
 func treePaneSize(width, height int) (int, int) {
 	return max(20, width/3), max(5, height-13)
 }
 
+// detailsWidth returns the details pane width beside the tree pane.
 func detailsWidth(appWidth, treeWidth int) int {
 	return max(20, appWidth-treeWidth-defaultMargin-1)
 }

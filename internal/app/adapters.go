@@ -11,7 +11,7 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/ui/tree"
 )
 
-// buildTreeNode converts a planview node into the tree component model.
+// buildTreeNode adapts a planview node tree into the tree component model.
 func buildTreeNode(n *planview.Node) *tree.Node {
 	if n == nil {
 		return nil
@@ -37,7 +37,7 @@ func buildTreeNode(n *planview.Node) *tree.Node {
 	return out
 }
 
-// buildStats counts resource nodes by action for the status component.
+// buildStats adapts the plan tree into status action counters.
 func buildStats(n *planview.Node) *status.Stats {
 	if n == nil {
 		return &status.Stats{}
@@ -49,7 +49,7 @@ func buildStats(n *planview.Node) *status.Stats {
 	return stats
 }
 
-// collectStats recursively accumulates action counts from the plan tree.
+// collectStats recursively counts resource nodes by action.
 func collectStats(n *planview.Node, stats *status.Stats) {
 	if n == nil {
 		return
@@ -77,7 +77,7 @@ func collectStats(n *planview.Node, stats *status.Stats) {
 	}
 }
 
-// buildDetailsContent derives the details pane content from the selected tree node.
+// buildDetailsContent adapts the selected tree node into details pane content.
 func buildDetailsContent(n *tree.Node) details.Content {
 	if n == nil {
 		return details.Content{Kind: details.KindNone}
@@ -109,7 +109,7 @@ func buildDetailsContent(n *tree.Node) details.Content {
 	return content
 }
 
-// buildFilterOptions builds filter modal options from the action group nodes.
+// buildFilterOptions adapts top-level action groups into filter modal options.
 func buildFilterOptions(groups []*planview.Node) []filter.Option {
 	options := make([]filter.Option, 0, len(groups))
 
@@ -128,6 +128,7 @@ func buildFilterOptions(groups []*planview.Node) []filter.Option {
 	return options
 }
 
+// convertPlanAction maps a planview action to the matching UI action.
 func convertPlanAction(a planview.Action) ui.Action {
 	switch a {
 	case planview.ActionCreate:
@@ -147,6 +148,7 @@ func convertPlanAction(a planview.Action) ui.Action {
 	}
 }
 
+// convertPlanNodeKind maps a planview node kind to the matching tree node kind.
 func convertPlanNodeKind(k planview.NodeKind) tree.NodeKind {
 	switch k {
 	case planview.NodeGroup:

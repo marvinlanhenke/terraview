@@ -14,6 +14,7 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/ui/tree"
 )
 
+// defaultMargin reserves horizontal space for pane gaps and outer padding.
 const defaultMargin = 4
 
 // focus identifies the active app pane.
@@ -26,6 +27,7 @@ const (
 	focusFilter
 )
 
+// components groups the child models owned by the app model.
 type components struct {
 	search  search.Search
 	filter  filter.Modal
@@ -34,6 +36,7 @@ type components struct {
 	details details.Details
 }
 
+// size stores the latest terminal dimensions.
 type size struct {
 	width  int
 	height int
@@ -55,7 +58,7 @@ type Model struct {
 	help       help.Model
 }
 
-// New creates a Model from the planview root node.
+// New creates an initialized app model from a planview root node.
 func New(root *planview.Node) Model {
 	t := theme.Default()
 
@@ -98,6 +101,7 @@ func New(root *planview.Node) Model {
 	return m
 }
 
+// applyLayout stores the terminal dimensions and sizes child components.
 func (m *Model) applyLayout(width, height int) {
 	m.size.width = width
 	m.size.height = height
@@ -126,6 +130,7 @@ func (m *Model) syncTreeOutputs() {
 	m.components.search.SetMatches(m.components.tree.VisibleResourceCount())
 }
 
+// generalFooterBindings returns app-level key bindings shown in the footer.
 func (m *Model) generalFooterBindings() []key.Binding {
 	bindings := []key.Binding{
 		keys.Quit,
@@ -141,6 +146,7 @@ func (m *Model) generalFooterBindings() []key.Binding {
 	return bindings
 }
 
+// specificFooterBindings returns focus-specific key bindings shown in the footer.
 func (m *Model) specificFooterBindings() []key.Binding {
 	switch m.focus {
 	case focusTree:

@@ -11,7 +11,7 @@ func (m Model) Init() tea.Cmd {
 	return nil
 }
 
-// Update satisfies tea.Model and routes messages to the focused component.
+// Update satisfies tea.Model by routing app-level messages before focused input.
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmds []tea.Cmd
 
@@ -34,6 +34,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
+// routeKeyPress applies app-level key bindings before component-specific updates.
+// A false consumed value lets the focused component also process the keypress.
 func (m *Model) routeKeyPress(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 	switch {
 	case key.Matches(msg, keys.Quit) && m.focus != focusSearch:
@@ -73,18 +75,21 @@ func (m *Model) routeKeyPress(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 	return nil, false
 }
 
+// focusSearch moves focus to the search field and starts cursor blinking.
 func (m *Model) focusSearch() tea.Cmd {
 	m.focus = focusSearch
 	m.components.details.Blur()
 	return m.components.search.Focus()
 }
 
+// focusTree moves focus back to the tree and clears child component focus styles.
 func (m *Model) focusTree() {
 	m.focus = focusTree
 	m.components.search.Blur()
 	m.components.details.Blur()
 }
 
+// focusDetailsIfResource moves focus to details when a resource row is selected.
 func (m *Model) focusDetailsIfResource() {
 	selected := m.components.tree.Selected()
 	if selected == nil || !selected.IsResource() {
@@ -97,6 +102,7 @@ func (m *Model) focusDetailsIfResource() {
 	m.components.details.Focus()
 }
 
+// toggleFilter opens the filter modal, or closes it when already active.
 func (m *Model) toggleFilter() {
 	if m.focus == focusFilter {
 		m.focusTree()
@@ -108,6 +114,7 @@ func (m *Model) toggleFilter() {
 	m.components.details.Blur()
 }
 
+// updateFocused forwards a message to the currently focused child component.
 func (m *Model) updateFocused(msg tea.Msg) tea.Cmd {
 	var cmds []tea.Cmd
 
