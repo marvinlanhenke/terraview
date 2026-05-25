@@ -5,7 +5,7 @@ import (
 	"charm.land/bubbles/v2/help"
 	"charm.land/bubbles/v2/key"
 	"github.com/marvinlanhenke/terraview/internal/planview"
-	"github.com/marvinlanhenke/terraview/internal/ui/action"
+	"github.com/marvinlanhenke/terraview/internal/ui"
 	"github.com/marvinlanhenke/terraview/internal/ui/details"
 	"github.com/marvinlanhenke/terraview/internal/ui/filter"
 	"github.com/marvinlanhenke/terraview/internal/ui/search"
@@ -42,7 +42,7 @@ type size struct {
 // treeControls stores the query and filters applied to the tree.
 type treeControls struct {
 	query   string
-	filters map[action.Action]bool
+	filters map[ui.Action]bool
 }
 
 // Model is the top-level Bubble Tea model for the Terraview app.
@@ -68,7 +68,7 @@ func New(root *planview.Node) Model {
 	}
 
 	controls := treeControls{
-		filters: make(map[action.Action]bool),
+		filters: make(map[ui.Action]bool),
 	}
 
 	m := Model{

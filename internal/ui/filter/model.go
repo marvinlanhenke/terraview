@@ -1,18 +1,18 @@
 package filter
 
 import (
-	"github.com/marvinlanhenke/terraview/internal/ui/action"
+	"github.com/marvinlanhenke/terraview/internal/ui"
 	"github.com/marvinlanhenke/terraview/internal/ui/theme"
 )
 
 type Intent struct {
-	Action    action.Action
+	Action    ui.Action
 	HasToggle bool
 	Reset     bool
 }
 
 type Option struct {
-	Action action.Action
+	Action ui.Action
 	Label  string
 	Count  string
 }

@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/marvinlanhenke/terraview/internal/planview"
-	"github.com/marvinlanhenke/terraview/internal/ui/action"
+	"github.com/marvinlanhenke/terraview/internal/ui"
 	"github.com/marvinlanhenke/terraview/internal/ui/details"
 	"github.com/marvinlanhenke/terraview/internal/ui/filter"
 	"github.com/marvinlanhenke/terraview/internal/ui/status"
@@ -126,8 +126,8 @@ func buildFilterOptions(groups []*planview.Node) []filter.Option {
 	return options
 }
 
-func convertPlanAction(a planview.Action) action.Action {
-	return action.Action(a)
+func convertPlanAction(a planview.Action) ui.Action {
+	return ui.Action(a)
 }
 
 func convertPlanNodeKind(k planview.NodeKind) tree.NodeKind {

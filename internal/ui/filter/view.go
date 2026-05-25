@@ -2,7 +2,7 @@ package filter
 
 import (
 	"charm.land/lipgloss/v2"
-	"github.com/marvinlanhenke/terraview/internal/ui/action"
+	"github.com/marvinlanhenke/terraview/internal/ui"
 )
 
 const (
@@ -12,7 +12,7 @@ const (
 	modalWidth = 28
 )
 
-func (f *Modal) View(active map[action.Action]bool) string {
+func (f *Modal) View(active map[ui.Action]bool) string {
 	rows := make([]string, len(f.options))
 
 	for i, option := range f.options {
