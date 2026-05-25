@@ -66,6 +66,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keys.Filter) && m.focus != focusSearch:
 			if m.focus == focusFilter {
 				m.focus = focusTree
+				m.components.details.Blur()
 			} else {
 				m.focus = focusFilter
 			}
