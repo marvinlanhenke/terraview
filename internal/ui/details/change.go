@@ -13,7 +13,7 @@ type change struct {
 }
 
 func flattenChanges(ch ui.ChangeSet) []change {
-	rows := make([]change, 0)
+	var rows []change
 
 	flattenChangeMap("", normalizeMap(ch.Before), normalizeMap(ch.After), &rows)
 
