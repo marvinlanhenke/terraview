@@ -16,6 +16,7 @@ type styles struct {
 	banner          lipgloss.Style
 }
 
+// newStyles builds the styles used to render the search bar.
 func newStyles(t ui.Theme) styles {
 	p := t.Palette
 

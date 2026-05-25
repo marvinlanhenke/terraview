@@ -6,6 +6,7 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
+// searchLayout contains precomputed strings and widths for rendering Search.
 type searchLayout struct {
 	label              string
 	status             string
@@ -15,6 +16,7 @@ type searchLayout struct {
 	inputViewportWidth int
 }
 
+// View renders the search bar.
 func (s *Search) View() string {
 	if s.width <= 0 {
 		return ""
@@ -42,6 +44,7 @@ func (s *Search) View() string {
 		Render(row)
 }
 
+// layout computes the current rendered search bar layout.
 func (s *Search) layout() searchLayout {
 	label := s.styles.nugget.Render("[S]")
 	status := s.styles.status.Render(fmt.Sprintf("%d matches", s.matches))
