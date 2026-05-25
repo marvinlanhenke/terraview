@@ -88,6 +88,7 @@ func (s *Search) Clear() {
 	s.matches = 0
 	s.input.SetValue("")
 	s.input.Placeholder = placeholder
+	s.syncInputWidth()
 }
 
 // syncInputWidth updates the underlying text input viewport width.
