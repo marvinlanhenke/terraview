@@ -7,6 +7,10 @@ import (
 )
 
 func (s *Status) View() string {
+	if s.width <= 0 {
+		return ""
+	}
+
 	row := s.styles.base
 	bar := s.styles.borderBar
 
