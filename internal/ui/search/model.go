@@ -1,8 +1,6 @@
 package search
 
 import (
-	"strings"
-
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
 	"github.com/marvinlanhenke/terraview/internal/ui"
@@ -64,11 +62,12 @@ func (s *Search) Focused() bool {
 }
 
 func (s *Search) Blur() {
+	s.input.Placeholder = placeholder
 	s.input.Blur()
 }
 
 func (s *Search) Value() string {
-	return strings.TrimSpace(s.input.Value())
+	return s.input.Value()
 }
 
 func (s *Search) Clear() {
