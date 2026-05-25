@@ -1,6 +1,8 @@
 package app
 
 import (
+	"fmt"
+
 	"github.com/marvinlanhenke/terraview/internal/planview"
 	"github.com/marvinlanhenke/terraview/internal/ui"
 	"github.com/marvinlanhenke/terraview/internal/ui/details"
@@ -127,9 +129,31 @@ func buildFilterOptions(groups []*planview.Node) []filter.Option {
 }
 
 func convertPlanAction(a planview.Action) ui.Action {
-	return ui.Action(a)
+	switch a {
+	case planview.ActionCreate:
+		return ui.ActionCreate
+	case planview.ActionUpdate:
+		return ui.ActionUpdate
+	case planview.ActionDelete:
+		return ui.ActionDelete
+	case planview.ActionReplace:
+		return ui.ActionReplace
+	case planview.ActionNoOp:
+		return ui.ActionNoOp
+	case planview.ActionError:
+		return ui.ActionError
+	default:
+		panic(fmt.Sprintf("unknown planview action %q", a))
+	}
 }
 
 func convertPlanNodeKind(k planview.NodeKind) tree.NodeKind {
-	return tree.NodeKind(k)
+	switch k {
+	case planview.NodeGroup:
+		return tree.NodeGroup
+	case planview.NodeResource:
+		return tree.NodeResource
+	default:
+		panic(fmt.Sprintf("unknown planview node kind %q", k))
+	}
 }
