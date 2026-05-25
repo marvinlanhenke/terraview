@@ -59,7 +59,7 @@ func appendRows(rows []row, n *Node, parentIndex, depth int, expanded map[string
 		return rows
 	}
 
-	if m.Active() && !subtreeMatches(n, m) {
+	if m.active() && !subtreeMatches(n, m) {
 		return rows
 	}
 
@@ -76,7 +76,7 @@ func appendRows(rows []row, n *Node, parentIndex, depth int, expanded map[string
 
 	rows = append(rows, r)
 
-	if r.open(m.Active()) {
+	if r.open(m.active()) {
 		for _, child := range n.Children {
 			rows = appendRows(rows, child, rowIndex, depth+1, expanded, m)
 		}
@@ -90,7 +90,7 @@ func subtreeMatches(n *Node, m matcher) bool {
 		return false
 	}
 
-	if m.MatchNode(n) {
+	if m.matchNode(n) {
 		return true
 	}
 

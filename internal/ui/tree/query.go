@@ -33,27 +33,27 @@ func newMatcher(query string) matcher {
 	return m
 }
 
-func (m matcher) Active() bool {
+func (m matcher) active() bool {
 	return m.raw != ""
 }
 
-func (m matcher) MatchNode(n *Node) bool {
+func (m matcher) matchNode(n *Node) bool {
 	if n == nil {
 		return false
 	}
 
-	if !m.Active() {
+	if !m.active() {
 		return true
 	}
 
-	return m.MatchString(n.Id) ||
-		m.MatchString(n.Label) ||
-		m.MatchString(string(n.Action)) ||
-		m.MatchString(n.searchPayload)
+	return m.matchString(n.Id) ||
+		m.matchString(n.Label) ||
+		m.matchString(string(n.Action)) ||
+		m.matchString(n.searchPayload)
 }
 
-func (m matcher) MatchString(v string) bool {
-	if !m.Active() {
+func (m matcher) matchString(v string) bool {
+	if !m.active() {
 		return true
 	}
 

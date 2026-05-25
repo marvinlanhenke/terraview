@@ -33,7 +33,7 @@ func (t *Tree) renderRow(r row, selected bool) string {
 
 	icon := " "
 	if r.expandable {
-		if r.open(t.matcher.Active()) {
+		if r.open(t.matcher.active()) {
 			icon = "◉"
 		} else {
 			icon = "○"
