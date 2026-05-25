@@ -222,11 +222,11 @@ func keyCtrl(code rune) tea.KeyPressMsg {
 }
 
 func filterIntent(action ui.Action) filter.Intent {
-	return filter.Intent{Action: action, HasToggle: true}
+	return filter.ToggleIntent(action)
 }
 
 func filterResetIntent() filter.Intent {
-	return filter.Intent{Reset: true}
+	return filter.ResetIntent()
 }
 
 func testPlanRoot() *planview.Node {

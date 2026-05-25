@@ -4,12 +4,6 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/ui"
 )
 
-type Intent struct {
-	Action    ui.Action
-	HasToggle bool
-	Reset     bool
-}
-
 type Option struct {
 	Action ui.Action
 	Label  string
@@ -30,7 +24,7 @@ func New(t ui.Theme) Modal {
 }
 
 func (f *Modal) SetOptions(options []Option) {
-	f.options = options
+	f.options = append([]Option(nil), options...)
 	f.clampCursor()
 }
 

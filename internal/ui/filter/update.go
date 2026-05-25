@@ -23,17 +23,12 @@ func (f *Modal) Update(msg tea.Msg) (Intent, tea.Cmd) {
 		case key.Matches(msg, keys.toggle):
 			selected := f.selected()
 			if selected != nil {
-				intent = Intent{
-					Action:    selected.Action,
-					HasToggle: true,
-				}
+				intent = ToggleIntent(selected.Action)
 			}
 
 		// Reset Filters
 		case key.Matches(msg, keys.reset):
-			intent = Intent{
-				Reset: true,
-			}
+			intent = ResetIntent()
 		}
 	}
 

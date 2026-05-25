@@ -161,7 +161,7 @@ func (m *Model) applySearchQuery() bool {
 
 // applyFilterIntent applies filter modal state changes and reports whether filters changed.
 func (m *Model) applyFilterIntent(intent filter.Intent) bool {
-	if intent.Reset {
+	if intent.Reset() {
 		if len(m.controls.filters) == 0 {
 			return false
 		}
@@ -171,11 +171,11 @@ func (m *Model) applyFilterIntent(intent filter.Intent) bool {
 		return true
 	}
 
-	if intent.HasToggle {
-		if m.controls.filters[intent.Action] {
-			delete(m.controls.filters, intent.Action)
+	if action, ok := intent.Toggle(); ok {
+		if m.controls.filters[action] {
+			delete(m.controls.filters, action)
 		} else {
-			m.controls.filters[intent.Action] = true
+			m.controls.filters[action] = true
 		}
 
 		return true
