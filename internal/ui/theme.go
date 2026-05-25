@@ -8,41 +8,41 @@ import (
 // Palette defines the colors shared by UI components.
 type Palette struct {
 	// Surface is the default component background color.
-	Surface         color.Color
+	Surface color.Color
 	// SurfaceAlt is the highlighted component background color.
-	SurfaceAlt      color.Color
+	SurfaceAlt color.Color
 	// SurfaceMuted is the subdued component background color.
-	SurfaceMuted    color.Color
+	SurfaceMuted color.Color
 	// SurfaceEmbedded is the nested content background color.
 	SurfaceEmbedded color.Color
 
 	// Text is the default foreground color.
-	Text      color.Color
+	Text color.Color
 	// TextMuted is the subdued foreground color.
 	TextMuted color.Color
 
 	// Primary is the primary accent color.
-	Primary   color.Color
+	Primary color.Color
 	// Secondary is the secondary accent color.
 	Secondary color.Color
 	// Info is the informational accent color.
-	Info      color.Color
+	Info color.Color
 	// Success is the success accent color.
-	Success   color.Color
+	Success color.Color
 	// Warning is the warning accent color.
-	Warning   color.Color
+	Warning color.Color
 	// Danger is the destructive or error accent color.
-	Danger    color.Color
+	Danger color.Color
 }
 
 // CommonStyles contains base styles shared by UI components.
 type CommonStyles struct {
 	// App styles the top-level application container.
-	App           lipgloss.Style
+	App lipgloss.Style
 	// Footer styles the app footer.
-	Footer        lipgloss.Style
+	Footer lipgloss.Style
 	// Background styles default pane backgrounds.
-	Background    lipgloss.Style
+	Background lipgloss.Style
 	// BackgroundAlt styles highlighted pane backgrounds.
 	BackgroundAlt lipgloss.Style
 }
@@ -52,7 +52,7 @@ type Theme struct {
 	// Palette contains the theme colors.
 	Palette Palette
 	// Styles contains reusable common styles.
-	Styles  CommonStyles
+	Styles CommonStyles
 }
 
 // DefaultTheme returns the default Terraview UI theme.
