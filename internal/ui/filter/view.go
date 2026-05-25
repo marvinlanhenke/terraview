@@ -12,6 +12,7 @@ const (
 	modalWidth = 28
 )
 
+// View renders the modal using active to mark enabled filters.
 func (f *Modal) View(active map[ui.Action]bool) string {
 	rows := make([]string, len(f.options))
 
@@ -29,12 +30,9 @@ func (f *Modal) View(active map[ui.Action]bool) string {
 			row = f.styles.rowAlt
 		}
 
-		label := option.Label
-		count := option.Count
-
 		iconCol := row.Width(iconWidth).Render(icon)
-		labelCol := row.Width(labelWidth).Render(label)
-		countCol := row.Width(countWidth).Align(lipgloss.Right).Render(count)
+		labelCol := row.Width(labelWidth).Render(option.Label)
+		countCol := row.Width(countWidth).Align(lipgloss.Right).Render(option.Count)
 
 		rows[i] = lipgloss.JoinHorizontal(lipgloss.Top, iconCol, labelCol, countCol)
 	}

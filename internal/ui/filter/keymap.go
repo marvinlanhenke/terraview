@@ -47,6 +47,7 @@ func (k keymap) FullHelp() [][]key.Binding {
 	}
 }
 
+// KeyMap returns the key bindings used by the filter modal.
 func KeyMap() help.KeyMap {
 	return keys
 }

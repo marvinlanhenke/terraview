@@ -5,6 +5,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 )
 
+// Update applies a Bubble Tea message and returns any requested filter intent.
 func (f *Modal) Update(msg tea.Msg) (Intent, tea.Cmd) {
 	intent := Intent{}
 
