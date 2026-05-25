@@ -31,6 +31,7 @@ var keys = keymap{
 	),
 }
 
+// ShortHelp returns the compact help bindings for the filter keymap.
 func (k keymap) ShortHelp() []key.Binding {
 	return []key.Binding{
 		k.up,
@@ -40,6 +41,7 @@ func (k keymap) ShortHelp() []key.Binding {
 	}
 }
 
+// FullHelp returns the expanded help bindings for the filter keymap.
 func (k keymap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
 		{k.up, k.down},

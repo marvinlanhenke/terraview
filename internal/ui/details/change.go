@@ -6,12 +6,14 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/ui"
 )
 
+// change describes one flattened attribute change rendered in the details pane.
 type change struct {
 	path   string
 	before any
 	after  any
 }
 
+// flattenChanges converts a ChangeSet into sorted detail rows.
 func flattenChanges(ch ui.ChangeSet) []change {
 	var rows []change
 
@@ -20,6 +22,7 @@ func flattenChanges(ch ui.ChangeSet) []change {
 	return rows
 }
 
+// flattenChangeMap appends changes for every key in before or after.
 func flattenChangeMap(prefix string, before, after map[string]any, rows *[]change) bool {
 	keys := sortedUnionKeys(before, after)
 
@@ -35,6 +38,7 @@ func flattenChangeMap(prefix string, before, after map[string]any, rows *[]chang
 	return len(keys) > 0
 }
 
+// appendValueChange appends a change row, recursively expanding map values first.
 func appendValueChange(path string, before, after any, rows *[]change) {
 	beforeMap, beforeIsMap := asMap(before)
 	afterMap, afterIsMap := asMap(after)
@@ -59,11 +63,13 @@ func appendValueChange(path string, before, after any, rows *[]change) {
 	})
 }
 
+// asMap returns v as a string-keyed map when possible.
 func asMap(v any) (map[string]any, bool) {
 	m, ok := v.(map[string]any)
 	return m, ok
 }
 
+// normalizeMap returns an empty map when m is nil.
 func normalizeMap(m map[string]any) map[string]any {
 	if m == nil {
 		return map[string]any{}
@@ -72,6 +78,7 @@ func normalizeMap(m map[string]any) map[string]any {
 	return m
 }
 
+// sortedUnionKeys returns the sorted set of keys present in before or after.
 func sortedUnionKeys(before, after map[string]any) []string {
 	keys := make(map[string]struct{}, len(before)+len(after))
 

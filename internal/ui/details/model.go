@@ -1,3 +1,4 @@
+// Package details renders and updates the selected resource details pane.
 package details
 
 import (
@@ -6,14 +7,19 @@ import (
 	"github.com/marvinlanhenke/terraview/internal/ui"
 )
 
+// Kind identifies the type of content shown in the details pane.
 type Kind int
 
 const (
+	// KindNone represents an empty details selection.
 	KindNone Kind = iota
+	// KindGroup represents a selected resource group.
 	KindGroup
+	// KindResource represents a selected resource.
 	KindResource
 )
 
+// Content contains the data rendered by the details pane.
 type Content struct {
 	Key     string
 	Kind    Kind
@@ -23,6 +29,7 @@ type Content struct {
 	IsError bool
 }
 
+// Details renders and updates the selected resource details pane.
 type Details struct {
 	content  Content
 	changes  []change
@@ -36,6 +43,7 @@ type Details struct {
 	styles   styles
 }
 
+// New returns an initialized Details using t for styling.
 func New(t ui.Theme) Details {
 	s := newStyles(t)
 
@@ -51,6 +59,7 @@ func New(t ui.Theme) Details {
 	}
 }
 
+// SetSize sets the rendered details pane dimensions.
 func (d *Details) SetSize(width, height int) {
 	d.width = max(0, width)
 	d.height = max(0, height)
@@ -63,6 +72,7 @@ func (d *Details) SetSize(width, height int) {
 	d.syncViewport()
 }
 
+// SetContent replaces the content shown by Details.
 func (d *Details) SetContent(content Content) {
 	changed := d.content.Key != content.Key
 
@@ -78,12 +88,14 @@ func (d *Details) SetContent(content Content) {
 	d.syncViewport()
 }
 
+// Focus moves keyboard focus to the details pane.
 func (d *Details) Focus() {
 	d.focus = true
 	d.viewport.Style = d.styles.backgroundAlt
 	d.syncViewport()
 }
 
+// Blur removes keyboard focus from the details pane.
 func (d *Details) Blur() {
 	d.focus = false
 	d.viewport.Style = d.styles.background

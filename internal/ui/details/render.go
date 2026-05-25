@@ -11,8 +11,10 @@ import (
 	"github.com/alecthomas/chroma/v2/quick"
 )
 
+// ansiBackground matches reset sequences emitted by Chroma highlighting.
 var ansiBackground = regexp.MustCompile(`\x1b\[0m`)
 
+// syncViewport renders the current content into the viewport.
 func (d *Details) syncViewport() {
 	if d.width <= 0 || d.height <= 0 {
 		d.viewport.SetContentLines(nil)
@@ -29,6 +31,7 @@ func (d *Details) syncViewport() {
 	d.viewport.SetContentLines(lines)
 }
 
+// renderLines returns the plan or diff lines shown in the viewport.
 func (d *Details) renderLines() []string {
 	lines := make([]string, 0)
 
@@ -77,6 +80,7 @@ func (d *Details) renderLines() []string {
 	return lines
 }
 
+// highlightJson applies terminal JSON highlighting using bg as the line background.
 func (d *Details) highlightJson(jsonStr string, bg lipgloss.Style) string {
 	var buf bytes.Buffer
 
@@ -92,6 +96,7 @@ func (d *Details) highlightJson(jsonStr string, bg lipgloss.Style) string {
 	return highlighted
 }
 
+// getJsonStr returns v formatted as JSON and prefixed on each line.
 func getJsonStr(v any, prefix string) string {
 	if v == nil {
 		return prefix + "null"

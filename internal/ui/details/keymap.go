@@ -16,16 +16,19 @@ var keys = keymap{
 	),
 }
 
+// ShortHelp returns the compact help bindings for the details keymap.
 func (k keymap) ShortHelp() []key.Binding {
 	return []key.Binding{k.toggle}
 }
 
+// FullHelp returns the expanded help bindings for the details keymap.
 func (k keymap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
 		{k.toggle},
 	}
 }
 
+// KeyMap returns the key bindings used by the details pane.
 func KeyMap() help.KeyMap {
 	return keys
 }

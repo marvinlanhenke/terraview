@@ -4,6 +4,7 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
+// View renders the details pane.
 func (d *Details) View() string {
 	if d.showEmptyState() {
 		empty := d.styles.empty.

@@ -5,6 +5,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 )
 
+// Update applies a Bubble Tea message to the details pane.
 func (d *Details) Update(msg tea.Msg) tea.Cmd {
 	var cmd tea.Cmd
 
