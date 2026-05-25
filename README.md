@@ -86,9 +86,9 @@ terraview -file - < plan.json
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ [S]  search resources...                    3 matches  ◎─TERRAVIEW─◉       │
-│ ⚑ Plan: [+7] [~2] [-1] [*0] [=2] [!0]                    ⚲ Filter: 1        │
+│ ⚑ Plan: [+7] [~2] [-1] [*0] [=2] [!0]                    ⚲ Filter: 1       │
 ├──────────────────────────────┬──────────────────────────────────────────────┤
-│ ⌘ Resources                 │ ▤ Details · Diff                             │
+│ ⌘ Resources                 │ ▤ Details · Diff                            │
 │                              │                                              │
 │  ○ Create            (7/12)  │  attribute: tags.owner                       │
 │  ● aws_ecs_cluster.main      │  (−) before:                                 │
