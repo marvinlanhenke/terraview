@@ -5,6 +5,7 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
+// View satisfies tea.Model and renders the composed Terraview UI.
 func (m Model) View() tea.View {
 	search := m.components.search.View()
 	status := m.components.status.View()
@@ -41,7 +42,7 @@ func (m Model) View() tea.View {
 
 	content := appContent
 
-	if m.focus == FocusFilter {
+	if m.focus == focusFilter {
 		modal := m.components.filter.View(m.controls.filterView())
 
 		x := max(0, (m.size.width-lipgloss.Width(modal))/2)

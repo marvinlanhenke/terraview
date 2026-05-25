@@ -1,3 +1,4 @@
+// Package app wires the top-level Bubble Tea model for Terraview.
 package app
 
 import (
@@ -14,30 +15,17 @@ import (
 
 const defaultMargin = 4
 
-type Focus int
+// focus identifies the active app pane.
+type focus int
 
 const (
-	FocusTree Focus = iota
-	FocusSearch
-	FocusDetails
-	FocusFilter
+	focusTree focus = iota
+	focusSearch
+	focusDetails
+	focusFilter
 )
 
-type TreeControls struct {
-	query   string
-	filters map[tree.Action]bool
-}
-
-func (t *TreeControls) filterView() map[filter.Action]bool {
-	f := make(map[filter.Action]bool, len(t.filters))
-	for k, v := range t.filters {
-		f[filter.Action(k)] = v
-	}
-
-	return f
-}
-
-type Components struct {
+type components struct {
 	search  search.Search
 	filter  filter.Modal
 	status  status.Status
@@ -50,19 +38,37 @@ type size struct {
 	height int
 }
 
+// treeControls stores the query and filters applied to the tree.
+type treeControls struct {
+	query   string
+	filters map[tree.Action]bool
+}
+
+// filterView converts tree filters into the filter modal action type.
+func (t *treeControls) filterView() map[filter.Action]bool {
+	f := make(map[filter.Action]bool, len(t.filters))
+	for k, v := range t.filters {
+		f[filter.Action(k)] = v
+	}
+
+	return f
+}
+
+// Model is the top-level Bubble Tea model for the Terraview app.
 type Model struct {
 	theme      theme.Theme
 	size       size
-	focus      Focus
-	controls   TreeControls
-	components Components
+	focus      focus
+	controls   treeControls
+	components components
 	help       help.Model
 }
 
+// New creates a Model from the planview root node.
 func New(root *planview.Node) Model {
 	t := theme.Default()
 
-	c := Components{
+	c := components{
 		search:  search.New(t),
 		filter:  filter.New(t),
 		status:  status.New(t),
@@ -70,14 +76,14 @@ func New(root *planview.Node) Model {
 		details: details.New(t),
 	}
 
-	controls := TreeControls{
+	controls := treeControls{
 		filters: make(map[tree.Action]bool),
 	}
 
 	m := Model{
 		theme:      t,
 		size:       size{},
-		focus:      FocusTree,
+		focus:      focusTree,
 		controls:   controls,
 		components: c,
 		help:       help.New(),
@@ -105,11 +111,13 @@ func New(root *planview.Node) Model {
 	return m
 }
 
+// refreshTreeFromControls reapplies the current query and filters to the tree.
 func (m *Model) refreshTreeFromControls() {
 	m.components.tree.SetCriteria(m.controls.query, m.controls.filters)
 	m.syncTreeOutputs()
 }
 
+// syncTreeOutputs updates selection-dependent UI state from the tree.
 func (m *Model) syncTreeOutputs() {
 	m.components.details.SetContent(buildDetailsContent(m.components.tree.Selected()))
 	m.components.search.SetMatches(m.components.tree.VisibleResourceCount())
@@ -124,10 +132,10 @@ func (m *Model) generalFooterBindings() []key.Binding {
 	}
 
 	switch m.focus {
-	case FocusTree:
+	case focusTree:
 		bindings = append(bindings, keys.LeftPane)
 		bindings = append(bindings, keys.RightPane)
-	case FocusDetails:
+	case focusDetails:
 		bindings = append(bindings, keys.LeftPane)
 		bindings = append(bindings, keys.RightPane)
 	}
@@ -139,17 +147,18 @@ func (m *Model) specificFooterBindings() []key.Binding {
 	bindings := make([]key.Binding, 0)
 
 	switch m.focus {
-	case FocusTree:
+	case focusTree:
 		bindings = append(bindings, tree.KeyMap().ShortHelp()...)
-	case FocusDetails:
+	case focusDetails:
 		bindings = append(bindings, details.KeyMap().ShortHelp()...)
-	case FocusFilter:
+	case focusFilter:
 		bindings = append(bindings, filter.KeyMap().ShortHelp()...)
 	}
 
 	return bindings
 }
 
+// buildTreeNode converts a planview node into the tree component model.
 func buildTreeNode(n *planview.Node) *tree.Node {
 	if n == nil {
 		return nil
@@ -175,6 +184,7 @@ func buildTreeNode(n *planview.Node) *tree.Node {
 	return out
 }
 
+// buildStats counts resource nodes by action for the status component.
 func buildStats(n *planview.Node) *status.Stats {
 	if n == nil {
 		return nil
@@ -186,6 +196,7 @@ func buildStats(n *planview.Node) *status.Stats {
 	return stats
 }
 
+// collectStats recursively accumulates action counts from the plan tree.
 func collectStats(n *planview.Node, stats *status.Stats) {
 	if n == nil {
 		return
@@ -213,6 +224,7 @@ func collectStats(n *planview.Node, stats *status.Stats) {
 	}
 }
 
+// buildDetailsContent derives the details pane content from the selected tree node.
 func buildDetailsContent(n *tree.Node) details.Content {
 	if n == nil {
 		return details.Content{Kind: details.KindNone}
@@ -244,6 +256,7 @@ func buildDetailsContent(n *tree.Node) details.Content {
 	return content
 }
 
+// buildFilterOptions builds filter modal options from the action group nodes.
 func buildFilterOptions(nodes []*planview.Node) []filter.Option {
 	seen := make(map[filter.Action]struct{})
 	options := make([]filter.Option, 0, len(nodes))
