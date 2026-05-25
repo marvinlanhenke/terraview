@@ -1,6 +1,7 @@
 package app
 
 import (
+	"log/slog"
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
@@ -10,7 +11,7 @@ import (
 )
 
 func TestRouteKeyPressConsumesSearchActivation(t *testing.T) {
-	m := New(testPlanRoot())
+	m := New(testPlanRoot(), slog.Default())
 
 	cmd, consumed := m.routeKeyPress(keyText("/"))
 	if !consumed {
@@ -35,7 +36,7 @@ func TestRouteKeyPressConsumesSearchActivation(t *testing.T) {
 }
 
 func TestRouteKeyPressConsumesSearchEscape(t *testing.T) {
-	m := New(testPlanRoot())
+	m := New(testPlanRoot(), slog.Default())
 	m = updateModel(t, m, keyText("/"))
 	m = updateModel(t, m, keyText("w"))
 
@@ -62,7 +63,7 @@ func TestRouteKeyPressConsumesSearchEscape(t *testing.T) {
 }
 
 func TestUpdateSearchInputUpdatesTreeControls(t *testing.T) {
-	m := New(testPlanRoot())
+	m := New(testPlanRoot(), slog.Default())
 
 	m = updateModel(t, m, keyText("/"))
 	m = updateModel(t, m, keyText("w"))
@@ -79,7 +80,7 @@ func TestUpdateSearchInputUpdatesTreeControls(t *testing.T) {
 }
 
 func TestUpdateSearchEnterDoesNotExpandTree(t *testing.T) {
-	m := New(testPlanRoot())
+	m := New(testPlanRoot(), slog.Default())
 	if got := m.components.tree.VisibleResourceCount(); got != 0 {
 		t.Fatalf("expected collapsed tree to have no visible resources, got %d", got)
 	}
@@ -97,7 +98,7 @@ func TestUpdateSearchEnterDoesNotExpandTree(t *testing.T) {
 }
 
 func TestUpdateRightPaneOnlyRoutesFromTreeFocus(t *testing.T) {
-	m := New(testPlanRoot())
+	m := New(testPlanRoot(), slog.Default())
 	m.focus = focusSearch
 	m.components.search.Focus()
 
@@ -109,7 +110,7 @@ func TestUpdateRightPaneOnlyRoutesFromTreeFocus(t *testing.T) {
 }
 
 func TestUpdateCanFocusDetailsForSelectedResource(t *testing.T) {
-	m := New(testPlanRoot())
+	m := New(testPlanRoot(), slog.Default())
 
 	m = updateModel(t, m, keyText("e"))
 	m = updateModel(t, m, keySpecial(tea.KeyDown))
@@ -121,7 +122,7 @@ func TestUpdateCanFocusDetailsForSelectedResource(t *testing.T) {
 }
 
 func TestUpdateFilterToggleAndReset(t *testing.T) {
-	m := New(testPlanRoot())
+	m := New(testPlanRoot(), slog.Default())
 
 	m = updateModel(t, m, keyText("f"))
 	if m.focus != focusFilter {
@@ -140,7 +141,7 @@ func TestUpdateFilterToggleAndReset(t *testing.T) {
 }
 
 func TestUpdateWindowSizeAppliesLayout(t *testing.T) {
-	m := New(testPlanRoot())
+	m := New(testPlanRoot(), slog.Default())
 	m = updateModel(t, m, tea.WindowSizeMsg{Width: 120, Height: 40})
 
 	if m.size.width != 120 || m.size.height != 40 {
@@ -149,7 +150,7 @@ func TestUpdateWindowSizeAppliesLayout(t *testing.T) {
 }
 
 func TestApplySearchQuery(t *testing.T) {
-	m := New(testPlanRoot())
+	m := New(testPlanRoot(), slog.Default())
 
 	if m.applySearchQuery() {
 		t.Fatal("expected unchanged empty query")
@@ -164,7 +165,7 @@ func TestApplySearchQuery(t *testing.T) {
 }
 
 func TestApplyFilterIntent(t *testing.T) {
-	m := New(testPlanRoot())
+	m := New(testPlanRoot(), slog.Default())
 
 	if !m.applyFilterIntent(filterIntent(ui.ActionCreate)) {
 		t.Fatal("expected create filter toggle to report a change")

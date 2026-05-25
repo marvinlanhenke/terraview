@@ -93,14 +93,21 @@ func New(root *planview.Node, logger *slog.Logger) Model {
 
 	m.applyLayout(0, 0)
 
-	m.components.status.SetStats(buildStats(root))
+	stats := buildStats(root)
+	m.components.status.SetStats(stats)
+	logger.Debug("plan stats built", "create", stats.Create, "update", stats.Update, "delete", stats.Delete, "replace", stats.Replace, "no_op", stats.NoOp, "errors", stats.Errors)
 
-	m.components.filter.SetOptions(buildFilterOptions(children))
+	filterOpts := buildFilterOptions(children)
+	m.components.filter.SetOptions(filterOpts)
+	logger.Debug("filter options built", "count", len(filterOpts))
 
-	m.components.tree.SetRoot(buildTreeNode(root))
+	treeRoot := buildTreeNode(root)
+	m.components.tree.SetRoot(treeRoot)
+	logger.Debug("tree root built", "has_root", treeRoot != nil)
 
 	m.refreshTreeFromControls()
 
+	logger.Debug("app model initialized")
 	return m
 }
 
@@ -123,14 +130,18 @@ func (m *Model) applyLayout(width, height int) {
 
 // refreshTreeFromControls reapplies the current query and filters to the tree.
 func (m *Model) refreshTreeFromControls() {
+	m.logger.Debug("refreshing tree", "query", m.controls.query, "filter_count", len(m.controls.filters))
 	m.components.tree.SetCriteria(m.controls.query, m.controls.filters)
 	m.syncTreeOutputs()
 }
 
 // syncTreeOutputs updates selection-dependent UI state from the tree.
 func (m *Model) syncTreeOutputs() {
-	m.components.details.SetContent(buildDetailsContent(m.components.tree.Selected()))
-	m.components.search.SetMatches(m.components.tree.VisibleResourceCount())
+	selected := m.components.tree.Selected()
+	visible := m.components.tree.VisibleResourceCount()
+	m.logger.Debug("tree outputs synced", "visible_resources", visible, "has_selection", selected != nil)
+	m.components.details.SetContent(buildDetailsContent(selected))
+	m.components.search.SetMatches(visible)
 }
 
 // generalFooterBindings returns app-level key bindings shown in the footer.

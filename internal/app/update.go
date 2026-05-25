@@ -45,13 +45,16 @@ func (m *Model) routeKeyPress(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 		return tea.Quit, true
 
 	case key.Matches(msg, keys.Search) && m.focus != focusSearch:
+		m.logger.Debug("key match", "key", keys.Search)
 		return m.focusSearch(), true
 
 	case key.Matches(msg, keys.Enter) && m.focus == focusSearch:
+		m.logger.Debug("key match", "key", keys.Enter, "focus", "search", "action", "apply search")
 		m.focusTree()
 		return nil, true
 
 	case key.Matches(msg, keys.Escape) && m.focus == focusSearch:
+		m.logger.Debug("key match", "key", keys.Escape, "focus", "search", "action", "clear and exit search")
 		m.components.search.Clear()
 		m.controls.query = ""
 		m.refreshTreeFromControls()
@@ -59,18 +62,22 @@ func (m *Model) routeKeyPress(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 		return nil, true
 
 	case m.focus == focusTree && (key.Matches(msg, keys.RightPane) || key.Matches(msg, keys.Enter)):
+		m.logger.Debug("key match", "key", msg.String(), "focus", "tree", "action", "inspect selected")
 		m.focusDetailsIfInspectable()
 		return nil, false
 
 	case m.focus == focusDetails && (key.Matches(msg, keys.LeftPane) || key.Matches(msg, keys.Enter) || key.Matches(msg, keys.Escape)):
+		m.logger.Debug("key match", "key", msg.String(), "focus", "details", "action", "return to tree")
 		m.focusTree()
 		return nil, false
 
 	case key.Matches(msg, keys.Filter) && m.focus != focusSearch:
+		m.logger.Debug("key match", "key", keys.Filter, "action", "toggle filter")
 		m.toggleFilter()
 		return nil, false
 
 	case key.Matches(msg, keys.Escape) && m.focus == focusFilter:
+		m.logger.Debug("key match", "key", keys.Escape, "focus", "filter", "action", "close filter")
 		m.focusTree()
 		return nil, false
 	}
@@ -80,6 +87,7 @@ func (m *Model) routeKeyPress(msg tea.KeyPressMsg) (tea.Cmd, bool) {
 
 // focusSearch moves focus to the search field and starts cursor blinking.
 func (m *Model) focusSearch() tea.Cmd {
+	m.logger.Debug("focus changed", "from", m.focus, "to", focusSearch)
 	m.focus = focusSearch
 	m.components.details.Blur()
 	return m.components.search.Focus()
@@ -87,6 +95,7 @@ func (m *Model) focusSearch() tea.Cmd {
 
 // focusTree moves focus back to the tree and clears child component focus styles.
 func (m *Model) focusTree() {
+	m.logger.Debug("focus changed", "from", m.focus, "to", focusTree)
 	m.focus = focusTree
 	m.components.search.Blur()
 	m.components.details.Blur()
@@ -96,9 +105,11 @@ func (m *Model) focusTree() {
 func (m *Model) focusDetailsIfInspectable() {
 	selected := m.components.tree.Selected()
 	if selected == nil || !selected.IsInspectable() {
+		m.logger.Debug("focus details skipped", "reason", "selected node not inspectable")
 		return
 	}
 
+	m.logger.Debug("focus changed", "from", m.focus, "to", focusDetails, "node", selected.Id)
 	m.focus = focusDetails
 	m.components.search.Blur()
 	m.components.details.Blur()
@@ -108,10 +119,12 @@ func (m *Model) focusDetailsIfInspectable() {
 // toggleFilter opens the filter modal, or closes it when already active.
 func (m *Model) toggleFilter() {
 	if m.focus == focusFilter {
+		m.logger.Debug("filter modal closed")
 		m.focusTree()
 		return
 	}
 
+	m.logger.Debug("filter modal opened", "from", m.focus)
 	m.focus = focusFilter
 	m.components.search.Blur()
 	m.components.details.Blur()
@@ -126,6 +139,7 @@ func (m *Model) updateFocused(msg tea.Msg) tea.Cmd {
 		cmds = append(cmds, m.components.search.Update(msg))
 
 		if m.applySearchQuery() {
+			m.logger.Debug("search query applied", "query", m.controls.query)
 			m.refreshTreeFromControls()
 		}
 
@@ -141,6 +155,7 @@ func (m *Model) updateFocused(msg tea.Msg) tea.Cmd {
 		cmds = append(cmds, cmd)
 
 		if m.applyFilterIntent(intent) {
+			m.logger.Debug("filters applied", "active_count", len(m.controls.filters))
 			m.refreshTreeFromControls()
 		}
 
@@ -169,6 +184,7 @@ func (m *Model) applyFilterIntent(intent filter.Intent) bool {
 			return false
 		}
 
+		m.logger.Debug("filter reset", "previously_active", len(m.controls.filters))
 		clear(m.controls.filters)
 
 		return true
@@ -176,8 +192,10 @@ func (m *Model) applyFilterIntent(intent filter.Intent) bool {
 
 	if action, ok := intent.Toggle(); ok {
 		if m.controls.filters[action] {
+			m.logger.Debug("filter removed", "action", action)
 			delete(m.controls.filters, action)
 		} else {
+			m.logger.Debug("filter added", "action", action)
 			m.controls.filters[action] = true
 		}
 
