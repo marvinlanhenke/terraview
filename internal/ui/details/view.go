@@ -4,7 +4,7 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-func (d Details) View() string {
+func (d *Details) View() string {
 	if d.showEmptyState() {
 		empty := d.styles.empty.
 			Width(d.width).
