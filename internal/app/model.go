@@ -143,31 +143,24 @@ func (m *Model) generalFooterBindings() []key.Binding {
 		keys.Filter,
 	}
 
-	switch m.focus {
-	case focusTree:
-		bindings = append(bindings, keys.LeftPane)
-		bindings = append(bindings, keys.RightPane)
-	case focusDetails:
-		bindings = append(bindings, keys.LeftPane)
-		bindings = append(bindings, keys.RightPane)
+	if m.focus == focusTree || m.focus == focusDetails {
+		bindings = append(bindings, keys.LeftPane, keys.RightPane)
 	}
 
 	return bindings
 }
 
 func (m *Model) specificFooterBindings() []key.Binding {
-	bindings := make([]key.Binding, 0)
-
 	switch m.focus {
 	case focusTree:
-		bindings = append(bindings, tree.KeyMap().ShortHelp()...)
+		return tree.KeyMap().ShortHelp()
 	case focusDetails:
-		bindings = append(bindings, details.KeyMap().ShortHelp()...)
+		return details.KeyMap().ShortHelp()
 	case focusFilter:
-		bindings = append(bindings, filter.KeyMap().ShortHelp()...)
+		return filter.KeyMap().ShortHelp()
+	default:
+		return nil
 	}
-
-	return bindings
 }
 
 // buildTreeNode converts a planview node into the tree component model.
