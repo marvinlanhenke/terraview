@@ -19,7 +19,7 @@ func buildTreeNode(n *planview.Node) *tree.Node {
 		Id:         n.Id,
 		Label:      n.Label,
 		LabelCount: n.LabelCount,
-		Kind:       tree.NodeKind(n.Kind),
+		Kind:       convertPlanNodeKind(n.Kind),
 		Action:     convertPlanAction(n.Action),
 		Payload:    n.Payload,
 		Changes:    tree.ChangeSet{Before: n.ChangeSetBefore(), After: n.ChangeSetAfter()},
@@ -128,4 +128,8 @@ func buildFilterOptions(groups []*planview.Node) []filter.Option {
 
 func convertPlanAction(a planview.Action) action.Action {
 	return action.Action(a)
+}
+
+func convertPlanNodeKind(k planview.NodeKind) tree.NodeKind {
+	return tree.NodeKind(k)
 }
