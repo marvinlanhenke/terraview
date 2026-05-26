@@ -1,13 +1,9 @@
 name: CI
 on:
   pull_request:
-    paths-ignore:
-      - docs/hugo-pages/**
   push:
     branches:
       - main
-    paths-ignore:
-      - docs/hugo-pages/**
 permissions:
   contents: read
 concurrency:
