@@ -279,7 +279,7 @@ func TestFromTerraformInvalidActionReturnsError(t *testing.T) {
 		ResourceChanges: []terraform.ResourceChange{
 			{
 				Address: "aws_s3_bucket.invalid",
-				Change: terraform.Change{Actions: []string{"unexpected"}},
+				Change:  terraform.Change{Actions: []string{"unexpected"}},
 			},
 		},
 	}
@@ -427,7 +427,7 @@ func requireGroupCount(t *testing.T, group *Node, wantChildren int, wantLabelCou
 	if group.LabelCount != wantLabelCount {
 		t.Fatalf("expected %q group label count %q, got %q", group.Action, wantLabelCount, group.LabelCount)
 	}
-	}
+}
 
 func requireChild(t *testing.T, group *Node, id string) *Node {
 	t.Helper()

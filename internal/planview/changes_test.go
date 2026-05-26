@@ -92,11 +92,11 @@ func TestNodeChangeSetsReturnClones(t *testing.T) {
 	node := &Node{
 		changes: changeSet{
 			before: map[string]any{
-				"tags": map[string]any{"env": "prod"},
+				"tags":  map[string]any{"env": "prod"},
 				"ports": []any{float64(80), float64(443)},
 			},
 			after: map[string]any{
-				"tags": map[string]any{"env": "stage"},
+				"tags":  map[string]any{"env": "stage"},
 				"ports": []any{float64(8080), float64(8443)},
 			},
 		},
