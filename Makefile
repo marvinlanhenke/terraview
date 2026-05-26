@@ -8,13 +8,16 @@ CMD ?= ./cmd/$(BINARY)
 OUT ?= bin/$(BINARY)
 DOCS_DIR ?= docs/hugo-pages
 
-.PHONY: help fmt lint test build check docs-build docs-serve
+.PHONY: help fmt fmt-check lint test build check docs-build docs-serve
 
 help: ## Show available targets.
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / {printf "%-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 fmt: ## Format Go source files.
 	$(GO) fmt ./...
+
+fmt-check: ## Verify Go source formatting.
+	@test -z "$$(gofmt -l .)" || (gofmt -l . && exit 1)
 
 lint: ## Run Go static analysis.
 	$(GO) vet ./...
