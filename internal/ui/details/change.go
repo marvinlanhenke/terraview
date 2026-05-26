@@ -43,7 +43,14 @@ func appendValueChange(path string, before, after any, rows *[]change) {
 	beforeMap, beforeIsMap := asMap(before)
 	afterMap, afterIsMap := asMap(after)
 
-	if beforeIsMap || afterIsMap {
+	// map <-> map: should expand children and suppress the parent row
+	// nil/map <-> map/nil: should expand children
+	// map <-> scalar: should not expand; keep the parent row to preserve scalar side
+	shouldExpand := (beforeIsMap && afterIsMap) ||
+		(beforeIsMap && after == nil) ||
+		(afterIsMap && before == nil)
+
+	if shouldExpand {
 		ok := flattenChangeMap(path, normalizeMap(beforeMap), normalizeMap(afterMap), rows)
 
 		// If both sides are empty we add the row as a leaf
@@ -53,9 +60,9 @@ func appendValueChange(path string, before, after any, rows *[]change) {
 				before: before,
 				after:  after,
 			})
-
-			return
 		}
+
+		return
 	}
 
 	*rows = append(*rows, change{

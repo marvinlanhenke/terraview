@@ -30,7 +30,7 @@ func TestFlattenChangesSortsAndExpandsNestedMaps(t *testing.T) {
 		},
 	})
 
-	wantPaths := []string{"added", "nested.a", "nested.b", "nested.c", "nested", "removed", "z"}
+	wantPaths := []string{"added", "nested.a", "nested.b", "nested.c", "removed", "z"}
 	if got := changePaths(rows); !reflect.DeepEqual(got, wantPaths) {
 		t.Fatalf("expected paths %v, got %v", wantPaths, got)
 	}
@@ -55,6 +55,80 @@ func TestFlattenChangesRendersEmptyMapOnce(t *testing.T) {
 	}
 
 	requireChange(t, rows, "settings", nil, map[string]any{})
+}
+
+func TestFlattenChangesExpandsOnlyCompatibleMapChanges(t *testing.T) {
+	tests := []struct {
+		name       string
+		before     map[string]any
+		after      map[string]any
+		wantPaths  []string
+		wantPath   string
+		wantBefore any
+		wantAfter  any
+	}{
+		{
+			name: "nil to map expands",
+			after: map[string]any{
+				"settings": map[string]any{"enabled": true},
+			},
+			wantPaths:  []string{"settings.enabled"},
+			wantPath:   "settings.enabled",
+			wantBefore: nil,
+			wantAfter:  true,
+		},
+		{
+			name: "map to nil expands",
+			before: map[string]any{
+				"settings": map[string]any{"enabled": true},
+			},
+			wantPaths:  []string{"settings.enabled"},
+			wantPath:   "settings.enabled",
+			wantBefore: true,
+			wantAfter:  nil,
+		},
+		{
+			name: "map to scalar keeps parent",
+			before: map[string]any{
+				"settings": map[string]any{"enabled": true},
+			},
+			after: map[string]any{
+				"settings": "disabled",
+			},
+			wantPaths:  []string{"settings"},
+			wantPath:   "settings",
+			wantBefore: map[string]any{"enabled": true},
+			wantAfter:  "disabled",
+		},
+		{
+			name: "scalar to map keeps parent",
+			before: map[string]any{
+				"settings": "disabled",
+			},
+			after: map[string]any{
+				"settings": map[string]any{"enabled": true},
+			},
+			wantPaths:  []string{"settings"},
+			wantPath:   "settings",
+			wantBefore: "disabled",
+			wantAfter:  map[string]any{"enabled": true},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			rows := flattenChanges(ui.ChangeSet{
+				Before: tt.before,
+				After:  tt.after,
+			})
+
+			if got := changePaths(rows); !reflect.DeepEqual(got, tt.wantPaths) {
+				t.Fatalf("expected paths %v, got %v", tt.wantPaths, got)
+			}
+
+			requireChange(t, rows, tt.wantPath, tt.wantBefore, tt.wantAfter)
+		})
+	}
 }
 
 func TestGetJsonStrFormatsNilAndPrefixesJSON(t *testing.T) {
