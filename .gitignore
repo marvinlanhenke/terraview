@@ -35,3 +35,8 @@ TODO.md
 REVIEW.md
 *.log
 bin/
+
+docs/hugo-pages/node_modules/
+docs/hugo-pages/public/
+docs/hugo-pages/resources/
+.hugo_build.lock
